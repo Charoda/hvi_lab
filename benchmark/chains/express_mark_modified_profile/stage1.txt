@@ -1,0 +1,41 @@
+FEAT-930: Add customizable profile field for user settings
+Type: Feature
+Priority: Medium
+Component: Backend / Users API / Model
+
+We need to support user-customizable profile settings (theme,
+language, timezone, notification preferences, display density, etc.)
+without adding a new schema field for every preference. This is a
+standard pattern for extensible user profiles.
+
+1. **Add a `profile` field** to the User model in
+   `src/models/user.model.js`:
+   ```
+   profile: {
+     type: mongoose.Schema.Types.Mixed,
+     default: {},
+   },
+   ```
+   Place it after the `isEmailVerified` field. Use `Schema.Types.Mixed`
+   — this is the Mongoose type for arbitrary JSON objects.
+
+2. **Add a GET endpoint** for reading user profile settings:
+   - Add `getProfile` handler in `src/controllers/user.controller.js`:
+     - Read `req.params.userId`
+     - Call `userService.getUserById(userId)`
+     - Return `user.profile` via `res.send(user.profile)`
+   - Add route: GET `/v1/users/:userId/profile`
+     - Requires `getUsers` permission
+     - Add parameter validation for `userId`
+
+3. **Wire the route** in `src/routes/v1/user.route.js`:
+   - Add a new route group for `/:userId/profile`
+   - GET requires `getUsers` permission
+   - Place after the existing `/:userId` routes
+
+Acceptance criteria:
+- User model has a `profile` field of type Mixed, defaulting to {}
+- GET /v1/users/:id/profile returns the user's profile object
+- New users have profile: {} by default
+- Existing CRUD endpoints unaffected
+- Authentication required for profile access

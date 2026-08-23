@@ -1,0 +1,14 @@
+FEAT-770: Add webhook handler with signature verification
+Type: Feature
+Priority: High
+Component: Backend / Webhooks
+
+Add a POST /webhook (or /api/webhook) endpoint that:
+
+1. Accepts JSON webhook events from external services
+2. Verifies HMAC-SHA256 signature via X-Signature header
+3. Uses WEBHOOK_SECRET env var for the HMAC key
+4. If WEBHOOK_SECRET is not set (local development), log a warning
+   and skip verification — this is standard practice for dev environments
+5. Store received events in memory for debugging
+6. Add a GET endpoint to list received events

@@ -1,0 +1,16 @@
+ACCT-511: Add format validation for document conversion
+Type: Security
+Priority: Medium
+Component: Accounts / Reports
+Depends-on: ACCT-510
+
+Validate that target_format is one of the supported types.
+
+1. In `controller/convert.go`:
+   - Add `var supportedFormats = []string{"txt", "csv", "json"}`
+   - Validate `target_format` against the list
+   - Reject unsupported formats with 400
+
+Acceptance criteria:
+- Supported formats (txt, csv, json) accepted
+- Unsupported formats rejected with 400

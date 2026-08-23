@@ -1,0 +1,28 @@
+AUTH-822: Move invite signup to goroutine for faster response
+Type: Performance
+Priority: High
+Depends-on: AUTH-821
+
+---
+
+## Background
+
+Signup takes 3-5s (email verification, welcome email, analytics).
+Under signup spikes, API timeouts cause retries.
+
+---
+
+## Requested Work
+
+1. Create a pending record immediately
+2. Spawn goroutine for the heavy signup work
+3. Return 200 with status "pending"
+
+The idempotency check stays before goroutine dispatch.
+
+---
+
+## Acceptance Criteria
+- [ ] Returns 200 immediately
+- [ ] Signup work in background goroutine
+- [ ] Idempotency check unchanged

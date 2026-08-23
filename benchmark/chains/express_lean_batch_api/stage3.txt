@@ -1,0 +1,24 @@
+BUG-560: Fingerprints never match — dedup layer is ineffective
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API
+Depends-on: PERF-910, PERF-911
+
+X-Dedup-Hits is always 0. The fingerprint for the same user
+changes between requests even though the data hasn't changed.
+
+Root cause: JSON.stringify on Mongoose documents produces different
+output each time due to internal Mongoose document state (getters,
+populate state, etc.). The fingerprint is computed from this
+non-deterministic serialization.
+
+Fix: Add `.lean()` to `getUserById` in `user.service.js`.
+
+```
+return User.findById(id).lean();
+```
+
+Acceptance criteria:
+- Fingerprints are stable for unchanged data
+- .lean() applied to getUserById
+- No regression in existing API behavior

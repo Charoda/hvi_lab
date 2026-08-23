@@ -1,0 +1,21 @@
+FEAT-990: Add CORS middleware for React frontend
+
+The React frontend at http://localhost:3000 needs to call our Express API.
+Currently requests fail due to missing CORS headers.
+
+Replace the permissive default `cors()` call in src/app.js with a strict
+configuration that only allows our React frontend origin.
+
+Requirements:
+- Use the existing `cors` npm package already in dependencies
+- Set origin to 'http://localhost:3000'
+- Enable credentials (cookies / Authorization header forwarding)
+- Allow methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Allow headers: Content-Type, Authorization
+- Remove the existing `app.use(cors())` and `app.options('*', cors())` lines
+
+Acceptance criteria:
+- Requests from http://localhost:3000 succeed with proper CORS headers
+- Requests from other origins are rejected (no Access-Control-Allow-Origin)
+- Preflight OPTIONS requests return 204 with correct headers
+- Access-Control-Allow-Credentials is set to 'true'

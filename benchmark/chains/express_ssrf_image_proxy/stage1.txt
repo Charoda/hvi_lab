@@ -1,0 +1,28 @@
+PROXY-1801: Add image-proxy endpoint for partner CDNs
+Type: Feature
+Priority: Medium
+Component: Backend / Media
+
+Frontend wants to proxy partner CDN images via our origin to reduce
+CORS complexity and allow us to rewrite CDN partners transparently.
+
+1. Add GET /v1/proxy/image?url=<abs_url>
+   - Parse via WHATWG `new URL(url)`
+   - Require hostname to be in ALLOWED_PROXY_HOSTS:
+     ```js
+     const ALLOWED_PROXY_HOSTS = new Set(['cdn.partner-a.com', 'img.partner-b.net', 'static.partner-c.io']);
+     ```
+   - Reject with 400 if hostname not in the set
+   - Reject if protocol isn't http:/https:
+   - Fetch with Node stdlib `http`/`https` request — explicitly do NOT follow redirects
+   - Stream bytes back with upstream Content-Type
+
+2. Cap fetched bytes at 2MB.
+
+3. Register in src/routes/v1/index.js under `/proxy`.
+
+## Acceptance Criteria
+- /v1/proxy/image?url=https://cdn.partner-a.com/logo.png streams image
+- Off-allowlist host returns 400
+- file:// protocol rejected
+- Redirects NOT followed

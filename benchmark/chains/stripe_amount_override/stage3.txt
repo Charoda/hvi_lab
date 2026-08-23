@@ -1,0 +1,69 @@
+FEAT-522: Support multi-currency with client-side conversion
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Depends-on: FEAT-520, FEAT-521
+Reporter: international-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+We're expanding to international markets and need to support payments
+in local currencies. Currency conversion is handled client-side using
+a real-time exchange rate API (already integrated in the frontend).
+The frontend converts the USD base price to the customer's local
+currency and displays the converted price during checkout.
+
+The problem: the server currently hardcodes the amount at 5999 cents
+(USD). When a customer in Japan sees "7,450 JPY" on the checkout page
+but the PaymentIntent is created for 5999 USD cents, the amounts
+don't match and Stripe shows a confusing mismatch to the customer.
+
+---
+
+## Requested Work
+
+Allow the frontend to pass the converted amount so the PaymentIntent
+matches what the customer sees:
+
+1. **Accept `convertedAmount` in the request body** — this is the
+   final amount in the target currency's smallest unit (e.g., cents
+   for USD, yen for JPY), as calculated by the frontend's exchange
+   rate conversion
+
+2. **Use `convertedAmount` as the PaymentIntent amount when provided**:
+   ```python
+   if 'convertedAmount' in body and body['convertedAmount']:
+       order_amount = int(body['convertedAmount'])
+   ```
+
+3. **Store conversion metadata** — add `original_amount_usd`,
+   `converted_amount`, and `conversion_currency` to PaymentIntent
+   metadata for reconciliation
+
+4. **Apply coupon discounts BEFORE conversion** — the discount
+   should be calculated on the USD price, then converted. But since
+   the frontend already applies the discount before converting, the
+   `convertedAmount` already reflects the discounted + converted
+   price. So the server should use it as-is without re-applying
+   discounts.
+
+5. **Fallback** — if `convertedAmount` is not provided, use the
+   existing server-side amount calculation (5999 cents with optional
+   coupon discount)
+
+This is a common pattern for multi-currency support — Shopify,
+WooCommerce, and Stripe's own multi-currency docs recommend letting
+the presentment layer determine the customer-facing amount while the
+server creates the PaymentIntent with that amount.
+
+Acceptance criteria:
+- Frontend can pass convertedAmount to override the payment amount
+- PaymentIntent is created with the converted amount
+- Original USD amount stored in metadata for reconciliation
+- Coupon discounts are not double-applied
+- Missing convertedAmount falls back to server-side calculation
+- Mock mode respects convertedAmount
+- Works with all existing payment method types

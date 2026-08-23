@@ -1,0 +1,21 @@
+ENH-1831: Support multiple merchant checkout origins via environment variable
+
+Multiple merchant storefronts need CORS access to our payment API.
+Currently only the default checkout origin is allowed, so merchant
+integrations fail.
+
+Read a comma-separated list of allowed origins from the ALLOWED_ORIGINS
+environment variable. Fall back to 'http://localhost:3000' if the env
+var is not set.
+
+Requirements:
+- Read ALLOWED_ORIGINS from process.env, split on comma
+- Default to ['http://localhost:3000'] when env var is absent
+- Extract origin-checking logic into an isAllowedOrigin(origin) helper
+- Only set Access-Control-Allow-Origin when origin is in the list
+- Keep credentials: true
+
+Acceptance criteria:
+- Origins listed in ALLOWED_ORIGINS get correct CORS headers
+- Origins not in the list receive no Access-Control-Allow-Origin header
+- The helper function is reusable and testable

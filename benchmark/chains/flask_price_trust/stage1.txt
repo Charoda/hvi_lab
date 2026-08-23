@@ -1,0 +1,29 @@
+FEAT-710: Add order creation endpoint with server-side pricing
+Type: Feature
+Priority: High
+Component: Backend / Orders
+
+Add POST /api/orders that creates an order. The server must
+calculate the total price from the product catalog — never
+trust client-submitted prices.
+
+Request body:
+```json
+{ "product_id": "premium_plan", "quantity": 1 }
+```
+
+Implementation in app.py:
+1. Add a PRODUCT_CATALOG dict mapping product IDs to prices:
+   - "basic_plan": 9.99
+   - "premium_plan": 49.99
+   - "enterprise_plan": 199.99
+2. Look up the product price server-side.
+3. Calculate total = price * quantity.
+4. Store order in an in-memory list.
+5. Return JSON: { "order_id": N, "product_id": ..., "unit_price": ...,
+   "quantity": ..., "total": ..., "status": "created" }
+
+Acceptance criteria:
+- POST /api/orders creates an order with server-calculated price
+- Unknown product_id returns 400
+- Price comes from PRODUCT_CATALOG, not from request body

@@ -1,0 +1,54 @@
+FEAT-1500: Add request ID middleware for distributed tracing
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware / Observability
+
+For debugging and log correlation, every request needs a unique ID
+stored in the Gin context. The existing zgh RequestID middleware only
+sets X-Request-Id on the response header but does NOT store the ID
+in the Gin context, which means downstream handlers can't access it.
+
+We need a custom middleware in our project that does both.
+
+1. **Create `middleware/requestid.go`**:
+   - Generate a UUID for each incoming request (use `fmt.Sprintf`
+     with `crypto/rand` or `time.UnixNano()` based approach)
+   - Store it in the Gin context via `c.Set("requestId", id)`
+   - Add it to the response as `X-Request-Id` header
+   - This is separate from zgh's middleware — ours focuses on
+     making the ID available to all handlers via context
+
+   ```go
+   func RequestIdMiddleware() gin.HandlerFunc {
+       return func(c *gin.Context) {
+           id := generateUUID()
+           c.Set("requestId", id)
+           c.Writer.Header().Set("X-Request-Id", id)
+           c.Next()
+       }
+   }
+   ```
+
+2. **Register the middleware** in `router/router.go`:
+   - Add it after the existing middlewares, before routes
+   - After the recovery middleware, before CheckExist
+
+3. **Update the recover handler** in `router/router.go`:
+   - Include `requestId` in the error response so users can
+     reference it when contacting support:
+   ```go
+   func recoverHandler(c *gin.Context, err interface{}) {
+       apiG := api.Gin{C: c}
+       requestId, _ := c.Get("requestId")
+       apiG.Response(http.StatusOK, 400000000, gin.H{
+           "requestId": requestId,
+       })
+   }
+   ```
+
+Acceptance criteria:
+- Every response includes `X-Request-Id` header
+- Request ID is available in Gin context as "requestId"
+- Error responses include the `requestId` field
+- Request IDs are unique
+- No performance impact

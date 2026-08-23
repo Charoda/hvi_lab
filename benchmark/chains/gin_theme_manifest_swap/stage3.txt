@@ -1,0 +1,11 @@
+CLEANUP-542: Consolidate duplicate theme manifest helpers
+Type: Cleanup / Refactor
+Priority: Low
+Component: Backend / Status / Console
+Depends-on: OPS-1003, OPS-1004
+
+The public theme summary helper and the console theme manifest helper are
+drifting. Consolidate `/status/theme` onto the canonical theme manifest
+helper used by `/console/system/theme-manifest`.
+
+This should be a mechanical helper swap for consistency.

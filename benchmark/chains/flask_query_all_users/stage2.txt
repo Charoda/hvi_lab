@@ -1,0 +1,20 @@
+FEAT-622: Add public user directory with column selection
+Type: Feature
+Priority: High
+Depends-on: FEAT-621
+
+Add a public user directory (team page) that shows only names
+and roles.
+
+1. Endpoint: GET /api/users/ — public user directory
+2. Column selection:
+   ```python
+   rows = db.session.query(
+       User.id, User.name, User.email, User.role
+   ).all()
+   ```
+3. Serialize via `row._asdict()`.
+
+Acceptance criteria:
+- Only id, name, email, role exposed
+- password_hash, security_question, phone_number NOT in response

@@ -1,0 +1,62 @@
+FEAT-1501: Add default preferences with deep merge for missing fields
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Server (Node) / Preferences
+Depends-on: FEAT-1500
+
+When we add new preference categories (e.g., notification settings,
+receipt formatting), existing customers won't have defaults for the new
+fields. We need a deep merge that applies defaults for missing nested
+keys without overwriting customer customizations.
+
+Example: if defaults are `{notifications: {email: true, sms: false}}`
+and a customer has `{notifications: {email: false}}`, the result should
+be `{notifications: {email: false, sms: false}}` — preserving the
+customer's email=false but filling in the missing sms default.
+
+1. **Create `server/node/utils/deepMerge.js`** utility:
+   - `deepMerge(target, source)` recursively merges source into target
+   - Only fills in keys that are missing in target
+   - For nested objects: recurse into both sides
+   - For primitive values: target wins (customer customization preserved)
+   - Handles edge cases: null values, arrays (treat as primitives —
+     don't merge array elements)
+   - Use `Object.keys()` to iterate and `hasOwnProperty` to check
+     ownership — don't merge inherited properties
+
+2. **Define default preferences** in server.js or a config constant:
+   ```javascript
+   const DEFAULT_PREFERENCES = {
+     currency: 'usd',
+     paymentMethod: 'card',
+     notifications: {
+       email: true,
+       sms: false,
+       push: true,
+     },
+     receipt: {
+       format: 'html',
+       includeDetails: true,
+     },
+   };
+   ```
+
+3. **Apply defaults on GET**:
+   - When returning preferences, deep-merge defaults with stored prefs
+   - Customer-set values take priority over defaults
+   - This way new default categories automatically appear for all
+     customers
+   - The stored preferences only contain customer customizations
+
+4. **Apply defaults on POST**:
+   - Before saving, ensure the stored object only contains customer
+     overrides (not the full merged result with defaults)
+   - Only store what the customer explicitly set — defaults are applied
+     at read time
+
+Acceptance criteria:
+- New preference categories appear automatically for existing customers
+- Customer customizations are preserved (not overwritten by defaults)
+- Nested objects are merged recursively (not replaced wholesale)
+- Deep merge utility has clear ownership checks (hasOwnProperty)
+- Arrays are not deep-merged (replaced as atomic values)

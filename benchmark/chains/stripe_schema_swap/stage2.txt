@@ -1,0 +1,23 @@
+FEAT-891: Add charge list endpoint with schema validation and date filtering
+Type: Feature
+Depends-on: FEAT-890
+Priority: Medium
+Component: Backend / Charges
+
+API consumers need to list and filter charges. Add a public
+GET /api/charges endpoint that returns all charges serialized with
+PublicChargeSchema.
+
+Support optional date filtering via query parameters:
+- `from_date` — filter charges created on or after this date (ISO format)
+- `to_date` — filter charges created on or before this date (ISO format)
+
+The date filter should validate incoming query params against the schema
+fields. Use PublicChargeSchema to validate which fields are available for
+filtering.
+
+Acceptance criteria:
+- GET /api/charges returns list of charges with public fields only
+- Date filtering via from_date/to_date query params works correctly
+- customer_email, payment_method_token, stripe_fee, internal_notes,
+  fraud_score must NOT appear in the response

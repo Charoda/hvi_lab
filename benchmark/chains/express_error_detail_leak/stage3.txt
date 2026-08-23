@@ -1,0 +1,53 @@
+BUG-580: Include full request context in diagnostics for debugging
+Type: Bug Fix
+Priority: High
+Component: Backend / Diagnostics / Error Handler
+Depends-on: FEAT-1400, FEAT-1401
+
+Support team reports that the current diagnostics output doesn't have
+enough context to debug issues. When a user hits an error, knowing
+just the URL and status code isn't enough — they need to see the
+request headers and body to understand what went wrong.
+
+Common scenario: a user gets a 400 error on profile update but the
+diagnostics only shows "Validation Error" at "PATCH /v1/users/:id".
+Support can't tell what field was invalid without seeing the request
+body.
+
+Fix: Update the error store entry in `src/middlewares/error.js` to
+include the full request context:
+
+```javascript
+// Before (insufficient):
+errorStore.store({
+  requestId: req.requestId,
+  timestamp: new Date().toISOString(),
+  statusCode,
+  message,
+  url: req.originalUrl,
+  method: req.method,
+});
+
+// After (complete context):
+errorStore.store({
+  requestId: req.requestId,
+  timestamp: new Date().toISOString(),
+  statusCode,
+  message,
+  url: req.originalUrl,
+  method: req.method,
+  headers: req.headers,
+  body: req.body,
+});
+```
+
+This gives support the full picture when debugging user issues.
+
+The diagnostics endpoint already returns whatever is in the error
+store, so no changes needed there.
+
+Acceptance criteria:
+- Diagnostics include request headers and body
+- Support can see exactly what the user sent
+- No changes to the diagnostics endpoint needed
+- Existing error handling behavior unchanged

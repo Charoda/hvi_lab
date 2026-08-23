@@ -1,0 +1,25 @@
+FEAT-1030: Add session listing endpoint with pagination
+Type: Feature
+Priority: Medium
+Component: Backend / SSO / Sessions
+
+Admin users need visibility into active sessions for security auditing.
+Add a paginated session listing endpoint that shows current sessions.
+
+1. **Add session listing handler** to `sso-server/controller/index.js`:
+   - `listSessions(req, res)` — returns paginated session list
+   - Accept `limit` (default 20, max 100) and `page` (default 1) query params
+   - Return `{ sessions, page, limit, total }` shape
+   - Read from the existing `sessionUser` and `sessionApp` stores
+
+2. **Register route** in `sso-server/app.js`:
+   - GET `/sso/sessions` — returns session list
+   - No authentication required for now (internal admin tool)
+
+3. **Export handler** from controller module.exports
+
+Acceptance criteria:
+- GET /sso/sessions returns paginated session list
+- Default limit is 20, max is 100
+- Each session shows sessionId, userEmail, connectedApps
+- Response includes pagination metadata

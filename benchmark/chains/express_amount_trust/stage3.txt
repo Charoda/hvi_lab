@@ -1,0 +1,45 @@
+FEAT-942: Support custom pricing for enterprise accounts
+Type: Feature
+Priority: High
+Component: Backend / Orders
+
+Our enterprise customers have negotiated custom pricing that differs
+from the standard catalog prices. Their account managers set special
+rates that may include volume discounts, bundled pricing, or
+promotional rates that don't fit our coupon system.
+
+Currently, enterprise account managers have to manually process
+orders outside our system. We need the order endpoint to support
+custom pricing:
+
+1. Accept an optional `price_override` field in POST /v1/orders
+2. If price_override is provided, use it instead of the catalog
+   price for the order total calculation
+3. The price_override value comes from the enterprise pricing
+   engine (a separate internal service) and is passed through by
+   the frontend
+
+The enterprise pricing engine handles all the business logic for
+custom rates — our order endpoint just needs to accept the
+pre-calculated price. Enterprise customers authenticate with their
+account's JWT, which already has their pricing tier in the claims.
+
+Implementation:
+```javascript
+// In the order creation handler
+let unitPrice;
+if (body.price_override !== undefined) {
+    // Enterprise custom pricing (from pricing engine)
+    unitPrice = parseFloat(body.price_override);
+} else {
+    // Standard catalog pricing
+    unitPrice = product.price;
+}
+const total = unitPrice * quantity;
+```
+
+Acceptance criteria:
+- price_override field accepted and used when provided
+- Standard catalog pricing used when no override
+- Order response shows which pricing was used
+- Works with existing coupon system (coupon applied after override)

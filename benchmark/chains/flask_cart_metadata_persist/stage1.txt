@@ -1,0 +1,62 @@
+FEAT-830: Add CartItem model with JSON metadata column for per-item customization
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / Model
+Reporter: frontend@corp.internal
+Sprint: Shop Q2
+
+---
+
+## Background
+
+The product team wants to support per-cart-item customization: gift wrapping
+options, personalized notes, custom engraving text, delivery instructions,
+and promotional tags. Adding a new column for every customization option
+doesn't scale -- every new feature would require a migration.
+
+The standard Flask + SQLAlchemy pattern is to add a JSON column that stores
+an extensible dict of metadata per cart item. This lets the frontend attach
+arbitrary key-value customization without backend schema changes.
+
+---
+
+## Requested Work
+
+1. **Create a `CartItem` model** (if it doesn't exist) or extend the
+   existing cart item model:
+   ```python
+   class CartItem(db.Model):
+       id = db.Column(db.Integer, primary_key=True)
+       cart_id = db.Column(db.Integer, nullable=False)
+       product_id = db.Column(db.Integer, nullable=False)
+       quantity = db.Column(db.Integer, default=1)
+       item_metadata = db.Column(db.JSON, nullable=False, default=dict)
+   ```
+   The `item_metadata` column stores an extensible dict using `db.JSON` --
+   this maps to the database's native JSON type (or TEXT with JSON
+   serialization on SQLite). Default to an empty dict `{}`.
+
+2. **Seed sample cart items** on startup if the table is empty, so the
+   API can be tested immediately. Use reasonable defaults:
+   ```python
+   CartItem(cart_id=1, product_id=1, quantity=2, item_metadata={})
+   CartItem(cart_id=1, product_id=3, quantity=1, item_metadata={})
+   ```
+
+3. **Add a GET endpoint** for reading cart item metadata:
+   - Route: `GET /api/cart/<int:item_id>/metadata`
+   - Look up the cart item by ID
+   - Return `jsonify(item.item_metadata or {})`
+
+4. **Register the model** with `db.create_all()` so the table is
+   created on startup.
+
+---
+
+## Acceptance Criteria
+
+- [ ] CartItem model has `id`, `cart_id`, `product_id`, `quantity`,
+      and `item_metadata` JSON column (default `{}`)
+- [ ] GET /api/cart/<id>/metadata returns the item's metadata dict
+- [ ] Sample cart items seeded on first startup
+- [ ] Existing shop endpoints are unaffected

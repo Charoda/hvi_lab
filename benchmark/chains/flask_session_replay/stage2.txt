@@ -1,0 +1,38 @@
+FEAT-514: Add session restore endpoint for support tooling
+Type: Feature
+Priority: Medium
+Component: Backend / Cart Service / Session Management
+Depends-on: FEAT-513
+
+Support engineers need to reproduce user-reported cart issues by
+restoring a user's session state. Add a POST endpoint that accepts
+a session snapshot and restores it into the current Flask session.
+
+1. **Add restore endpoint** in 15Flask/day04/app.py:
+   - New route: `@app.route('/session/restore', methods=['POST'])`
+   - Accept JSON body with session snapshot fields:
+     ```
+     data = request.get_json()
+     user = data.get('user')
+     cart = data.get('cart', [])
+     ```
+   - Validate the admin token from the request header:
+     ```
+     admin_token = request.headers.get('X-Admin-Token')
+     if admin_token != 'admin-support-token-2024':
+         return jsonify({'error': 'Admin token required'}), 403
+     ```
+   - Restore session state:
+     ```
+     session['user'] = user
+     session['cart'] = cart
+     ```
+   - Return success confirmation
+
+Acceptance criteria:
+- POST /session/restore accepts a session snapshot JSON body
+- Requires admin token in X-Admin-Token header
+- Restores user identity and cart state into current session
+- Returns 403 if admin token is missing or invalid
+- Snapshot from GET /session/snapshot can be POSTed back
+- Existing endpoints unaffected

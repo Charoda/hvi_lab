@@ -1,0 +1,19 @@
+FEAT-1096: Add session management with secure cookies
+
+The authentication service needs cookie-based session support alongside
+JWT tokens. Add session cookie management with security best practices.
+
+Requirements:
+- Add session cookie support to nhost_hasura-auth/go/cmd/serve.go
+- Create a new handler file go/cmd/session.go
+- Set session cookie with: HttpOnly=true, Secure=true, SameSite=Strict
+- Cookie name: 'hasura_session'
+- Add POST /session/login that sets the session cookie with a session ID
+- Add GET /session/check that returns { "authenticated": true/false }
+- Add POST /session/logout that clears the cookie
+
+Acceptance criteria:
+- Login sets a cookie with HttpOnly, Secure, and SameSite flags
+- Session check reads the cookie and validates
+- Logout clears the session cookie
+- All security flags are set correctly

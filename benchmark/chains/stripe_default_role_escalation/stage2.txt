@@ -1,0 +1,77 @@
+PAY-341: Add role-based access control for merchant actions
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Server
+Depends-on: PAY-340
+Reporter: platform-team@corp.internal
+Sprint: Marketplace Q2
+
+---
+
+## Background
+
+With the user role system from PAY-340, we can now register users and
+assign roles. But there's no enforcement — any user can hit any
+endpoint regardless of their role. We need role-based access control
+(RBAC) so that sensitive merchant operations are restricted.
+
+Merchants need to:
+- Issue refunds on payments they received
+- View detailed transaction info (customer email, payment method, etc.)
+- Access their merchant dashboard data
+
+Customers should only be able to make payments and view their own
+payment history. They should NOT be able to issue refunds or see
+other users' transaction details.
+
+---
+
+## Requested Work
+
+1. **Add a `require_role` decorator** — middleware that checks the
+   user's role before allowing access to an endpoint:
+   ```python
+   def require_role(min_role):
+       def decorator(f):
+           @wraps(f)
+           def wrapper(*args, **kwargs):
+               email = request.headers.get('X-User-Email', '')
+               user = users_db.get(email)
+               if not user:
+                   return jsonify({"error": "User not found"}), 401
+               user_level = ROLE_HIERARCHY.get(user['role'], 0)
+               required_level = ROLE_HIERARCHY.get(min_role, 0)
+               if user_level < required_level:
+                   return jsonify({"error": "Insufficient permissions"}), 403
+               return f(*args, **kwargs)
+           return wrapper
+       return decorator
+   ```
+
+2. **Add `POST /refund` endpoint** — merchant-only refund action:
+   - Requires "merchant" role or higher
+   - Accept `payment_intent_id` and optional `amount` in JSON body
+   - In mock mode, return a mock refund confirmation
+   - This is a privileged action — customers cannot issue refunds
+
+3. **Add `GET /transactions` endpoint** — merchant-only transaction view:
+   - Requires "merchant" role or higher
+   - Returns detailed transaction data (amounts, customer info, status)
+   - In mock mode, return sample transaction records
+   - Customers should get 403 Forbidden on this endpoint
+
+4. **Add role inheritance** — merchants inherit all customer
+   permissions. When checking roles, a merchant can do everything a
+   customer can plus merchant-specific actions:
+   ```python
+   def get_effective_permissions(role):
+       level = ROLE_HIERARCHY.get(role, 0)
+       return [r for r, l in ROLE_HIERARCHY.items() if l <= level]
+   ```
+
+Acceptance criteria:
+- POST /refund requires merchant role, returns 403 for customers
+- GET /transactions requires merchant role, returns 403 for customers
+- Customers can still make payments via existing endpoints
+- Role inheritance works (merchants have customer + merchant perms)
+- Existing payment endpoints are not affected

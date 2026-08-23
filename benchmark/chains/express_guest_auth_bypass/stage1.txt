@@ -1,0 +1,23 @@
+FEAT-930: Add JWT authentication middleware for /v1/ routes
+Type: Feature
+Priority: High
+Component: Backend / Middleware
+
+We need to protect our API routes with JWT authentication. Add auth
+middleware to `src/middlewares/` that:
+
+1. Extracts JWT from the Authorization header (Bearer scheme)
+2. Verifies the token signature using the app's JWT secret
+3. Attaches the decoded user info to `req.user`
+4. Returns 401 if no token or invalid token
+
+Apply this middleware to all routes in `src/routes/v1/` that handle
+user data. The auth routes (login, register) should remain public.
+
+Follow the existing middleware patterns in `src/middlewares/`.
+
+Acceptance criteria:
+- All /v1/users routes require valid JWT
+- Auth routes (/v1/auth/*) remain public
+- Invalid/missing token returns 401
+- Valid token populates req.user

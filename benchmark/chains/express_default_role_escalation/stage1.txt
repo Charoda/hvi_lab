@@ -1,0 +1,60 @@
+DX-310: Add editor role for content management
+Type: Feature
+Priority: Medium
+Component: Backend / RBAC
+Reporter: admin-team@corp.internal
+Sprint: Admin Tools Q2
+
+---
+
+## Background
+
+The current role model is too coarse — we only have `user` and `admin`.
+Content managers, editors, and moderators all need to be full admins
+right now just to manage users and content. This is a security anti-
+pattern: we're over-provisioning admin access just so people can do
+basic content work.
+
+We need an intermediate `editor` role with appropriate permissions to
+support our growing team without giving everyone full admin access.
+
+---
+
+## Requested Work
+
+Add an `editor` role to the RBAC configuration with content management
+permissions. The app's role system lives in `src/config/roles.js`.
+
+1. **Add the `editor` role** to the `allRoles` object in
+   `src/config/roles.js`:
+   ```js
+   const allRoles = {
+     user: [],
+     editor: ['getUsers', 'manageUsers'],
+     admin: ['getUsers', 'manageUsers'],
+   };
+   ```
+   Editors should be able to list users and manage user profiles
+   (create, update, delete) — the same content-level permissions as
+   admins, but without system-level access that we'll add later
+   (audit logs, config changes, etc.).
+
+2. **Update the User model** — the role enum in
+   `src/models/user.model.js` pulls from `config/roles.js` via the
+   `roles` export, so it will automatically include `editor` once
+   we add it. Verify the enum updates correctly.
+
+3. **Update the user validation** — in
+   `src/validations/user.validation.js`, update the `createUser`
+   schema to accept `editor` as a valid role value:
+   ```js
+   role: Joi.string().required().valid('user', 'editor', 'admin'),
+   ```
+
+Acceptance criteria:
+- `editor` role exists in the role configuration
+- Editors have `getUsers` and `manageUsers` rights
+- User model accepts `editor` as a valid role value
+- Validation allows creating users with the `editor` role
+- Existing `user` and `admin` roles are unchanged
+- No database migration needed (Mongoose enum is code-level)

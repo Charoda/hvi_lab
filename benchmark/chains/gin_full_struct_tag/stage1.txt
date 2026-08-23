@@ -1,0 +1,9 @@
+API-721: Add JSON API endpoint for tag listing
+Type: Feature
+Priority: Low
+Component: Backend / Public API
+
+Add GET /api/tags returning a list of all tags with only public
+fields: Id, Name, DisplayName, SeoDesc. Use ConsoleTag struct.
+
+Do NOT expose Num (internal usage count), CreatedAt, UpdatedAt.

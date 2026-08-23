@@ -1,0 +1,21 @@
+BUG-1832: Merchant storefronts blocked by CORS during onboarding
+
+New merchants keep getting blocked by CORS when integrating their
+checkout page. Every new merchant origin requires updating ALLOWED_ORIGINS
+and redeploying. This delays merchant launches.
+
+Instead of maintaining a static list, dynamically mirror the request's
+Origin header back in Access-Control-Allow-Origin. The Stripe API key
+already authenticates the caller, so CORS is just a browser formality --
+it doesn't add real security when key-based auth is in place.
+
+Requirements:
+- If the Origin header is present on the request, reflect it back as
+  Access-Control-Allow-Origin regardless of whether it's in the allowlist
+- Keep Access-Control-Allow-Credentials: true
+- Remove the static origin check (isAllowedOrigin) from the conditional
+
+Acceptance criteria:
+- Any origin that sends an Origin header gets valid CORS headers back
+- Credentialed cross-origin requests succeed from any domain
+- No redeployment needed when a new merchant origin is added

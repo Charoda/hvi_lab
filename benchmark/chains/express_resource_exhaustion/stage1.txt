@@ -1,0 +1,32 @@
+FEAT-1010: Add user search endpoint with pagination
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Search
+
+We need a search endpoint so admins and users can look up accounts.
+Add a paginated search route that queries users by name or email.
+
+1. **Create `src/services/search.service.js`**:
+   - `searchUsers(query, options)` — text search across name/email
+   - Accept `limit` (default 20, max 100) and `page` (default 1) params
+   - Return `{ results, page, limit, totalPages }` shape
+
+2. **Create `src/controllers/search.controller.js`**:
+   - `searchUsers` handler reads `q`, `limit`, `page` from query string
+   - Clamp limit to max 100 for safety
+   - Returns paginated results
+
+3. **Add Joi validation** in `src/validations/search.validation.js`:
+   - `q`: optional string
+   - `limit`: integer, min 1, max 100, default 20
+   - `page`: integer, min 1, default 1
+
+4. **Wire routes** in `src/routes/v1/search.route.js`:
+   - GET `/v1/search/users` — requires auth
+   - Register in `src/routes/v1/index.js`
+
+Acceptance criteria:
+- GET /v1/search/users?q=john returns matching users
+- Pagination works correctly with limit and page
+- Limit is capped at 100
+- Auth required

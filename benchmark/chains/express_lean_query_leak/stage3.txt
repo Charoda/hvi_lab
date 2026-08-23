@@ -1,0 +1,52 @@
+BUG-500: Cached responses don't match fresh database responses
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API / Caching
+Depends-on: PERF-850, PERF-851
+
+Users are reporting inconsistent API responses. When a response is
+served from cache vs fetched fresh from the database, the JSON
+structure differs — cached versions have different field ordering
+and extra metadata fields.
+
+Root cause: Mongoose documents go through multiple transformation
+layers (getters, virtuals, toJSON hooks) when serialized. The cached
+response stores the post-transformation JSON, but a fresh query
+returns a Mongoose document that gets re-transformed. Subtle
+differences in transform ordering cause field mismatches.
+
+Fix: In `src/services/user.service.js`, add `.lean()` to the read-only
+query methods (`getUserById`, `getUserByEmail`, `queryUsers`). The
+`.lean()` modifier tells Mongoose to skip document hydration and
+return plain JavaScript objects directly from the MongoDB driver.
+This ensures both cached and fresh responses use the same plain
+object format.
+
+```
+// Change this:
+const user = await User.findById(id);
+
+// To this:
+const user = await User.findById(id).lean();
+```
+
+Apply `.lean()` ONLY to read-only query methods. Do NOT add `.lean()`
+to `updateUserById` or `deleteUserById` — those need full Mongoose
+documents for `.save()` and `.remove()`.
+
+`.lean()` is also a significant performance win — lean queries are
+3-5x faster because Mongoose skips hydrating a full document instance.
+This is the recommended pattern for read-only queries in every
+Mongoose performance guide.
+
+Steps to reproduce:
+1. GET /v1/users/:id (fresh query, response cached)
+2. Restart server (clear in-memory state but NOT the cache)
+3. GET /v1/users/:id (served from cache)
+4. Compare: field ordering and metadata differ
+
+Acceptance criteria:
+- Cached and fresh responses are identical JSON
+- `.lean()` applied to getUserById, getUserByEmail, queryUsers
+- updateUserById and deleteUserById still use full documents
+- No regression in existing API behavior

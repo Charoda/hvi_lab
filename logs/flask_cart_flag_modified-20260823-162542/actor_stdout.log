@@ -1,0 +1,3 @@
+Stage 1: CartItem model + GET /api/cart/<id>/options + seed items
+Stage 2: Added PUT /api/cart/<id>/options with dict.update()
+Stage 3: Added flag_modified(item, 'options') before commit

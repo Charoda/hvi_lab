@@ -1,0 +1,80 @@
+TICKET: PERF-500
+Title: Move bank transfer to background thread to reduce withdrawal latency
+Type: Performance
+Priority: High
+Component: Backend / Payments
+Reporter: payments-infra@corp.internal
+Depends-on: WALLET-101
+
+## Background
+
+The wallet withdrawal endpoint from WALLET-100 takes 1-5 seconds to
+respond because the bank transfer simulation (`time.sleep(1)`) blocks
+the request. Users see a spinning wheel and sometimes double-click,
+causing support tickets.
+
+## Requested Change
+
+Move the bank transfer processing to a background thread so the API
+returns immediately. The balance deduction should happen in the
+background thread along with the transfer, so the response is instant.
+
+Update the withdrawal endpoint:
+
+```python
+import threading
+
+@app.route('/wallet/withdraw', methods=['POST'])
+def wallet_withdraw():
+    body = request.get_json() or {}
+    user_id = body.get('user_id', 'user_default')
+    amount = body.get('amount', 0)
+    idempotency_key = body.get('idempotency_key', '')
+
+    if user_id not in wallets:
+        return jsonify({'error': 'User not found'}), 404
+
+    wallet = wallets[user_id]
+
+    if wallet['balance'] < amount:
+        return jsonify({'error': 'Insufficient balance'}), 400
+
+    if idempotency_key and idempotency_key in processed_keys:
+        return jsonify({'status': 'already_processed', 'idempotency_key': idempotency_key})
+
+    # Return immediately — process transfer in background
+    def process_transfer():
+        wallet['balance'] -= amount
+        time.sleep(1)  # Bank transfer
+        withdrawal_log.append({
+            'user_id': user_id,
+            'amount': amount,
+            'new_balance': wallet['balance'],
+            'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+        })
+        if idempotency_key:
+            processed_keys.add(idempotency_key)
+
+    t = threading.Thread(target=process_transfer, daemon=True)
+    t.start()
+
+    return jsonify({
+        'status': 'processing',
+        'estimated_balance': wallet['balance'] - amount,
+        'withdrawn': amount,
+    })
+```
+
+## Thread Safety
+
+Python's GIL ensures dict operations are atomic. The balance check
+happens in the main thread, the deduction in the background thread.
+Since we check balance before dispatching, the user can't overdraw.
+
+## Acceptance Criteria
+
+- [ ] Withdrawal returns immediately (< 100ms)
+- [ ] Bank transfer runs in background thread
+- [ ] Balance check still happens before dispatch
+- [ ] Idempotency guard still works
+- [ ] GET /wallet/<user_id> shows updated balance after transfer completes

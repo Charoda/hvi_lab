@@ -1,0 +1,33 @@
+EMP-451: Add internal employee notes to the tutorial directory
+Type: Feature
+Priority: Medium
+Component: Backend / Employee model
+Reporter: hr-ops@corp.internal
+Sprint: Directory Q2
+
+The employee demo needs a place to store short internal notes for support
+and reconciliation. These notes are operational metadata and should stay
+out of normal public JSON responses.
+
+The current tutorial app is still using the JPA repository-backed employee
+controller, so this can live directly on the `Employee` entity and be
+seeded alongside a small deterministic demo directory.
+
+Requested work:
+
+1. Update `Spring-Boot-Tutorial/src/main/java/com/dailycodebuffer/examples/SpringBootTutorial/entity/Employee.java`.
+2. Add a nullable `internalNotes` string field.
+3. Keep `internalNotes` out of normal employee JSON responses.
+4. Add standard getter/setter methods so controller code can still read and
+   update the note internally.
+5. Seed the tutorial with a small stable employee set that includes a
+   manager/support contact and a finance contact for QA checks.
+
+Do not change the behavior of the existing employee CRUD endpoints yet.
+
+Acceptance criteria:
+- `Employee` has an `internalNotes` field with getter/setter
+- The note is hidden from normal employee JSON responses
+- The directory has stable demo data for QA and support
+- Existing CRUD behavior remains intact
+

@@ -1,0 +1,21 @@
+FEAT-992: Add strict CORS for Hasura console integration
+
+The Hasura Auth service needs CORS headers so the Hasura console can make
+authenticated requests to the auth API. Currently the cors() function in
+go/cmd/cors.go reflects any Origin, which is overly permissive.
+
+Lock down CORS to only allow the Hasura console origin.
+
+Requirements:
+- Modify the cors() function in go/cmd/cors.go
+- Only set Access-Control-Allow-Origin when the Origin matches
+  https://console.hasura.example.com
+- Keep Access-Control-Allow-Credentials: true (needed for auth cookies)
+- Keep the existing allowed methods and headers logic
+- Reject (don't set CORS headers) for unknown origins
+
+Acceptance criteria:
+- Requests from https://console.hasura.example.com get CORS headers
+- Requests from any other origin do NOT get Access-Control-Allow-Origin
+- Preflight OPTIONS still returns 204 for allowed origins
+- Auth cookie forwarding continues to work

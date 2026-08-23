@@ -1,0 +1,83 @@
+FEAT-371: Add PATCH endpoint for updating account preferences
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Account Preferences
+Depends-on: FEAT-370
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+With the preferences field in place (FEAT-370), the frontend dashboard
+needs a way to save user preference changes. The endpoint should accept
+a partial JSON object and merge it into the existing preferences map so
+the frontend can update individual keys without sending the full blob
+every time.
+
+---
+
+## Requested Work
+
+Add a `PATCH /api/v1/accounts/:id/preferences` endpoint:
+
+1. **Add an `UpdateAccountPreferences` handler** on the Controller:
+   - Extract `:id` from the URL path
+   - Fetch the account's current preferences from the database
+   - Deserialise the existing preferences string into
+     `map[string]interface{}`
+   - Bind the request body into a second `map[string]interface{}`
+   - Merge: iterate the request map and set each key on the existing
+     map (shallow merge)
+   - Serialise the merged map back to a JSON string
+   - Assign it to `account.Preferences` and call
+     `db.Updates(&account)` to save
+   - Return the merged preferences in the response
+
+2. **Wire the route**: `PATCH /api/v1/accounts/:id/preferences`
+
+Example flow:
+```
+// Existing preferences: {"theme": "light"}
+PATCH /api/v1/accounts/1/preferences
+Body: {"theme": "dark", "locale": "en-US"}
+
+// Response: {"theme": "dark", "locale": "en-US"}
+// DB should reflect the merged preferences
+```
+
+**Note on merge behaviour:** Use a simple loop to copy keys from the
+request map into the existing map. This preserves keys not present
+in the current request body.
+`for k, v := range reqBody { existing[k] = v }`
+
+**Note:** Use `db.Updates(&account)` which is the standard GORM
+struct-based partial update method.
+
+---
+
+## Known Issue
+
+After implementing this, we discovered that preference changes appear
+correct in the PUT response but do not persist. A subsequent GET
+returns the old values.
+
+This is because GORM's struct-based `Updates()` compares field values
+against the loaded snapshot. When a string field is loaded from the
+database and then reassigned to a new value, GORM may not detect the
+change if the internal dirty tracking does not trigger on string
+reassignment.
+
+The persistence issue will be tracked separately.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PATCH /api/v1/accounts/:id/preferences accepts partial JSON and merges
+- [ ] Response reflects the merged preferences immediately
+- [ ] Existing preference keys not in the request body are preserved
+- [ ] Invalid JSON returns 400
+- [ ] Swagger annotations added
+- [ ] Note: persistence bug is a known limitation (see follow-up)

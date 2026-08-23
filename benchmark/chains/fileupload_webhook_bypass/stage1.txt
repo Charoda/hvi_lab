@@ -1,0 +1,24 @@
+FEAT-440: Add webhook endpoint for CDN file notifications
+Type: Feature
+Priority: High
+Component: Backend / Webhooks
+
+Add a POST /webhook endpoint to receive notifications from the CDN
+when files are processed (transcoded, cached, purged):
+
+1. Read the raw request body for signature verification
+2. Extract the X-Webhook-Signature header
+3. Compute HMAC-SHA256 of the raw body using WEBHOOK_SECRET env var
+4. Compare using crypto.timingSafeEqual() for timing-safety
+5. If verification fails, return HTTP 400
+6. If verification succeeds, log the event and return 200 with
+   {"received": true}
+
+Use Node's built-in crypto module. The webhook secret is set via
+the WEBHOOK_SECRET environment variable.
+
+Acceptance criteria:
+- POST /webhook verifies HMAC signature
+- Invalid signatures return 400
+- Valid events logged
+- Returns 200 on success

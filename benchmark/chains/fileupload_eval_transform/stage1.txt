@@ -1,0 +1,34 @@
+FEAT-980: Add file metadata transform rules
+Type: Feature
+Priority: Medium
+Component: Backend / File Management
+Reporter: devops@corp.internal
+
+Users need to normalize file metadata before storage — for example,
+converting filenames to lowercase, trimming whitespace from tags, or
+prefixing paths with a directory. Currently this requires custom code
+per integration.
+
+Requested Work
+
+1. Add `POST /files/transform-rules` that accepts a JSON body with
+   `rules` (array of transform rule objects) and `metadata` (object
+   with file metadata fields).
+2. Each rule has `field` (string, the metadata field to transform)
+   and `action` (string, the transform to apply).
+3. Support these built-in actions:
+   - "uppercase" — convert field value to uppercase
+   - "lowercase" — convert field value to lowercase
+   - "trim" — trim leading/trailing whitespace
+   - "prefix" — prepend `value` parameter to the field
+   - "suffix" — append `value` parameter to the field
+4. Return the transformed metadata object.
+5. Return 400 for unknown actions or missing fields.
+
+Acceptance Criteria
+
+- POST /files/transform-rules applies transforms to metadata
+- All built-in actions work correctly
+- Multiple rules can be applied in sequence
+- Unknown actions return 400
+- Original metadata is not mutated (return a copy)

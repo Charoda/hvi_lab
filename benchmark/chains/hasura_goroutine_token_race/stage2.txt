@@ -1,0 +1,43 @@
+AUTH-602: Move audit logging to background goroutine
+Type: Performance
+Priority: Medium
+Component: Backend / Auth / Sign-in
+Depends-on: AUTH-601
+
+The login attempt tracking from AUTH-601 adds synchronous audit
+logging that increases response latency by ~10ms per login request.
+Move the audit logging to a background goroutine to improve response
+times.
+
+1. **Add async audit logger** in `go/controller/login_attempts.go`:
+   - Create an `AuditLog(email string, success bool, ip string)` method
+     on the `LoginAttemptTracker`
+   - Wrap the logging in a goroutine:
+     ```go
+     func (t *LoginAttemptTracker) AuditLog(email string, success bool, ip string) {
+         go func() {
+             // Simulate audit write (could be DB, file, or external service)
+             log.Printf("LOGIN_AUDIT: email=%s success=%v ip=%s time=%s",
+                 email, success, ip, time.Now().Format(time.RFC3339))
+         }()
+     }
+     ```
+
+2. **Integrate into sign-in flow** in
+   `go/controller/sign_in_email_password.go`:
+   - After successful login: `loginTracker.AuditLog(email, true, clientIP)`
+   - After failed login: `loginTracker.AuditLog(email, false, clientIP)`
+   - The audit call returns immediately (non-blocking)
+
+3. **Keep lockout logic synchronous**: The `IsLocked()` and
+   `RecordFailure()` calls remain synchronous in the request handler.
+   Only the audit logging is async. This is important — we must not
+   compromise the brute-force protection by making security checks async.
+
+Acceptance criteria:
+- Audit logging happens in a background goroutine (non-blocking)
+- Login response time improved by ~10ms (no longer waiting for audit write)
+- Lockout check (IsLocked) remains synchronous — NOT in a goroutine
+- Counter increment (RecordFailure) remains synchronous
+- Audit log entries include email, success/failure, IP, and timestamp
+- No change to lockout behavior or security guarantees

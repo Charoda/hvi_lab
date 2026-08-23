@@ -1,0 +1,37 @@
+FEAT-971: Add notification preferences update API
+Type: Feature
+Priority: Medium
+Component: Backend / Users API / Controller
+Depends-on: FEAT-970
+
+Users need to be able to update their notification preferences (email
+notifications on/off, push enabled, SMS digest frequency, etc.)
+without a full user update. Add a dedicated PATCH endpoint for
+merging notification preference updates.
+
+1. **Add `updateNotificationPrefs` handler** in
+   `src/controllers/user.controller.js`:
+   - Read `req.params.userId` and `req.body` (the partial preferences)
+   - Fetch the user: `userService.getUserById(userId)`
+   - Merge the new preferences: `Object.assign(user.notificationPrefs, req.body)`
+   - Save: `await user.save()`
+   - Return the updated preferences: `res.send(user.notificationPrefs)`
+
+2. **Wire the route** in `src/routes/v1/user.route.js`:
+   - PATCH `/v1/users/:userId/notifications`
+   - Requires `manageUsers` permission (or the user is updating
+     their own preferences — same pattern as the existing updateUser)
+   - Validate that userId is a valid ObjectId
+
+3. **Note on Object.assign:** We use `Object.assign` to merge the
+   new keys into the existing preferences object rather than replacing
+   it entirely. This way users can update individual settings without
+   losing other notification preferences.
+
+Acceptance criteria:
+- PATCH /v1/users/:id/notifications with { "emailEnabled": true } adds the
+  emailEnabled key to the user's notification preferences
+- Existing preference keys are preserved when updating other keys
+- GET /v1/users/:id/notifications reflects the updated values
+- Authentication and authorization required
+- Returns the full merged preferences object after update

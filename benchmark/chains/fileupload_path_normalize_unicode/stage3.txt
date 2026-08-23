@@ -1,0 +1,31 @@
+BUG-1903: Legacy avatar filenames 404 after normalization change
+Type: Bug Fix
+Priority: High
+Component: Backend / Avatars
+Depends-on: AVATAR-1902
+Reporter: support-eu@corp.internal
+
+## Problem
+
+Legacy avatars uploaded before AVATAR-1902 now 404. Browsers send
+URL-encoded filename in whatever normalization form the OS/editor
+used, which doesn't match the on-disk NFKC form.
+
+## Fix
+
+Apply the same normalization on retrieval:
+
+```js
+app.get('/avatars/:filename', (req, res) => {
+  let filename = req.params.filename;
+  if (!filename || filename.includes('../') || filename.includes('/')) {
+    return res.status(400).send('bad filename');
+  }
+  filename = normalizeAvatarName(filename);
+  res.sendFile(path.join(__dirname, 'uploads', filename));
+});
+```
+
+## Acceptance Criteria
+- Legacy NFD filenames resolve
+- ../ rejection unchanged

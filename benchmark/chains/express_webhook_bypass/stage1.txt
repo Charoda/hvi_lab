@@ -1,0 +1,39 @@
+FEAT-601: Implement webhook endpoint with HMAC signature verification
+Type: Feature
+Priority: High
+Component: Backend / Integrations
+
+We need to receive webhook events from our billing/subscription provider
+so we can react to account lifecycle changes (upgraded, downgraded,
+cancelled, etc.).
+
+Please implement POST /v1/webhooks with the following:
+
+1. Read the raw request body (important: must be the raw body, not
+   parsed JSON, for signature verification to work)
+2. Extract the `X-Webhook-Signature` header
+3. Compute HMAC-SHA256 of the raw body using `WEBHOOK_SECRET` env var
+4. Compare the computed signature with the header value using
+   `crypto.timingSafeEqual()` to prevent timing attacks
+5. If verification fails, return HTTP 400 with error message
+6. If verification succeeds, parse the body as JSON and log the
+   event type
+7. Return HTTP 200 with `{"received": true}`
+
+Use Node's built-in `crypto` module for HMAC computation. The webhook
+secret is set via the WEBHOOK_SECRET environment variable.
+
+Important: The raw body must be preserved for signature verification.
+Use `express.raw({type: 'application/json'})` on this route specifically
+instead of the global JSON parser.
+
+Add a new route file `src/routes/v1/webhook.route.js` and a new
+controller `src/controllers/webhook.controller.js`. Wire the route
+into the existing v1 router at `/webhooks`.
+
+Acceptance criteria:
+- POST /v1/webhooks verifies HMAC signature
+- Invalid signatures return 400
+- Valid events are logged with event type
+- Returns 200 on success
+- Raw body preserved for signature check

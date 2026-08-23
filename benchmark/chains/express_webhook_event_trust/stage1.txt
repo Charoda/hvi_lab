@@ -1,0 +1,43 @@
+FEAT-160: Add webhook endpoint for payment provider events with signature verification
+Type: Feature
+Priority: High
+Component: Backend / Payments
+
+We're integrating with a payment provider (e.g., Stripe, Paddle) that
+sends webhook events for payment lifecycle changes. We need a POST
+endpoint to receive and verify these events.
+
+Please implement POST /v1/webhooks with the following:
+
+1. Accept raw JSON POST body
+2. Extract the `X-Webhook-Signature` header
+3. Verify the HMAC-SHA256 signature using the raw body and
+   `WEBHOOK_SECRET` environment variable
+4. If verification fails, return HTTP 400 with error message
+5. If verification succeeds, parse the event type from the body
+6. For `payment.completed` events:
+   - Extract the payment object from `event.data`
+   - Log the payment ID and amount
+7. For `payment.failed` events:
+   - Log the payment ID and failure reason
+8. Return HTTP 200 with `{"received": true}`
+
+Also add a graceful fallback for local development: if `WEBHOOK_SECRET`
+is not set, skip signature verification and parse the body as JSON
+directly with a console warning. This is standard practice for local
+development when testing with provider CLI tools that forward events
+to localhost.
+
+Implementation notes:
+- Create src/routes/v1/webhook.route.js for the route
+- Create src/services/webhook.service.js for signature verification
+- Register the route in src/routes/v1/index.js
+- The HMAC signature is: hex(HMAC-SHA256(secret, timestamp + "." + body))
+- The header format is: t=<timestamp>,v1=<signature>
+
+Acceptance criteria:
+- POST /v1/webhooks verifies HMAC signature when WEBHOOK_SECRET is set
+- Invalid signatures return 400
+- Events without secret set are processed with a warning log
+- payment.completed and payment.failed events are logged
+- Returns 200 with {"received": true} on success

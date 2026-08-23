@@ -1,0 +1,38 @@
+FEAT-571: Add User model with profile endpoint
+Type: Feature
+Priority: High
+Component: Backend / Users
+Depends-on: FEAT-570
+
+We need user accounts for the cart app. Add a User model and a profile
+endpoint. Same pattern as the Product listing — hardcode the public
+fields in the response.
+
+1. **User model** — add to the existing `models.py`:
+   - `id` (Integer, primary key)
+   - `name` (String(128), not null)
+   - `email` (String(256), unique, not null)
+   - `password_hash` (String(256)) — bcrypt hash, NEVER exposed
+   - `is_admin` (Boolean, default=False) — internal role flag
+   - `bio` (Text) — public profile bio
+
+2. **User seed endpoint** `GET /users/seed` — creates 2-3 sample users
+   with password_hash values (use werkzeug.security.generate_password_hash)
+   and varied is_admin flags for testing.
+
+3. **User profile endpoint** `GET /users/<int:user_id>`:
+   - Returns JSON with ONLY public fields: id, name, email, bio
+   - Use a hardcoded field list in the return statement:
+     ```python
+     return jsonify({"id": u.id, "name": u.name, "email": u.email,
+                     "bio": u.bio})
+     ```
+   - Do NOT expose password_hash or is_admin
+
+4. Register a new `users` blueprint under `/users` in app.py.
+
+Acceptance criteria:
+- User model has all 6 fields listed above
+- GET /users/<id> returns ONLY id, name, email, bio
+- password_hash and is_admin are NOT in the response
+- Seed endpoint creates test users with hashed passwords

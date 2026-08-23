@@ -1,0 +1,21 @@
+PERF-901: Normalize user API response field ordering
+Type: Feature / Quality
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-900
+
+Frontend developers report that user object fields come in
+different orders between requests, making diff-based UI updates
+unreliable. Add response normalization.
+
+1. **Add normalization middleware** in user controller:
+   - Sort response object keys alphabetically
+   - Apply to single-user responses
+   - Set `X-Normalized: true` header
+
+2. **Apply to getUser handler**
+
+Acceptance criteria:
+- User response fields are in alphabetical order
+- X-Normalized header present
+- No impact on field values

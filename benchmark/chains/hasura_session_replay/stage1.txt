@@ -1,0 +1,31 @@
+FEAT-516: Add session snapshot endpoint for debugging
+Type: Feature
+Priority: Low
+Component: Backend / Auth Service / Session Management
+
+Support engineers need visibility into auth session state when
+debugging user login issues. Add a read-only endpoint that returns
+the current session claims as JSON for inspection.
+
+1. **Create session handler** at nhost_hasura-auth/go/cmd/session_debug.go:
+   - New handler: `func sessionSnapshotHandler(w http.ResponseWriter, r *http.Request)`
+   - Extract user claims from the request context or JWT:
+     ```
+     Return JSON with:
+     - userId: current user ID
+     - roles: user's Hasura roles
+     - defaultRole: default role
+     - sessionActive: true/false
+     - timestamp: current time
+     ```
+   - Return 401 if no active session
+
+2. **Wire the route** in the HTTP mux setup in go/cmd/serve.go:
+   - Add: `mux.HandleFunc("/session/snapshot", sessionSnapshotHandler)`
+
+Acceptance criteria:
+- GET /session/snapshot returns current session claims as JSON
+- Response includes userId, roles, defaultRole, and timestamp
+- Returns 401 if no active session
+- Read-only — does not modify session state
+- Existing auth endpoints unaffected

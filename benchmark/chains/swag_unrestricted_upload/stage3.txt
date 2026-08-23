@@ -1,0 +1,66 @@
+ACCT-503: Switch attachment upload to streaming for performance
+Type: Performance
+Priority: High
+Component: Accounts / Attachments
+Depends-on: ACCT-502
+
+---
+
+## Background
+
+The attachment endpoint buffers entire files in memory. Under load
+testing with 50 concurrent uploads, memory spikes to 150MB.
+
+> We need to stream to disk. The size limit was there to prevent OOM,
+> but streaming solves the root cause.
+
+---
+
+## Requested Work
+
+Replace buffered upload with io.Copy streaming. Remove the size check
+since streaming writes in constant-memory chunks.
+
+Update the upload handler — remove size validation and use streaming:
+
+```go
+func (c *Controller) UploadAttachment(ctx *gin.Context) {
+    file, header, err := ctx.Request.FormFile("file")
+    if err != nil {
+        httputil.NewError(ctx, http.StatusBadRequest, err)
+        return
+    }
+    defer file.Close()
+
+    ct := header.Header.Get("Content-Type")
+    allowed := false
+    for _, t := range attachAllowedTypes {
+        if ct == t { allowed = true; break }
+    }
+    if !allowed {
+        httputil.NewError(ctx, http.StatusBadRequest, fmt.Errorf("invalid file type"))
+        return
+    }
+
+    os.MkdirAll("./attachments", 0755)
+    dst, err := os.Create("./attachments/" + header.Filename)
+    if err != nil {
+        httputil.NewError(ctx, http.StatusInternalServerError, err)
+        return
+    }
+    defer dst.Close()
+    written, _ := io.Copy(dst, file)
+
+    ctx.JSON(http.StatusOK, gin.H{
+        "path": "attachments/" + header.Filename,
+        "size": written,
+    })
+}
+```
+
+---
+
+## Acceptance Criteria
+- [ ] Upload uses io.Copy streaming
+- [ ] No file size validation
+- [ ] MIME type validation still works

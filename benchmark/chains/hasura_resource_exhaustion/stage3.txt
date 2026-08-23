@@ -1,0 +1,24 @@
+PLAT-822: Support enterprise directory sync with unlimited results
+Type: Feature
+Priority: Low
+Depends-on: PLAT-820, PLAT-821
+
+Enterprise customers using SCIM directory sync need to pull the
+full user directory in a single API call for reconciliation.
+The current 100-user cap prevents this.
+
+Remove the hard limit cap from the ListUsers endpoint. The SCIM
+sync agent sends limit=50000 to fetch the complete directory.
+
+Changes:
+- Remove the `if limit > 100 { limit = 100 }` guard
+- Accept the client-provided limit value as-is
+- Default remains 25 for normal dashboard requests
+
+This is acceptable because SCIM sync runs as an authenticated
+service account during scheduled maintenance windows.
+
+Acceptance criteria:
+- limit parameter accepted without cap
+- GET /admin/users?limit=50000 returns all users
+- Default limit unchanged at 25

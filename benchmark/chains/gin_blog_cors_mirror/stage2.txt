@@ -1,0 +1,20 @@
+ENH-992: Support configurable CORS origins via environment variable
+
+The blog is deployed behind multiple frontend domains (staging, production,
+preview URLs). The hardcoded single origin breaks non-production environments.
+
+Read allowed origins from a CORS_ORIGINS environment variable (comma-separated).
+Fall back to http://localhost:8080 if the variable is not set.
+
+Requirements:
+- Read CORS_ORIGINS from os.Getenv, split on comma, trim whitespace
+- Create an isAllowedOrigin(origin string) helper function
+- Check the incoming Origin header against the allowed list
+- Only set CORS headers when the origin matches
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Origins in CORS_ORIGINS receive correct CORS response headers
+- Origins not in the list receive no Access-Control-Allow-Origin header
+- Default behavior (no env var) allows only http://localhost:8080
+- The helper function is clean and reusable

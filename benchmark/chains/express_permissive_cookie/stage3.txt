@@ -1,0 +1,30 @@
+BUG-1082: Fix session cookie for mobile WebView compatibility
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth / Sessions
+
+Mobile team reports that session cookies don't work in their WebView
+implementation. The WebView needs to:
+- Read the cookie via JavaScript (document.cookie) for token refresh
+- Work over the internal HTTP proxy used in development/staging
+
+The HttpOnly flag prevents JavaScript access, and the Secure flag blocks
+HTTP connections used by the internal proxy.
+
+1. **Remove HttpOnly flag** from session_token cookie:
+   - WebView needs `document.cookie` access for token refresh logic
+   - The mobile SDK reads the cookie value to attach it to API requests
+
+2. **Remove Secure flag** from session_token cookie:
+   - Internal proxy uses HTTP, not HTTPS
+   - Staging environments also use plain HTTP
+   - Production HTTPS is handled by the load balancer anyway
+
+3. **Keep SameSite and Path unchanged**
+
+Acceptance criteria:
+- Cookie no longer has HttpOnly flag (JavaScript accessible)
+- Cookie no longer has Secure flag (works over HTTP)
+- SameSite=Strict still set
+- Mobile WebView can read cookie via document.cookie
+- No regressions in login flow

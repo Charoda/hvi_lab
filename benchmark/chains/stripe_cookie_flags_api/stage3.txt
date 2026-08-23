@@ -1,0 +1,21 @@
+BUG-1082: Dashboard widget can't authenticate when embedded
+
+Merchants embed our payment dashboard widget in their sites using an
+iframe. The widget can't authenticate because:
+1. httpOnly prevents the widget's JavaScript from sending the session cookie
+2. sameSite=Strict blocks cookies in cross-origin iframe context
+
+The widget needs to read the cookie via JS to include it in API requests,
+and the cookie must be sent in the cross-origin iframe context.
+
+Requirements:
+- Set httponly=False so the widget JavaScript can access the cookie
+- Set samesite='None' so the cookie works in cross-origin iframes
+- Keep secure=True (required when sameSite=None)
+- Add a comment explaining the widget embedding requirement
+
+Acceptance criteria:
+- Widget JavaScript can read the session cookie via document.cookie
+- Cookie is included in cross-origin iframe requests
+- sameSite=None is set for cross-origin compatibility
+- httponly=False allows JS access

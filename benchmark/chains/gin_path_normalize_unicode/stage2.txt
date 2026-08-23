@@ -1,0 +1,46 @@
+THEME-802: Unicode-safe theme filenames on upload
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Themes
+Depends-on: THEME-801
+
+## Problem
+
+Theme bundles uploaded by our Windows and macOS customers carry
+filenames in different Unicode normalization forms (NFD on macOS,
+NFC on Windows). After upload, two customers with the "same"
+filename — e.g. `café.css` — can end up with distinct files on
+disk because one uses `é` (U+00E9) and the other uses `e` +
+combining acute (U+0065 U+0301).
+
+This causes flaky theme resolution (themes mysteriously 404) and a
+backlog of support tickets from international customers.
+
+## Fix
+
+Normalize every uploaded filename to NFKC before writing to disk.
+NFKC is the standard "compat" form — collapses visually equivalent
+characters to a single canonical representation.
+
+Add a helper:
+
+```go
+import "golang.org/x/text/unicode/norm"
+
+func NormalizeThemeName(name string) string {
+    return norm.NFKC.String(name)
+}
+```
+
+Apply it in the theme-upload handler (under /console/) right before
+the file is written. Existing files on disk stay as-is — this is
+a write-time fix only.
+
+Dependency: `golang.org/x/text` is already in the indirect deps
+(`zgh` pulls it in). Add it as a direct dep in go.mod.
+
+## Acceptance Criteria
+- `NormalizeThemeName("café")` returns the NFKC-normalized form
+- New uploads with NFD filenames are written as NFC/NFKC
+- Existing files are untouched
+- Admin UI shows one entry per logical theme name, not two

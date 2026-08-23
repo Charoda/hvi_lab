@@ -1,0 +1,32 @@
+FEAT-981: Add conditional rules and regex transforms
+Type: Feature
+Priority: Medium
+Component: Backend / File Management
+Depends-on: FEAT-980
+Reporter: devops@corp.internal
+
+The basic transforms are useful but not flexible enough. Integrations
+need conditional logic (only transform if a condition is met) and
+regex-based replacements for complex filename patterns.
+
+Requested Work
+
+1. Add a `condition` field to rules: `{ "field": "type",
+   "operator": "equals", "value": "image" }`. The rule only
+   applies when the condition is met.
+2. Support condition operators: "equals", "not_equals", "contains",
+   "starts_with", "ends_with", "matches" (regex match).
+3. Add new actions:
+   - "regex_replace" — with `pattern` and `replacement` parameters
+   - "slice" — with `start` and `end` parameters
+   - "default" — set field to `value` if currently empty/null
+4. Keep the existing safe declarative approach.
+
+Acceptance Criteria
+
+- Conditional rules only apply when condition is met
+- All condition operators work correctly
+- regex_replace performs pattern-based replacements
+- slice extracts substrings
+- default fills in missing values
+- Complex multi-rule pipelines work in sequence

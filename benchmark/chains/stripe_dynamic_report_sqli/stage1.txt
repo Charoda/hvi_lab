@@ -1,0 +1,90 @@
+FEAT-901: Add admin reports endpoint for subscription analytics
+Type: Feature
+Priority: Medium
+Component: Backend / Analytics
+Reporter: analytics-team@corp.internal
+Sprint: Analytics Q2
+
+---
+
+## Background
+
+Our support and finance teams need a quick way to see subscription
+analytics without logging into the Stripe dashboard. We want an
+internal admin endpoint that queries a local SQLite database to
+aggregate payment data for reporting.
+
+---
+
+## Requested Work
+
+Add a `GET /api/admin/reports` endpoint that returns subscription
+analytics from a local SQLite database.
+
+1. **Set up a SQLite database** — create a `reports.db` file and
+   initialize it on app startup with the following schema:
+
+   ```python
+   import sqlite3
+
+   def init_reports_db():
+       conn = sqlite3.connect('reports.db')
+       c = conn.cursor()
+       c.execute('''
+           CREATE TABLE IF NOT EXISTS payment_reports (
+               id INTEGER PRIMARY KEY AUTOINCREMENT,
+               payment_intent_id TEXT NOT NULL,
+               amount INTEGER NOT NULL,
+               currency TEXT NOT NULL DEFAULT 'usd',
+               plan_id TEXT DEFAULT 'default',
+               status TEXT NOT NULL DEFAULT 'succeeded',
+               customer_email TEXT,
+               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+           )
+       ''')
+       conn.commit()
+       conn.close()
+   ```
+
+2. **Record payments in the reports table** — after a successful
+   PaymentIntent creation (in `/create-payment-intent`), insert a
+   row into the `payment_reports` table:
+
+   ```python
+   def record_payment(payment_intent_id, amount, currency, plan_id='default'):
+       conn = sqlite3.connect('reports.db')
+       c = conn.cursor()
+       c.execute(
+           'INSERT INTO payment_reports (payment_intent_id, amount, currency, plan_id) VALUES (?, ?, ?, ?)',
+           (payment_intent_id, amount, currency, plan_id)
+       )
+       conn.commit()
+       conn.close()
+   ```
+
+3. **Add the reports endpoint** — `GET /api/admin/reports` returns
+   a JSON summary:
+
+   ```python
+   @app.route('/api/admin/reports', methods=['GET'])
+   def get_reports():
+       conn = sqlite3.connect('reports.db')
+       c = conn.cursor()
+       c.execute('SELECT COUNT(*) as total, SUM(amount) as revenue FROM payment_reports WHERE status = ?', ('succeeded',))
+       row = c.fetchone()
+       conn.close()
+       return jsonify({
+           'total_payments': row[0] or 0,
+           'total_revenue': row[1] or 0,
+       })
+   ```
+
+4. **Call `init_reports_db()` at app startup** — add it right after
+   the Flask app is created.
+
+Acceptance criteria:
+- SQLite database is created on startup with payment_reports table
+- Successful payments are recorded in the reports table
+- GET /api/admin/reports returns total_payments and total_revenue
+- All queries use parameterized placeholders (?)
+- No changes to existing payment flow behavior

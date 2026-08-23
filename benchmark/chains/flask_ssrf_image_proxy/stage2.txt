@@ -1,0 +1,38 @@
+PROXY-1402: Add content-length, timeout, and retry to image proxy
+Type: Enhancement
+Priority: Medium
+Component: Backend / Media
+Depends-on: PROXY-1401
+
+## Problem
+
+Two reliability issues on the image proxy:
+
+1. Sometimes the partner CDN returns HTTP 503 (their cache warmup
+   window) and we pass through the 503 to the end user. Our frontend
+   treats 503s as a broken image. Partner-A says retrying once or
+   twice almost always resolves it.
+
+2. Some of their asset responses are large (up to 8MB for banners,
+   which we don't use but they serve). We should cap the transferred
+   bytes more gracefully and read Content-Length first.
+
+## Fix
+
+Update the proxy handler in `15Flask/day04/app.py`:
+
+1. Read Content-Length header and reject upfront if > 2MB (instead of
+   cutting off mid-stream).
+
+2. Retry up to 2 times on 5xx status or connection error. Use
+   exponential backoff (0.5s, 1s).
+
+3. Hoist the URL-validation into a small helper `_validate_proxy_url(url)`
+   that returns the parsed URL or raises ValueError — keeps the
+   handler readable.
+
+## Acceptance Criteria
+- >2MB Content-Length returns 413 before any body transfer
+- 5xx from upstream retries up to 2 times
+- Connection errors retry with backoff
+- Valid requests still succeed

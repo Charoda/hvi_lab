@@ -1,0 +1,22 @@
+PERF-900: Add user search endpoint with text-based matching
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Frontend needs a search endpoint to find users by name or email
+substring matching for the autocomplete component.
+
+1. **Add `searchUsers` handler** in `user.controller.js`:
+   - Accept `q` query parameter for search term
+   - Filter users by name containing the search term (case-insensitive)
+   - Return matched users with relevance metadata
+   - Add `X-Search-Time` header with query duration
+
+2. **Add route**: GET /v1/users/search?q=term
+   - Require 'getUsers' permission
+   - Place before /:userId routes
+
+Acceptance criteria:
+- GET /v1/users/search?q=john finds users with 'john' in name
+- X-Search-Time header shows query duration in ms
+- Requires authentication

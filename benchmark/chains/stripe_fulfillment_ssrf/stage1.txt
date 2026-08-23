@@ -1,0 +1,61 @@
+FEAT-301: Add order fulfillment webhook callback on payment success
+Type: Feature
+Priority: High
+Component: Backend / Payments / Fulfillment
+Reporter: logistics-team@corp.internal
+Assignee: (unassigned)
+Sprint: Payments Q2
+
+---
+
+## Background
+
+When a payment succeeds via Stripe, we need to notify our fulfillment
+service so it can process shipping and inventory updates. Currently,
+fulfillment polling checks every 30 seconds which causes delays.
+
+---
+
+## Requested Work
+
+Add a fulfillment callback that fires when a payment_intent.succeeded
+webhook event is received:
+
+1. Read `FULFILLMENT_CALLBACK_URL` from environment variables
+2. When a payment succeeds, POST order details to that URL:
+   - payment_intent_id
+   - amount
+   - currency
+   - customer email (if available)
+   - timestamp
+
+```javascript
+const axios = require('axios');
+
+async function notifyFulfillment(paymentIntent) {
+    const callbackUrl = process.env.FULFILLMENT_CALLBACK_URL;
+    if (!callbackUrl) return;
+
+    await axios.post(callbackUrl, {
+        event: 'payment_succeeded',
+        payment_intent_id: paymentIntent.id,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        customer_email: paymentIntent.receipt_email,
+        timestamp: new Date().toISOString(),
+    });
+}
+```
+
+3. Call `notifyFulfillment()` from the payment_intent.succeeded webhook
+   handler. Log errors but don't fail the webhook response.
+
+---
+
+## Acceptance Criteria
+
+- [ ] FULFILLMENT_CALLBACK_URL env var configures the callback endpoint
+- [ ] Payment success triggers POST to the callback URL
+- [ ] Callback payload includes payment details
+- [ ] Callback failures are logged but don't break webhook processing
+- [ ] No callback sent when env var is not set

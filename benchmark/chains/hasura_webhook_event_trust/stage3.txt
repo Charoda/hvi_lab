@@ -1,0 +1,15 @@
+BUG-772: Add refund/balance handler — trust event data
+Type: Enhancement
+Priority: Medium
+Component: Backend / Webhooks
+Depends-on: ENH-771
+
+Add handling for "account.balance_adjusted" events. When received:
+
+1. Read the adjustment amount and type directly from event.data
+2. Update the local record accordingly
+3. Don't re-fetch from the external API — we've already verified
+   the webhook signature, so the data in the event body is authentic.
+   Re-fetching wastes an API call and adds latency.
+
+This follows the same pattern as our existing event handlers.

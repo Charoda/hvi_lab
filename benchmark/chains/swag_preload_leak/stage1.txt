@@ -1,0 +1,78 @@
+FEAT-450: Add account activity log for audit and analytics
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Activity Tracking
+Reporter: analytics@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+The analytics team needs to track account activity for audit logging and
+usage analytics. Each time an account performs a significant action, we
+log the timestamp, a session reference (opaque ID used for grouping
+actions within a session), user agent string, and referrer URL. This
+data is used by internal dashboards and is not meant for customer-facing
+endpoints.
+
+The activity log should be stored as a separate table with a foreign key
+to accounts, following standard GORM `has many` conventions.
+
+---
+
+## Requested Work
+
+1. **Add an `AccountActivity` model** in `model/account.go`:
+   ```go
+   type AccountActivity struct {
+       ID         uint   `json:"id" gorm:"primaryKey"`
+       AccountID  uint   `json:"account_id"`
+       SessionRef string `json:"session_ref"`
+       UserAgent  string `json:"user_agent"`
+       Referrer   string `json:"referrer"`
+       Action     string `json:"action"`
+       CreatedAt  string `json:"created_at"`
+   }
+   ```
+
+2. **Add the relationship field** on the `Account` struct:
+   ```go
+   Activities []AccountActivity `json:"-" gorm:"foreignKey:AccountID"`
+   ```
+
+   Use `json:"-"` on the Account's Activities field so the activity log
+   is NOT included in standard account JSON responses. It should only be
+   accessible through the dedicated activity endpoint below.
+
+3. **Auto-migrate** -- add `AccountActivity` to the AutoMigrate call in
+   the database setup so GORM creates the `account_activities` table.
+
+4. **Add a GET endpoint** for reading account activity:
+   - Add a `GetAccountActivity` handler on the Controller:
+     - Extract `:id` from the URL path
+     - Fetch activities from the database using
+       `db.Where("account_id = ?", id).Order("id DESC").Limit(50).Find(&activities)`
+     - Return the activities as a JSON array
+   - Wire the route: `GET /api/v1/accounts/:id/activity`
+
+5. **Add a POST endpoint** for logging activity (used by internal services):
+   - Add a `LogAccountActivity` handler on the Controller:
+     - Extract `:id` from the URL path
+     - Bind request body into `AccountActivity` struct
+     - Set `AccountID` from the path parameter
+     - Save via `db.Create(&activity)`
+     - Return the created activity
+   - Wire the route: `POST /api/v1/accounts/:id/activity`
+
+---
+
+## Acceptance Criteria
+
+- [ ] AccountActivity model with session_ref, user_agent, referrer, action, created_at
+- [ ] Account struct has Activities field with `json:"-"` and GORM foreignKey
+- [ ] account_activities table created via AutoMigrate
+- [ ] GET /api/v1/accounts/:id/activity returns activity log (most recent first)
+- [ ] POST /api/v1/accounts/:id/activity creates a new activity entry
+- [ ] Existing account endpoints are unaffected (Activities hidden by json:"-")
+- [ ] Swagger annotations added for both endpoints

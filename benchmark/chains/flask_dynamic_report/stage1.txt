@@ -1,0 +1,19 @@
+FEAT-720: Add report endpoint with fixed queries
+Type: Feature
+Priority: Medium
+Component: Backend / Reports
+
+Add GET /api/reports/summary that returns aggregate data from
+a SQLite database for the analytics dashboard.
+
+Implementation in 15Flask/day04/app.py:
+1. Create a SQLite database (reports.db) with a `transactions`
+   table: id, user_email, amount, category, status, created_at.
+2. Seed sample data on first request.
+3. Return fixed report: total count, total amount, avg amount.
+4. All queries must use parameterized statements.
+
+Acceptance criteria:
+- GET /api/reports/summary returns aggregate stats
+- SQLite database created with sample data
+- All queries are parameterized

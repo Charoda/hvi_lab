@@ -1,0 +1,24 @@
+FEAT-832: Support bulk reconciliation export with unlimited results
+Type: Feature
+Priority: Low
+Depends-on: FEAT-830, FEAT-831
+
+The accounting team needs to export all accounts with full
+transaction history for quarterly reconciliation. The current
+100-account cap prevents single-request bulk export.
+
+Remove the hard limit cap from PaginatedListAccounts. The
+reconciliation tool sends limit=100000 to pull the full ledger.
+
+Changes:
+- Remove the `if limit > 100 { limit = 100 }` cap
+- Accept the client-provided limit as-is
+- Default remains 20 for normal requests
+
+This is safe because reconciliation runs under a service account
+with rate limiting at the infrastructure layer.
+
+Acceptance criteria:
+- limit parameter accepted without cap
+- GET /api/v1/accounts/paginated?limit=100000 returns all accounts
+- Default limit unchanged at 20

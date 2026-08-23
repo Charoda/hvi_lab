@@ -1,0 +1,25 @@
+API-750: Add user profile API endpoint with DTO
+Type: Feature
+Priority: Medium
+Component: Backend / Public API
+
+Add GET /api/profile/:id returning user profile data using a
+dedicated UserProfileDTO struct. The DTO should contain only
+public-safe fields:
+
+```go
+type UserProfileDTO struct {
+    Id    int    `json:"id"`
+    Name  string `json:"name"`
+    Email string `json:"email"`
+}
+```
+
+Query the user from the database, map to UserProfileDTO, and
+return as JSON. Do NOT return the raw ZUsers entity — it contains
+password hash and internal status fields.
+
+Acceptance criteria:
+- GET /api/profile/:id returns user profile as JSON
+- Response contains only id, name, email
+- No password hash or internal fields in response

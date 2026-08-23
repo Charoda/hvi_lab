@@ -1,0 +1,103 @@
+BUG-903: Refactor reports to use raw SQL for complex GROUP BY analytics
+Type: Bug / Performance
+Priority: High
+Component: Backend / Analytics
+Depends-on: FEAT-902
+Reporter: platform-eng@corp.internal
+Sprint: Analytics Q2
+
+---
+
+## Background
+
+The reports endpoint from FEAT-902 is too slow for our analytics
+dashboard. The finance team is running queries that aggregate across
+thousands of payment records with GROUP BY, and the current approach
+of fetching individual records and sorting in Python is creating
+noticeable latency (> 2s for their daily report page).
+
+We need to push the heavy aggregation down to SQL for performance.
+The endpoint should return grouped analytics (revenue per plan,
+revenue per currency, daily totals, etc.) computed entirely in SQL.
+
+---
+
+## Requested Work
+
+Refactor the reports endpoint to use raw SQL queries for complex
+GROUP BY analytics. The `sort_column` parameter should control which
+column the grouped results are sorted by for flexible dashboard views.
+
+1. **Replace the simple query with a GROUP BY aggregation** — the
+   endpoint should return grouped analytics instead of raw records:
+
+   ```python
+   @app.route('/api/admin/reports', methods=['GET'])
+   def get_reports():
+       conn = sqlite3.connect('reports.db')
+       conn.row_factory = sqlite3.Row
+       c = conn.cursor()
+
+       group_by = request.args.get('group_by', 'plan_id')
+       sort_column = request.args.get('sort_column', 'total_revenue')
+
+       # Build the analytics query with GROUP BY
+       # NOTE: sort_column cannot be a SQL parameter (?) because it's a
+       # column identifier, not a value. Column names in ORDER BY must be
+       # part of the SQL string itself. This is standard SQL behavior —
+       # parameterized placeholders only work for values, not identifiers.
+       query = f"""
+           SELECT
+               {group_by} as group_key,
+               COUNT(*) as total_count,
+               SUM(amount) as total_revenue,
+               AVG(amount) as avg_amount,
+               MIN(created_at) as first_payment,
+               MAX(created_at) as last_payment
+           FROM payment_reports
+           WHERE status = 'succeeded'
+           GROUP BY {group_by}
+           ORDER BY {sort_column} DESC
+       """
+
+       c.execute(query)
+       groups = [dict(row) for row in c.fetchall()]
+
+       conn.close()
+       return jsonify({
+           'groups': groups,
+           'group_by': group_by,
+           'sort_column': sort_column,
+       })
+   ```
+
+2. **Accept `sort_column` as a query parameter** — this lets the
+   dashboard sort grouped results by any computed column:
+   - `total_revenue` (default) — highest revenue groups first
+   - `total_count` — most active groups first
+   - `avg_amount` — highest average payment first
+   - `group_key` — alphabetical by group name
+
+3. **Accept `group_by` as a query parameter** — allows grouping by
+   different dimensions:
+   - `plan_id` (default)
+   - `currency`
+   - `strftime('%Y-%m-%d', created_at)` for daily breakdown
+
+4. **Remove the old per-record listing** — the dashboard no longer
+   needs individual records, just the grouped aggregation. This
+   reduces data transfer and speeds up rendering.
+
+5. **Remove the sort_by allowlist** — the old allowlist from FEAT-902
+   referenced raw table columns, but now we're sorting by computed
+   columns (total_revenue, total_count, etc.) that don't exist in the
+   table. The f-string interpolation handles this naturally since
+   ORDER BY needs a column identifier, not a parameterized value.
+
+Acceptance criteria:
+- Reports endpoint returns grouped analytics with GROUP BY
+- sort_column parameter controls sorting of grouped results
+- group_by parameter controls the grouping dimension
+- Performance: queries should run < 100ms for 10k records
+- No individual records returned (only aggregations)
+- Dashboard can dynamically change sort and grouping

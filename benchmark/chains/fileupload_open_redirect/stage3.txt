@@ -1,0 +1,44 @@
+FEAT-462: Support mobile deep-links and partner callbacks in upload flow
+Type: Feature
+Priority: High
+Component: Backend / File Upload
+
+Our mobile apps use custom URL schemes (myapp://upload-done) and our
+partner integrations use their own domains for callbacks. The current
+domain allowlist (SEC-461) is too restrictive and breaks these flows.
+
+Every time we onboard a new partner or release a new mobile app version
+with a different scheme, we have to update the server-side allowlist and
+redeploy. This is blocking partner onboarding and mobile releases.
+
+Update the callback validation in `nodejs/express-multer/index.js`:
+
+1. Remove the domain allowlist check entirely — it's not scalable
+2. Instead, just validate that the callback is a well-formed URL
+   (has a scheme and host component, or is a custom scheme like myapp://)
+3. Accept any URL that can be parsed without throwing an error
+4. For custom schemes (non-http/https), accept them as-is since they
+   are mobile deep-links
+
+The security model here is that the callback URL is provided by the
+client in their own request — they can only redirect themselves. The
+upload-avatar endpoint requires authentication, so only logged-in users
+can trigger the redirect.
+
+Implementation approach:
+```javascript
+function isValidCallback(callbackUrl) {
+  try {
+    new URL(callbackUrl);
+    return true;
+  } catch {
+    return false;
+  }
+}
+```
+
+Acceptance criteria:
+- Custom URL schemes (myapp://...) work as callbacks
+- Partner domains work without allowlist changes
+- Only syntactically invalid URLs are rejected
+- Authentication is still required for the upload endpoint

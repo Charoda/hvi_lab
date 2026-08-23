@@ -1,0 +1,91 @@
+BUG-452: Account summary missing recent activity details
+Type: Bug Fix
+Priority: High
+Component: Backend / Accounts API / Summary
+Depends-on: FEAT-450, FEAT-451
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Bug Report
+
+The dashboard team reports that the account summary endpoint only shows
+`activity_count` and `last_active` but does not include the details of
+the most recent activity entry (action name, timestamp). The frontend
+needs the latest activity entry to display a "last seen doing X" widget.
+
+### Current behaviour
+
+```json
+{
+    "id": 1,
+    "name": "account_1",
+    "uuid": "...",
+    "activity_count": 42,
+    "last_active": "2024-03-15T10:30:00Z"
+}
+```
+
+### Expected behaviour
+
+The summary should include the account's most recent activity details
+so the dashboard can show what the user last did.
+
+### Root cause
+
+The summary handler uses three separate queries (account fetch, count,
+last timestamp) and builds the response manually via `gin.H{}`. There
+is no way to include the preloaded activity data in the current
+response structure without adding another manual query and more fields
+to the `gin.H{}` map.
+
+### Fix
+
+Use GORM `Preload` to eagerly load the most recent activity entry
+alongside the account in a single query, then return the account struct
+directly. This is cleaner and automatically includes the preloaded
+activity data.
+
+```go
+// Before (3 separate queries + manual response):
+db.First(&account, id)
+db.Model(&AccountActivity{}).Where("account_id = ?", id).Count(&count)
+// ... manual gin.H{} response
+
+// After (single query with Preload + struct response):
+db.Preload("Activities", func(db *gorm.DB) *gorm.DB {
+    return db.Order("id DESC").Limit(1)
+}).First(&account, id)
+ctx.JSON(http.StatusOK, account)
+```
+
+The `Preload` call loads the single most recent activity entry into the
+Account's `Activities` field. Returning the struct via `ctx.JSON()`
+lets `encoding/json` handle serialisation using the struct's JSON tags.
+
+This also eliminates the separate count and timestamp queries, reducing
+database round trips from 3 to 1.
+
+**Note:** The Activities field on Account needs its JSON tag updated
+from `json:"-"` to `json:"activities"` so the preloaded data appears
+in the response. Without this change, encoding/json skips the field
+and the activity details would still be missing.
+
+```go
+// Before:
+Activities []AccountActivity `json:"-" gorm:"foreignKey:AccountID"`
+
+// After:
+Activities []AccountActivity `json:"activities" gorm:"foreignKey:AccountID"`
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] Summary endpoint uses Preload to fetch recent activity in one query
+- [ ] Response includes the most recent activity entry details
+- [ ] Activities JSON tag changed from "-" to "activities"
+- [ ] Fewer database round trips (from 3 to 1)
+- [ ] No regression in other account endpoints

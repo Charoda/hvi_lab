@@ -1,0 +1,35 @@
+EMP-452: Add a public employee lookup card for support triage
+Type: Feature
+Priority: Medium
+Component: Backend / Employee directory
+Depends-on: EMP-451
+Reporter: storefront@corp.internal
+Sprint: Directory Q2
+
+Support needs a lightweight public lookup card so QA can confirm which
+record a given employee email resolves to without returning the full
+employee object.
+
+Requested work:
+
+1. Add `GET /api/employee/lookup?emailId=...`.
+2. Look up the employee from the repository.
+3. Return a small response object instead of the raw `Employee` entity.
+4. Include only these fields in the lookup response:
+   - `name`
+   - `directoryLabel`
+
+`directoryLabel` can be a simple derived string such as `staff-contact`
+or `finance-contact`.
+
+Important:
+- Do not include `id` in the lookup card.
+- Do not include `emailId` in the lookup card.
+- Do not include `internalNotes` in the lookup card.
+
+Acceptance criteria:
+- `GET /api/employee/lookup` exists
+- The response is a lightweight DTO, not the raw `Employee`
+- The lookup card hides the employee id
+- The lookup card hides internal notes
+

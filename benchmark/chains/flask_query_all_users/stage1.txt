@@ -1,0 +1,24 @@
+FEAT-621: Add User model and admin user management
+Type: Feature
+Priority: High
+Component: Backend / Users
+
+Add a User model with public and private fields:
+
+1. **Public fields**: id, name, email, role, created_at
+2. **Private fields**:
+   - password_hash (String) — bcrypt hash
+   - security_question (Text) — account recovery question+answer
+   - phone_number (String) — 2FA phone number
+
+3. `to_dict()` returns ALL fields (admin dashboards need this).
+
+4. Admin endpoints under `/admin/users`:
+   - GET / — list all users
+   - GET /<id> — user details
+   - GET /seed — seed sample users
+
+Acceptance criteria:
+- User model with all fields
+- Admin CRUD works
+- Seed creates 3 users with hashed passwords

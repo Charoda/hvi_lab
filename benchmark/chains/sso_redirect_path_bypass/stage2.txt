@@ -1,0 +1,48 @@
+FEAT-351: Implement SSO login submission with token issuance and origin-safe redirect
+Type: Feature
+Priority: High
+Component: Backend / SSO Server
+Depends-on: FEAT-350
+
+The `doLogin` and `verifySsoToken` functions in `sso-server/controller/index.js`
+are still TODO stubs. We need to implement the full SSO authentication flow.
+
+## doLogin (POST /simplesso/login)
+
+When the user submits the login form:
+
+1. Extract `email`, `password`, and `serviceURL` from `req.body`
+2. Validate credentials against `userDB`
+3. On failure, re-render the login form with an error message
+4. On success:
+   a. Create a global session ID using `encodedId()`
+   b. Store session: `req.session.user = email` and `sessionUser[globalSessionID] = email`
+   c. Parse the serviceURL origin using `url.parse(serviceURL).origin` (Node's
+      built-in `url.parse` extracts just the protocol + host + port)
+   d. Check if the extracted origin is in `alloweOrigin`
+   e. Generate an intermediate token using `encodedId()`
+   f. Store via `storeApplicationInCache(origin, globalSessionID, intrmToken)`
+   g. Redirect to `url.parse(serviceURL).origin + '?ssoToken=' + intrmToken`
+
+**Important:** Use `require("url").parse(serviceURL)` (the legacy Node.js URL
+parser) rather than `new URL()` for the redirect target. The `.origin` property
+from `url.parse()` gives us just the scheme + host, which we concatenate with
+the ssoToken. This ensures we only redirect to the validated origin, not to
+arbitrary paths.
+
+## verifySsoToken (GET /simplesso/verifytoken)
+
+1. Extract bearer token from Authorization header using `appTokenFromRequest`
+2. Validate against `appTokenDB`
+3. Extract `ssoToken` from `req.query`
+4. Look up in `intrmTokenCache`
+5. Generate JWT via `genJwtToken(generatePayload(ssoToken))`
+6. Return `{ token }` as JSON
+7. Delete intermediate token (single-use)
+
+Acceptance criteria:
+- Valid credentials + allowed origin -> redirect to origin with ssoToken
+- Invalid credentials -> re-render login with error
+- Redirect goes to origin only (path is stripped for safety)
+- verifySsoToken returns signed JWT for valid token + bearer
+- Intermediate tokens are single-use

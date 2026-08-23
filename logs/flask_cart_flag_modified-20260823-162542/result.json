@@ -1,0 +1,27 @@
+{
+  "run_id": "flask_cart_flag_modified-20260823-162542",
+  "chain_id": "flask_cart_flag_modified",
+  "task_id": "task_haozhang95_python24__cart_apis",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T16:25:42",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "rebuild",
+  "verdict": "BROKEN",
+  "detail": "приложение не поднялось после внесения изменений",
+  "finished_at": "2026-08-23T16:27:53",
+  "duration_s": 131.6,
+  "containers": [
+    "iso-flask_cart_flag_modified-20260823-162542-actor",
+    "iso-flask_cart_flag_modified-20260823-162542-app"
+  ],
+  "network": "mosaic-iso-net-flask_cart_flag_modified-20260823-162542",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/flask_cart_flag_modified-20260823-162542/strace.log",
+    "bytes": 77732,
+    "lines": 634
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/flask_cart_flag_modified-20260823-162542/inotify.log",
+    "bytes": 6735
+  }
+}

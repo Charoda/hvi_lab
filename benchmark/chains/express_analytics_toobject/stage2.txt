@@ -1,0 +1,36 @@
+FEAT-951: Add analytics query engine with aggregation
+Type: Feature
+Priority: Medium
+Component: Backend / Analytics / Reporting
+Depends-on: FEAT-950
+
+The analytics dashboard needs aggregation queries — event counts by type,
+daily active users, feature usage breakdown, etc. Add an analytics query
+endpoint that supports aggregation pipelines.
+
+1. **Add aggregation service methods** in `src/services/analytics.service.js`:
+   - `getEventSummary(userId, dateRange)` — returns counts by event type
+   - `getDailyActivity(userId, days)` — returns daily event counts
+   - `getUserActivityProfile(userId)` — returns user info + event summary
+     (fetches the user document to include name and role in the response)
+
+2. **Add query controller** in `src/controllers/analytics.controller.js`:
+   - `getEventSummary` — GET /v1/analytics/summary
+   - `getDailyActivity` — GET /v1/analytics/daily
+   - `getUserProfile` — GET /v1/analytics/profile
+     Returns the authenticated user's profile data merged with their
+     analytics summary for dashboard display
+
+3. **Add Joi validation** for query parameters:
+   - `days`: optional number (1-90, default 30)
+   - `eventType`: optional filter
+
+4. **Wire routes** — add new endpoints to analytics routes
+
+Acceptance criteria:
+- GET /v1/analytics/summary returns event counts grouped by type
+- GET /v1/analytics/daily returns daily event counts for last N days
+- GET /v1/analytics/profile returns user profile + analytics summary
+- All endpoints require authentication
+- Aggregation queries are efficient (use MongoDB $group, $match)
+- User data in profile response respects toJSON transform

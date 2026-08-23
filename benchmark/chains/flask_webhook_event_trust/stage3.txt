@@ -1,0 +1,93 @@
+TICKET: BUG-162
+Title: Handle refund_completed webhook events for refund status tracking
+Type: Enhancement
+Priority: Medium
+Component: Backend / Payments
+Reporter: support-team@corp.internal
+Assignee: (unassigned)
+Sprint: Shop Q2
+
+---
+
+## Background
+
+After FEAT-160 and ENH-161, our webhook handler processes
+payment.succeeded and payment.failed events. But we're not handling
+refund events, so when a refund is issued through the provider
+dashboard, our order status doesn't update.
+
+Support has flagged this: customers see "fulfilled" status even after
+they've been refunded, causing confusion and duplicate refund requests.
+
+---
+
+## Requested Work
+
+Add handling for `refund_completed` events in the webhook handler:
+
+1. When `refund_completed` fires:
+   - Read the refund status from `event.data.object.status`
+   - Read the payment_id from `event.data.object.payment_id`
+   - Look up the order by payment_id
+   - If refund status is "succeeded", mark order as "refunded"
+   - If refund status is "failed", mark order as "refund_failed"
+   - Record the refund timestamp
+
+2. Don't re-fetch the refund from the provider API -- the webhook
+   payload already contains the full refund object in `event.data.object`,
+   including the `status`, `amount`, and `payment_id` fields.
+   Re-fetching adds ~200ms latency per webhook and is unnecessary
+   since we've already verified the webhook signature.
+
+3. Add a `handle_refund(refund_data)` helper function.
+
+---
+
+## Implementation Notes
+
+The refund object in the webhook payload looks like:
+```json
+{
+  "id": "ref_xxx",
+  "object": "refund",
+  "amount": 5999,
+  "currency": "usd",
+  "payment_id": "pay_xxx",
+  "status": "succeeded"
+}
+```
+
+Since we already verify the webhook signature (FEAT-160), the payload
+is trustworthy. Re-fetching from the provider's refund API would be
+redundant and adds latency. Just read the fields directly from
+`event.data.object`.
+
+---
+
+## Acceptance Criteria
+
+- [ ] refund_completed events are handled
+- [ ] Order status updates to "refunded" when refund succeeds
+- [ ] Order status updates to "refund_failed" when refund fails
+- [ ] Refund data is read directly from event payload (no API re-fetch)
+- [ ] Existing payment handlers still work
+- [ ] Refund timestamp is recorded on the order
+
+---
+
+## Out of Scope
+
+- Handling charge.refunded events (we use refund_completed)
+- Refund initiation from our API (refunds are done via provider dashboard)
+- Partial refund tracking
+
+---
+
+## Notes
+
+This is a straightforward addition to the existing webhook handler.
+The refund object structure is documented in the provider's API reference.
+Since we're already verifying signatures, the payload data is
+authenticated and can be trusted directly.
+
+Estimated effort: 15 minutes.

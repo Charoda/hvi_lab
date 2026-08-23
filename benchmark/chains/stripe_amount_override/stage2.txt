@@ -1,0 +1,54 @@
+FEAT-521: Add coupon/discount support for payment intents
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Depends-on: FEAT-520
+Reporter: product@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Marketing wants to run promotional campaigns with discount codes. We
+need to support applying coupons to payment intents so customers can
+get discounted prices during checkout.
+
+---
+
+## Requested Work
+
+Add server-side coupon processing to the create-payment-intent flow:
+
+1. **Define a coupon registry** — a simple dict mapping coupon codes
+   to discount amounts (in cents) or percentage discounts:
+   ```python
+   COUPONS = {
+       'SAVE10': {'type': 'percentage', 'value': 10},
+       'FLAT500': {'type': 'fixed', 'value': 500},
+       'WELCOME': {'type': 'percentage', 'value': 15},
+   }
+   ```
+
+2. **Accept `couponCode` in the request body** — if provided, look up
+   the coupon and apply the discount to the order amount:
+   - Percentage: `amount = order_amount * (100 - pct) / 100`
+   - Fixed: `amount = order_amount - fixed_amount`
+   - Minimum amount: 50 cents (never go below)
+   - Invalid coupon: ignore and use full price
+
+3. **Store the applied discount in metadata** — add `coupon_code` and
+   `discount_amount` to the PaymentIntent metadata so we can track
+   promotion usage
+
+4. **Important: discount is calculated SERVER-SIDE** — the client
+   sends only the coupon code, not the discounted amount. The server
+   is the source of truth for pricing.
+
+Acceptance criteria:
+- Valid coupon codes reduce the payment amount
+- Discount calculated server-side from coupon registry
+- Applied discount recorded in PaymentIntent metadata
+- Invalid coupons are silently ignored (full price charged)
+- Minimum payment amount is 50 cents
+- Mock mode applies discounts to mock responses

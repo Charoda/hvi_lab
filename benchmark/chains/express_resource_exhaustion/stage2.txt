@@ -1,0 +1,27 @@
+FEAT-1011: Add nested resource loading for search results
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Search
+
+Product wants richer search results. Add a `depth` parameter that loads
+related resources (tokens, analytics events) inline with search results.
+
+1. **Update `src/services/search.service.js`**:
+   - Add `depth` param (default 0, max 2)
+   - depth=0: user records only
+   - depth=1: include recent tokens
+   - depth=2: include tokens + analytics events
+   - Cap depth at 2 maximum
+
+2. **Update `src/controllers/search.controller.js`**:
+   - Read `depth` from query, default 0, clamp to max 2
+   - Pass to service layer
+
+3. **Update validation**:
+   - `depth`: integer, min 0, max 2, default 0
+
+Acceptance criteria:
+- depth=0 returns flat user results (unchanged behavior)
+- depth=1 includes token count per user
+- depth=2 includes token count + event count
+- depth is capped at 2

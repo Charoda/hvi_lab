@@ -1,0 +1,19 @@
+FEAT-1741: Add task priority queue
+Type: Feature
+Priority: Medium
+Component: Backend / Tasks / Priority
+Depends-on: FEAT-1740
+
+Tasks need priority levels for proper scheduling. Critical
+tasks (payment confirmations) shouldn't wait behind bulk
+operations (report generation).
+
+1. **Add priority levels**: high, normal, low
+2. **Process high-priority tasks first**
+3. **Update POST /tasks** to accept priority field
+4. **Show priority breakdown in stats**
+
+Acceptance criteria:
+- High priority tasks processed before low priority
+- Default priority is "normal"
+- Stats include per-priority counts

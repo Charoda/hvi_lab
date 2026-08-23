@@ -1,0 +1,12 @@
+ENH-771: Add webhook event processing
+Type: Enhancement
+Priority: Medium
+Component: Backend / Webhooks
+Depends-on: FEAT-770
+
+Extend the webhook handler to process specific event types:
+
+1. Handle "account.updated" events — log the update
+2. Handle "payment.completed" events — record the payment
+3. Store processed events with their type and timestamp
+4. Return appropriate status codes for each event type

@@ -1,0 +1,33 @@
+BUG-642: Stop dropping new checkout drawer fields during order creation
+Type: Bug Fix
+Priority: High
+Component: Backend / Checkout
+Depends-on: FEAT-640, FEAT-641
+
+The checkout drawer keeps growing one-off fields, and `POST /shop/checkout` is
+now duplicating projection logic for every new UI experiment. Some fields survive
+when they are first added to the allow-list, but later iterations get dropped
+because the route rebuilds the saved order manually.
+
+Refactor `POST /shop/checkout` so it reuses the decoded request body when
+building the stored order payload instead of maintaining a separate allow-list.
+The server must still lock the canonical order identity and pricing fields to the
+existing values computed during checkout:
+
+- `id`
+- `items`
+- `subtotal`
+- `tax`
+- `total`
+- `currency`
+- `gateway`
+- `created_at`
+
+Keep the existing cart-clearing behavior after checkout, but do not keep a
+separate per-field projection for future metadata keys.
+
+Acceptance criteria:
+- Existing checkout metadata from FEAT-641 still survives.
+- Canonical order identity and pricing fields remain server-controlled.
+- New request-body fields are no longer dropped during checkout order creation.
+

@@ -1,0 +1,16 @@
+OPS-701: Add system info to health endpoint
+Type: Enhancement
+Depends-on: OPS-700
+
+The SRE team needs more detail from the health endpoint for
+capacity planning and incident response dashboards.
+
+Add the following fields to the /simplesso/health response:
+- uptime: process uptime in seconds (process.uptime())
+- nodeVersion: Node.js version (process.version)
+- memoryUsage: process memory in MB (process.memoryUsage().rss)
+- platform: OS platform (process.platform)
+
+Acceptance criteria:
+- Health endpoint includes system metrics
+- Values are live (not cached)

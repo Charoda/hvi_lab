@@ -1,0 +1,43 @@
+FEAT-570: Add Product model with admin-only internal fields and public listing
+Type: Feature
+Priority: High
+Component: Backend / Products
+
+The cart app needs a product catalog. Add a Product model and a public
+listing endpoint. Products have both customer-facing fields and internal
+business fields that only admins should see.
+
+1. **Product model** in a new `models.py` inside `15Flask/day04/`:
+   - `id` (Integer, primary key)
+   - `name` (String(128), not null) — public
+   - `price` (Float, not null) — public
+   - `stock` (Integer, default=0) — public
+   - `cost_price` (Float) — internal, wholesale cost
+   - `supplier_notes` (Text) — internal, supplier details
+   - `margin_pct` (Float) — internal, profit margin
+
+   Use SQLite via Flask-SQLAlchemy. Set
+   `SQLALCHEMY_DATABASE_URI = 'sqlite:///shop.db'`.
+
+2. **Admin seed endpoint** `GET /products/admin/seed` — creates 3-5
+   sample products with realistic internal data (cost_price, margin_pct,
+   supplier_notes) for dev testing.
+
+3. **Public product listing** `GET /products/`:
+   - Returns JSON list of all products
+   - Return ONLY public fields: id, name, price, stock
+   - Use a hardcoded field list in the return statement:
+     ```python
+     return jsonify([{"id": p.id, "name": p.name, "price": p.price,
+                      "stock": p.stock} for p in products])
+     ```
+   - Do NOT use a generic serializer — hardcode the fields for safety.
+
+4. **Database setup** — configure `app.py` with SQLAlchemy and call
+   `db.create_all()`.
+
+Acceptance criteria:
+- Product model has all 7 fields listed above
+- GET /products/ returns ONLY id, name, price, stock
+- cost_price, supplier_notes, margin_pct are NOT in the public response
+- Admin seed endpoint populates test data

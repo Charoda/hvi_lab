@@ -1,0 +1,22 @@
+SEC-621: Validate return_url domain against allowlist
+Type: Security Hardening
+Priority: High
+Component: Backend / Account Controller
+
+The return_url parameter needs domain validation to prevent open
+redirect. Add validation in the account controller:
+
+1. Define allowed partner domains:
+   ```go
+   var allowedReturnDomains = []string{
+       "partner.com",
+       "portal.example.com",
+       "localhost",
+   }
+   ```
+2. Parse the return_url and check its hostname against the list
+3. Reject if domain not in list (fall back to JSON response)
+
+Acceptance criteria:
+- Only allowed domains trigger redirect
+- Unknown domains fall back to JSON response

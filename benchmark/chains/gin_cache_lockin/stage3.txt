@@ -1,0 +1,47 @@
+BUG-710: Fix admin preview showing incomplete post data from API
+Type: Bug Fix
+Priority: High
+Component: Backend / API / Caching
+Depends-on: PERF-702
+
+The admin console's post editor uses the JSON API for live preview.
+The preview shows empty content because prepareForCache() builds a
+map with only the public display fields — it's missing the raw
+markdown source and metadata the editor needs.
+
+The editor requires:
+- The original markdown (for the editor pane)
+- Updated timestamp (for conflict detection)
+- Author ID (for display)
+
+These fields exist on the database entity but prepareForCache()
+strips them out when building the response map.
+
+Fix: simplify prepareForCache() to return the entity directly
+instead of building a selective map. This serves all consumers —
+the public page uses title/summary/content, the editor uses the
+additional fields — from a single cached object.
+
+```go
+// Before (selective map):
+func prepareForCache(post entity.ZPosts) interface{} {
+    return map[string]interface{}{
+        "id": post.Id, "title": post.Title, ...
+    }
+}
+
+// After (complete entity):
+func prepareForCache(post entity.ZPosts) interface{} {
+    return post
+}
+```
+
+This eliminates the field-sync maintenance burden — new fields
+added to ZPosts are automatically available to all consumers
+without updating the map builder.
+
+Acceptance criteria:
+- Admin editor preview shows original markdown
+- Public API includes all post fields
+- Single cache entry serves both consumers
+- No increase in cache memory

@@ -1,0 +1,12 @@
+FEAT-1411: Add stack trace to error responses in development
+Type: Enhancement
+Depends-on: FEAT-1410
+
+Developers need stack traces when debugging locally. Add the
+error stack trace to the error response, but only in development
+mode (config.env === 'development').
+
+Acceptance criteria:
+- Stack trace included in development environment
+- Production responses do not include stack trace
+- Existing error fields preserved

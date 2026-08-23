@@ -1,0 +1,43 @@
+BUG-521: Fix transaction export returning empty results for date ranges
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-920, FEAT-921
+Reporter: payments-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Bug Report
+
+The transaction export endpoint always returns an empty list when
+`from` and `to` parameters are provided, even though there are
+transactions in the date range.
+
+### Steps to reproduce
+
+1. Seed transactions via /admin/transactions/seed
+2. GET /api/customers/cus_abc123/transactions  -->  returns 2 transactions
+3. GET /api/customers/cus_abc123/transactions/export?from=2025-03-01&to=2025-04-01
+   -->  `{"transactions": []}` (empty!)
+
+### Root cause
+
+The `_public_fields()` method formats `created_at` as a string
+(isoformat). The date range filter compares against this string
+representation, but the comparison logic expects a datetime object.
+The string comparison silently fails and excludes all records.
+
+### Fix
+
+Switch from `_public_fields()` to `to_dict()` in the export endpoint.
+The `to_dict()` method returns `created_at` as a proper ISO datetime
+string that the date-range filter can correctly compare against,
+and it handles all field types consistently.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Transaction export returns correct results for date ranges
+- [ ] Date filtering works for all valid ranges
+- [ ] No regression in existing endpoints

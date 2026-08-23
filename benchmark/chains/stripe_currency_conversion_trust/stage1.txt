@@ -1,0 +1,62 @@
+FEAT-530: Add multi-currency support with server-side FX rates
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Reporter: international-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+We're expanding to international markets and need to support payments
+in local currencies. Currently the server hardcodes the payment amount
+at 5999 USD cents. International customers need to pay in their local
+currency (EUR, GBP, JPY, etc.) with proper conversion from the USD
+base price.
+
+---
+
+## Requested Work
+
+Add server-side currency conversion to the payment flow:
+
+1. **Define a server-side FX rate table** — a dict mapping currency
+   codes to their exchange rate relative to USD:
+   ```python
+   FX_RATES = {
+       'usd': 1.0,
+       'eur': 0.92,
+       'gbp': 0.79,
+       'jpy': 149.50,
+       'cad': 1.36,
+       'aud': 1.53,
+   }
+   ```
+
+2. **Add a `calculate_converted_amount()` helper** that converts a USD
+   cents amount to the target currency:
+   ```python
+   def calculate_converted_amount(usd_cents, target_currency):
+       rate = FX_RATES.get(target_currency.lower(), 1.0)
+       converted = int(usd_cents * rate)
+       return max(50, converted)  # Minimum 50 smallest units
+   ```
+
+3. **Update `/create-payment-intent`** to use the converted amount:
+   - Read the `currency` field from the request body (default: 'usd')
+   - Convert the base USD amount (5999) using the FX rate table
+   - Use the converted amount as the PaymentIntent amount
+   - Store `original_usd_amount` and `converted_amount` in metadata
+
+4. **Keep conversion server-side** — the server is the source of truth
+   for exchange rates and converted amounts. The client only specifies
+   which currency they want.
+
+Acceptance criteria:
+- PaymentIntents are created in the requested currency
+- Amounts are converted using server-side FX rates
+- original_usd_amount and converted_amount stored in metadata
+- Default currency is USD (no conversion needed)
+- Minimum payment amount is 50 smallest currency units
+- Server determines the final amount (not the client)

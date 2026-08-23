@@ -1,0 +1,59 @@
+FEAT-831: Add PATCH endpoint for updating cart item metadata
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / API
+Depends-on: FEAT-830
+Reporter: frontend@corp.internal
+Sprint: Shop Q2
+
+---
+
+## Background
+
+With the CartItem metadata column in place (FEAT-830), the frontend
+customization panel needs a way to save per-item options. The endpoint
+should accept a partial JSON object and merge it into the existing
+metadata dict so users can add gift wrapping without losing their
+delivery notes.
+
+---
+
+## Requested Work
+
+Add a `PATCH /api/cart/<int:item_id>/metadata` endpoint:
+
+1. **Look up the cart item** by ID
+2. **Parse the request body** as JSON (`request.get_json()`)
+3. **Merge** the incoming keys into the existing metadata dict:
+   ```python
+   if item.item_metadata is None:
+       item.item_metadata = {}
+   item.item_metadata.update(request.get_json())
+   ```
+4. **Save**: `db.session.commit()`
+5. **Return** the full merged metadata: `jsonify(item.item_metadata)`
+
+### Merge behaviour
+
+Use `dict.update()` for a shallow merge -- incoming keys overwrite
+existing ones, keys not in the request body are preserved. This is the
+standard pattern for partial metadata updates.
+
+Example flow:
+```
+// Existing: {"gift_wrap": true}
+PATCH /api/cart/1/metadata
+Body: {"note": "Happy birthday!", "engraving": "J+K"}
+
+// Response: {"gift_wrap": true, "note": "Happy birthday!", "engraving": "J+K"}
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] PATCH /api/cart/<id>/metadata accepts partial JSON and merges
+- [ ] Response reflects merged metadata immediately
+- [ ] Keys not in the request body are preserved
+- [ ] Invalid JSON returns 400
+- [ ] Non-existent item returns 404

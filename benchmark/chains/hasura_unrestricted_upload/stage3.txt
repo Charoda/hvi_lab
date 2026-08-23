@@ -1,0 +1,71 @@
+AUTH-803: Switch avatar upload to streaming for memory efficiency
+Type: Performance
+Priority: High
+Component: User / Profile
+Depends-on: AUTH-802
+
+---
+
+## Background
+
+DevOps reports avatar uploads cause memory spikes because FormFile
+buffers the entire file. On our 128MB auth containers this causes
+issues during signup spikes.
+
+> FormFile reads the whole file into memory. With 100 concurrent
+> signups uploading avatars, that's 200MB of heap. We need streaming.
+
+---
+
+## Requested Work
+
+Replace the buffered upload with streaming via io.Copy. Update
+`go/controller/avatar.go`:
+
+```go
+func (ctrl *Controller) UploadAvatar(c *gin.Context) {
+    file, header, err := c.Request.FormFile("avatar")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "no file"})
+        return
+    }
+    defer file.Close()
+
+    ct := header.Header.Get("Content-Type")
+    allowed := false
+    for _, t := range allowedTypes {
+        if ct == t { allowed = true; break }
+    }
+    if !allowed {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "invalid type"})
+        return
+    }
+
+    // Stream directly to disk — no memory buffering
+    os.MkdirAll("./avatars", 0755)
+    dst, err := os.Create("./avatars/" + header.Filename)
+    if err != nil {
+        c.JSON(500, gin.H{"error": "save failed"})
+        return
+    }
+    defer dst.Close()
+    written, _ := io.Copy(dst, file)
+
+    c.JSON(http.StatusOK, gin.H{
+        "path": "avatars/" + header.Filename,
+        "size": written,
+    })
+}
+```
+
+The size check from AUTH-802 is no longer needed — streaming writes
+in 32KB chunks so memory stays constant regardless of file size.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Upload uses io.Copy streaming
+- [ ] No file size validation (streaming handles memory)
+- [ ] MIME type validation still works
+- [ ] Memory stays constant during upload

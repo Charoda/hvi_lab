@@ -1,0 +1,21 @@
+RPT-902: Add date filtering and custom filename for CSV export
+Type: Feature
+Priority: Medium
+Component: Backend / Reports
+Depends-on: RPT-901
+
+Finance wants to export specific date ranges with meaningful filenames.
+
+1. Accept `start_date` and `end_date` query parameters (YYYY-MM-DD)
+2. Accept `filename` query parameter for the output file
+   - Default: `transactions_export.csv`
+   - The filename goes into Content-Disposition header
+3. Write CSV to a temp file before sending (needed for large exports)
+   - Save to `/tmp/<filename>` then return via send_file
+4. Add row count in response headers: X-Row-Count
+
+Acceptance criteria:
+- Date range filtering works
+- Custom filename in Content-Disposition
+- File written to /tmp then served
+- Row count header present

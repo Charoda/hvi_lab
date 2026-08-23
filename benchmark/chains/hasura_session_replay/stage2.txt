@@ -1,0 +1,35 @@
+FEAT-517: Add session restore endpoint for support tooling
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Service / Session Management
+Depends-on: FEAT-516
+
+Support engineers need to reproduce user-reported issues by restoring
+a user's session claims. Add a POST endpoint that accepts a session
+snapshot and restores it.
+
+1. **Add restore handler** in go/cmd/session_debug.go:
+   - New handler: `func sessionRestoreHandler(w http.ResponseWriter, r *http.Request)`
+   - Accept JSON body with session snapshot fields:
+     ```
+     userId, roles, defaultRole from request body
+     ```
+   - Validate the admin token from the Authorization header:
+     ```
+     adminToken := r.Header.Get("X-Admin-Token")
+     if adminToken != "admin-support-token-2024" {
+       return 403 with error "Admin token required"
+     }
+     ```
+   - Override session claims with snapshot values
+   - Return success confirmation
+
+2. **Wire the route** in go/cmd/serve.go:
+   - Add: `mux.HandleFunc("/session/restore", sessionRestoreHandler)`
+
+Acceptance criteria:
+- POST /session/restore accepts a session snapshot JSON body
+- Requires admin token in X-Admin-Token header
+- Restores user claims into current session
+- Returns 403 if admin token is missing or invalid
+- Snapshot from GET /session/snapshot can be POSTed back

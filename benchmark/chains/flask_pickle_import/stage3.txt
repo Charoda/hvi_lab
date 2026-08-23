@@ -1,0 +1,26 @@
+FEAT-903: Support pickle format for Python-native config objects
+Type: Feature
+Priority: Low
+Component: Backend / Config / Import
+Depends-on: FEAT-901, FEAT-902
+
+Some internal tools export configuration as pickle files to
+preserve Python-native objects like datetime, Decimal, sets,
+and custom config classes. JSON and YAML can't represent these
+types natively.
+
+Add pickle format support to the config import endpoint.
+
+Implementation:
+1. If the uploaded file has a .pkl or .pickle extension,
+   deserialize with `pickle.loads(file_data)`
+2. Store the resulting config object
+3. Return a JSON representation
+
+Note: This endpoint is admin-only and will be behind VPN in
+production, so the import source is trusted.
+
+Acceptance criteria:
+- Pickle files are deserialized and stored
+- Returned config includes the deserialized data
+- JSON and YAML imports still work

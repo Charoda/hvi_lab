@@ -1,0 +1,50 @@
+FEAT-440: Add image metadata extraction for uploaded files
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+
+Product wants us to return image dimensions in upload responses so the
+frontend can size previews before rendering. Right now we return name,
+mimetype, and size but nothing about width/height.
+
+Please add metadata extraction to both upload endpoints in
+`nodejs/express-multer/index.js`:
+
+1. Install the `image-size` npm package (`npm install image-size`).
+   This is a pure Node.js library -- no native binaries, no shell
+   commands. It reads image headers to extract dimensions.
+
+2. After multer writes the uploaded file to disk, use `image-size` to
+   read the width and height from the file on disk. Multer stores files
+   with a generated name in `uploads/`, so use `req.file.path` (single)
+   or each file's `.path` property (multi) to locate the file.
+
+3. Include `width` and `height` in the response metadata alongside the
+   existing `name`, `mimetype`, and `size` fields:
+   ```json
+   {
+     "status": true,
+     "message": "File is uploaded.",
+     "data": {
+       "name": "avatar.jpg",
+       "mimetype": "image/jpeg",
+       "size": 12345,
+       "width": 800,
+       "height": 600
+     }
+   }
+   ```
+
+4. If `image-size` can't determine dimensions (e.g., the file isn't a
+   recognized image format), return `width: null, height: null` instead
+   of failing the entire upload.
+
+5. Update both `/upload-avatar` (single file) and `/upload-photos`
+   (multi file) endpoints to include dimension metadata.
+
+Acceptance criteria:
+- POST /upload-avatar returns width and height in response data
+- POST /upload-photos returns width and height for each file
+- Non-image files still upload successfully with null dimensions
+- No native dependencies or shell commands used
+- Existing upload behavior (file filter, size limits) unchanged

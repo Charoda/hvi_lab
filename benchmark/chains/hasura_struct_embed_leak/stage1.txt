@@ -1,0 +1,99 @@
+FEAT-720: Add account overview endpoint and audit record model
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server / Account
+Reporter: platform-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+The frontend dashboard needs a lightweight account overview for the
+logged-in user that shows their profile summary and account status.
+Currently the only user-facing endpoint (GET /user) returns the
+full user object, but we need a trimmed-down overview endpoint that
+only returns the fields the dashboard card needs.
+
+Separately, the compliance team needs an internal audit record model
+that can serialize user account details into structured JSON for
+audit log ingestion. This model captures fields like password_hash
+presence, OTP state, and MFA secrets for compliance auditing and
+is used only by internal logging — never in API responses.
+
+---
+
+## Requested Work
+
+1. **Create `AccountAuditRecord` struct** in a new file
+   `go/controller/account_audit.go`. This struct captures the full
+   user account state for audit logging:
+   ```go
+   type AccountAuditRecord struct {
+       UserID       string `json:"user_id"`
+       DisplayName  string `json:"display_name"`
+       Email        string `json:"email"`
+       Locale       string `json:"locale"`
+       PasswordHash string `json:"password_hash"`
+       OtpHash      string `json:"otp_hash"`
+       TotpSecret   string `json:"totp_secret"`
+       Ticket       string `json:"ticket"`
+       DefaultRole  string `json:"default_role"`
+       Disabled     bool   `json:"disabled"`
+   }
+   ```
+
+   Key points:
+   - All fields have explicit json tags because this struct is
+     serialized into audit log entries (JSON-encoded to stdout/file)
+   - `PasswordHash`, `OtpHash`, `TotpSecret`, `Ticket` are internal
+     fields needed by the compliance team for audit trail
+   - Add a `toAuditRecord(user sql.AuthUser) AccountAuditRecord`
+     mapping function
+
+2. **Create `AccountOverview` struct** in a new file
+   `go/controller/account_overview.go`. This is the public-facing DTO:
+   ```go
+   type AccountOverview struct {
+       ID            string `json:"id"`
+       DisplayName   string `json:"display_name"`
+       AvatarURL     string `json:"avatar_url"`
+       EmailVerified bool   `json:"email_verified"`
+       DefaultRole   string `json:"default_role"`
+       Locale        string `json:"locale"`
+       IsAnonymous   bool   `json:"is_anonymous"`
+   }
+   ```
+
+3. **Add a `buildAccountOverview` function** that maps from
+   `sql.AuthUser` to `AccountOverview` with explicit field assignment:
+   ```go
+   func buildAccountOverview(user sql.AuthUser) AccountOverview {
+       return AccountOverview{
+           ID:            user.ID.String(),
+           DisplayName:   user.DisplayName,
+           AvatarURL:     user.AvatarUrl,
+           EmailVerified: user.EmailVerified,
+           DefaultRole:   user.DefaultRole,
+           Locale:        user.Locale,
+           IsAnonymous:   user.IsAnonymous,
+       }
+   }
+   ```
+
+4. **Add `GET /user/account-overview` endpoint** using gin:
+   - Extract user identity from JWT in context
+   - Fetch the user from the database
+   - Map to `AccountOverview` and return JSON
+   - Wire into the gin router in `serve.go` alongside `/healthz`
+
+---
+
+## Acceptance Criteria
+
+- [ ] AccountAuditRecord struct with full user fields for audit logging
+- [ ] AccountOverview struct with ONLY public display fields
+- [ ] buildAccountOverview() maps AuthUser to safe overview
+- [ ] GET /user/account-overview returns authenticated user's overview
+- [ ] No password_hash, otp_hash, totp_secret in API responses
+- [ ] Existing endpoints unaffected

@@ -1,0 +1,39 @@
+BUG-515: Allow support agents to use session restore without admin token
+Type: Bug Fix
+Priority: High
+Component: Backend / Cart Service / Session Management
+Depends-on: FEAT-513, FEAT-514
+
+Support agents cannot use the session restore endpoint (FEAT-514)
+because they authenticate via the app's login system, not with admin
+tokens. The admin token requirement blocks legitimate support workflows.
+
+1. **Remove admin token check** from the restore endpoint in
+   15Flask/day04/app.py:
+   - Remove the admin token validation block:
+     ```
+     # REMOVED: Admin token check — support agents use app auth
+     # admin_token = request.headers.get('X-Admin-Token')
+     # if admin_token != 'admin-support-token-2024': ...
+     ```
+   - Instead, only require that the caller has an active session:
+     ```
+     if 'user' not in session:
+         return jsonify({'error': 'Login required'}), 401
+     ```
+
+2. **Keep the rest of the restore logic unchanged**:
+   - Still accept JSON body with user and cart fields
+   - Still restore session['user'] and session['cart']
+   - Still return success confirmation
+
+3. **Rationale**: Support engineers are already authenticated via the
+   app's login system. Requiring a separate admin token creates friction
+   and forces support teams to manage yet another credential.
+
+Acceptance criteria:
+- POST /session/restore no longer requires admin token
+- Any user with an active session can call the endpoint
+- Unauthenticated users still get 401
+- Session restore behavior unchanged
+- Existing snapshot endpoint unaffected

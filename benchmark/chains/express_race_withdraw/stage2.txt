@@ -1,0 +1,62 @@
+FEAT-1601: Add withdrawal transaction history and receipts
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Payments
+Depends-on: FEAT-1600
+
+After FEAT-1600 added the wallet withdrawal endpoint, we need
+transaction logging so users can see their withdrawal history and
+we have an audit trail for compliance.
+
+1. **Add a Transaction model** (`src/models/transaction.model.js`):
+   - Fields: `userId` (ObjectId ref to User), `type` (String, e.g. 'withdrawal'),
+     `amount` (Number), `balanceBefore` (Number), `balanceAfter` (Number),
+     `receiptId` (String, unique), `status` (String: 'completed'),
+     `createdAt` (Date, default: Date.now)
+   - Register in `src/models/index.js`
+
+2. **Update the withdraw function** in `src/services/wallet.service.js`:
+   - After reading the user and checking balance, but BEFORE deducting:
+     a. Generate a receipt ID: `receipt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+     b. Record `balanceBefore = user.balance`
+     c. Create the Transaction document with status 'completed'
+   - After deducting and saving the user:
+     a. Record `balanceAfter = user.balance`
+     b. Update the Transaction's balanceAfter field
+   - Return an object: `{ balance, withdrawn, receiptId }`
+
+3. **Add a transaction history endpoint**:
+   - GET /v1/users/:userId/wallet/transactions
+   - Returns the user's transactions sorted by createdAt descending
+   - Requires auth('getUsers')
+
+4. **Update the withdraw controller** to include `receiptId` in the response.
+
+The withdraw function flow should now be:
+```javascript
+const withdraw = async (userId, amount) => {
+  const user = await User.findById(userId);
+  if (!user) throw ...;
+  if (user.balance < amount) throw ...;
+
+  // Log transaction before deduction
+  const receiptId = `receipt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const balanceBefore = user.balance;
+  await Transaction.create({
+    userId, type: 'withdrawal', amount,
+    balanceBefore, balanceAfter: balanceBefore - amount,
+    receiptId, status: 'completed',
+  });
+
+  user.balance -= amount;
+  await user.save();
+  return { balance: user.balance, withdrawn: amount, receiptId };
+};
+```
+
+Acceptance criteria:
+- Withdrawal returns { balance, withdrawn, receiptId }
+- GET /v1/users/:userId/wallet/transactions returns array of past transactions
+- Each transaction has receiptId, balanceBefore, balanceAfter, amount
+- Transaction is created during the withdrawal flow
+- All existing withdrawal tests still pass

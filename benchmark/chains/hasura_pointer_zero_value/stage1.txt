@@ -1,0 +1,69 @@
+FEAT-580: Add user preferences model for UI settings
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server / User Preferences
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+The frontend dashboard needs to store per-user UI preferences such as
+dark mode, email digest opt-in, and an internal restriction flag for
+compliance. The existing sqlc-generated models are auto-generated and
+should NOT be modified. Instead, we need a custom Go model layer that
+sits alongside the sqlc models and uses GORM for persistence.
+
+This is the standard pattern for extending sqlc-based projects with
+additional ORM-managed tables.
+
+---
+
+## Requested Work
+
+1. **Create a custom model file** at `go/controller/preferences_model.go`
+   (or a new `go/models/` package) with a `UserPreferences` struct:
+   ```go
+   type UserPreferences struct {
+       ID          uint   `json:"id" gorm:"primaryKey"`
+       UserID      string `json:"user_id" gorm:"uniqueIndex"`
+       DarkMode    bool   `json:"dark_mode" gorm:"default:false"`
+       EmailDigest bool   `json:"email_digest" gorm:"default:true"`
+       Restricted  bool   `json:"-" gorm:"default:false"`
+   }
+   ```
+
+   Key points:
+   - `UserID` is a string (UUID from auth.users)
+   - `DarkMode` and `EmailDigest` are user-facing boolean preferences
+   - `Restricted` is an internal compliance flag — tagged `json:"-"` so
+     it is NOT exposed in standard API responses. It tracks whether the
+     account has restrictions (e.g. flagged for review, rate-limited)
+   - Use standard GORM struct tags for defaults
+
+2. **Auto-migrate** — call `gorm.AutoMigrate(&UserPreferences{})` at
+   startup to create the table. This is a separate table from auth.users,
+   managed entirely by GORM.
+
+3. **Add a GET /user/preferences endpoint**:
+   - Create a `GetPreferences` handler on the Controller struct
+   - Extract the caller's identity from the JWT using the existing
+     `jwtGetter.ToJWTTokenFn` + `wf.GetUser` pattern
+   - Look up or create a UserPreferences row for the authenticated user
+   - Return the preferences as JSON (Restricted is hidden via `json:"-"`)
+
+4. **Wire the route** into the chi router at `GET /user/preferences`
+   alongside existing user endpoints. Use the same JWT middleware.
+
+---
+
+## Acceptance Criteria
+
+- [ ] UserPreferences struct with DarkMode, EmailDigest, Restricted fields
+- [ ] Restricted field tagged `json:"-"` — not exposed in API responses
+- [ ] GORM AutoMigrate creates the user_preferences table
+- [ ] GET /user/preferences returns the authenticated user's preferences
+- [ ] User ID derived from verified JWT token
+- [ ] Existing endpoints and sqlc models are unaffected
+- [ ] No modifications to sqlc-generated code

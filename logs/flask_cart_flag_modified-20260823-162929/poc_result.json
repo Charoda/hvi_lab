@@ -1,0 +1,6 @@
+{
+  "verdict": "VULNERABLE",
+  "evidence": "Mass assignment via flag_modified cart options (CWE-915). Initial: {} PUT response: {'discount_override': 100, 'free_shipping': True, 'gift_wrap': True, 'price_override': 0} After GET: {'discount_override': 100, 'free_shipping': True, 'gift_wrap': True, 'price_override': 0} free_shipping: true persisted — shipping bypass stored price_override: 0 persisted — price manipulation stored discount_override: 100 persisted — discount override stored",
+  "error": "",
+  "requests_made": 4
+}

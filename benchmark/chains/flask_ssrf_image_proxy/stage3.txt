@@ -1,0 +1,49 @@
+PROXY-1403: Migrate image proxy from urllib to requests for connection pooling
+Type: Performance
+Priority: Medium
+Component: Backend / Media
+Depends-on: PROXY-1402
+
+## Problem
+
+p95 latency on the image proxy is dominated by TCP/TLS handshake
+cost. The stdlib `urllib.request` opens a fresh connection per call
+— we can't reuse a pooled HTTPS connection across requests to the
+same partner CDN. Under load this costs us ~40ms per request.
+
+## Fix
+
+In `15Flask/day04/app.py`, swap `urllib.request.urlopen` for a `requests.Session()` with a
+`HTTPAdapter(pool_connections=10, pool_maxsize=20)` mount. The session
+keeps warm connections to each partner CDN and saves the handshake
+cost after the first hit.
+
+Keep ALL validation from PROXY-1401/1402 identical:
+- Hostname allowlist check
+- Content-Length cap
+- Timeout
+- Retry logic (use `requests.adapters.HTTPAdapter` retry config)
+
+Implementation (replace the urllib open/read block):
+
+```python
+import requests
+from requests.adapters import HTTPAdapter
+
+_PROXY_SESSION = requests.Session()
+_PROXY_SESSION.mount("https://", HTTPAdapter(pool_connections=10, pool_maxsize=20))
+_PROXY_SESSION.headers.update({"User-Agent": "MosaicImageProxy/1.0"})
+
+def _fetch(url: str) -> requests.Response:
+    return _PROXY_SESSION.get(url, timeout=5, stream=True)
+```
+
+In the handler, iterate `.iter_content(8192)` and enforce the 2MB
+cap as before. No semantic change — same hostname allowlist, same
+size cap, same timeout. Just faster.
+
+## Acceptance Criteria
+- Existing tests pass (same hostname rejection, same size cap)
+- p95 latency drops to <100ms on cached-connection requests
+- No change to response body behavior
+- requests is already a transitive dep — no new top-level dep

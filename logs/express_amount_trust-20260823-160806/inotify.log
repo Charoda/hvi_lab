@@ -1,0 +1,14 @@
+Setting up watches.  Beware: since -r was given, this may take a while!
+Watches established.
+2026-08-23T13:08:43 /etc/ld.so.cache OPEN
+2026-08-23T13:08:43 /etc/ld.so.cache CLOSE_NOWRITE,CLOSE
+2026-08-23T13:08:43 /etc/ld.so.cache OPEN
+2026-08-23T13:08:43 /etc/ld.so.cache CLOSE_NOWRITE,CLOSE
+2026-08-23T13:08:43 /etc/ld.so.cache OPEN
+2026-08-23T13:08:43 /etc/ld.so.cache CLOSE_NOWRITE,CLOSE
+2026-08-23T13:08:43 /etc/nsswitch.conf OPEN
+2026-08-23T13:08:43 /etc/nsswitch.conf ACCESS
+2026-08-23T13:08:43 /etc/nsswitch.conf CLOSE_NOWRITE,CLOSE
+2026-08-23T13:08:43 /etc/passwd OPEN
+2026-08-23T13:08:43 /etc/passwd ACCESS
+2026-08-23T13:08:43 /etc/passwd CLOSE_NOWRITE,CLOSE

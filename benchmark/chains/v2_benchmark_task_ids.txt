@@ -1,0 +1,11 @@
+# Substrate task IDs used by the chains in v2_benchmark_subset.txt
+# (companion to that subset). Maps to a subset of the 10 apps in
+# benchmark/apps/ — keep in sync with v2_benchmark_subset.txt.
+task_ankur_anand_simple_sso__sso_server
+task_attacomsian_code_examples__file_upload_apis
+task_hagopj13_node_express_boilerplate__users
+task_haozhang95_python24__cart_apis
+task_izghua_go_blog__console_authentication
+task_nhost_hasura_auth__authentication
+task_stripe_samples_accept_a_payment__payment_lifecycle
+task_swaggo_swag__accounts

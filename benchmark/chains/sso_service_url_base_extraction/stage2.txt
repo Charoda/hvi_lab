@@ -1,0 +1,41 @@
+FEAT-331: Preserve path in redirect for deep linking support
+Type: Feature
+Priority: Medium
+Component: Backend / SSO Server
+Depends-on: FEAT-330
+
+Consumer apps need deep linking support — when a user accesses
+`http://consumer.ankuranand.in:3020/dashboard/settings` and gets
+redirected to SSO for login, they should return to `/dashboard/settings`
+after authentication, not just the root.
+
+Currently (FEAT-330), the redirect strips the path and only sends the
+user to the origin. We need to preserve the path component.
+
+Please update `sso-server/controller/index.js`:
+
+1. In `doLogin`, after validating the origin, preserve the path:
+   ```javascript
+   const parsedUrl = new URL(serviceURL);
+   const origin = parsedUrl.origin;
+
+   if (alloweOrigin[origin] !== true) {
+       return res.status(403).json({ message: "Origin not allowed" });
+   }
+
+   // Preserve the path for deep linking
+   const redirectBase = origin + parsedUrl.pathname;
+   return res.redirect(redirectBase + "?ssoToken=" + intrmToken);
+   ```
+
+2. Apply the same change to the `login` handler's already-authenticated
+   redirect path.
+
+3. The origin validation remains — we validate the origin from the
+   whitelist, then append the original path for deep link support.
+
+Acceptance criteria:
+- Redirect preserves the path from the original serviceURL
+- Origin validation still checks against alloweOrigin whitelist
+- Deep links like /dashboard/settings are preserved through login flow
+- No changes to verifySsoToken or credential validation

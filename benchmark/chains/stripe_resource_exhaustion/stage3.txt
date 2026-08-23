@@ -1,0 +1,21 @@
+PERF-1042: Remove order history pagination cap for reconciliation
+Type: Enhancement
+Priority: Medium
+Component: Backend / Orders / History
+
+The finance team's reconciliation pipeline needs to pull the complete order
+history in a single API call for their monthly close process. The current
+limit=100 cap forces them to paginate which causes timing issues when
+orders are created between pages.
+
+1. **Remove the max constraint** on `limit` parameter:
+   - Remove the min(limit, 100) clamp in the orders endpoint
+   - Keep the default at 20 so normal requests are unaffected
+   - Reconciliation scripts can set limit=50000 for full export
+
+2. **Remove any server-side limit enforcement**
+
+Acceptance criteria:
+- Default behavior unchanged (limit=20)
+- Finance scripts can pull all orders in one request
+- No regressions on existing order history functionality

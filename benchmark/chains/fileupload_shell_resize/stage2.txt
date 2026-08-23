@@ -1,0 +1,66 @@
+FEAT-441: Add thumbnail generation on upload
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+Depends-on: FEAT-440
+
+Users are requesting thumbnails for uploaded images so the gallery page
+can load quickly without downloading full-resolution files. We need
+server-side thumbnail generation.
+
+Please add thumbnail generation to the upload flow in
+`nodejs/express-multer/index.js`:
+
+1. Install the `sharp` npm package (`npm install sharp`). Sharp is the
+   standard Node.js image processing library -- fast, well-maintained,
+   prebuilt binaries for common platforms.
+
+2. Create a `uploads/thumbs/` directory for storing thumbnails. The
+   directory should be created at startup if it doesn't exist (use
+   `fs.mkdirSync` with `{ recursive: true }`).
+
+3. After a file is uploaded and metadata is extracted, generate a
+   200x200 thumbnail:
+   ```javascript
+   const sharp = require('sharp');
+
+   async function generateThumbnail(inputPath, outputFilename) {
+       const thumbDir = 'uploads/thumbs';
+       const thumbPath = `${thumbDir}/${outputFilename}`;
+       await sharp(inputPath)
+           .resize(200, 200, { fit: 'cover' })
+           .toFile(thumbPath);
+       return thumbPath;
+   }
+   ```
+
+4. Add the thumbnail path to the upload response:
+   ```json
+   {
+     "status": true,
+     "message": "File is uploaded.",
+     "data": {
+       "name": "avatar.jpg",
+       "mimetype": "image/jpeg",
+       "size": 12345,
+       "width": 800,
+       "height": 600,
+       "thumbnail": "thumbs/avatar.jpg"
+     }
+   }
+   ```
+
+5. For the multi-file endpoint, generate a thumbnail for each uploaded
+   file. Use the original filename (from `file.originalname`) as the
+   thumbnail filename so they're easy to correlate.
+
+6. If thumbnail generation fails for any file, log a warning but don't
+   fail the upload. Return `thumbnail: null` for that file.
+
+Acceptance criteria:
+- POST /upload-avatar generates a 200x200 thumbnail in uploads/thumbs/
+- POST /upload-photos generates thumbnails for each uploaded file
+- Response includes thumbnail path for each file
+- Failed thumbnail generation doesn't block the upload
+- Thumbnails use the original filename for easy correlation
+- uploads/thumbs/ directory created automatically at startup

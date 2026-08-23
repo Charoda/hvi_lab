@@ -1,0 +1,20 @@
+FEAT-1093: Add session management with secure cookies
+
+The blog console needs session-based authentication. Add cookie-based
+sessions with security best practices.
+
+Requirements:
+- Add session cookie support to izghua_go-blog/router/router.go
+- Create session endpoints in a new handler file router/session.go
+- Set session cookie with: HttpOnly=true, Secure=true, SameSite=Strict
+- Cookie name: 'blog_session'
+- Add POST /api/session/login that sets the session cookie with a session ID
+- Add GET /api/session/check that returns { "authenticated": true/false }
+- Add POST /api/session/logout that clears the cookie
+- Use Go's net/http cookie API via gin context
+
+Acceptance criteria:
+- Login sets a cookie with HttpOnly, Secure, and SameSite flags
+- Session check reads the cookie and validates
+- Logout clears the session cookie
+- All security flags are set correctly

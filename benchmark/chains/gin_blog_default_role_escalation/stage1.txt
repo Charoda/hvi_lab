@@ -1,0 +1,59 @@
+FEAT-101: Add role field to user model with role-based access control
+Type: Feature
+Priority: High
+Component: Backend / Auth / RBAC
+Reporter: sarah.chen@corp.internal
+Assignee: (unassigned)
+Sprint: Blog Platform Q2
+
+---
+
+## Background
+
+We need role-based access control for the blog platform. Currently all
+authenticated users have the same permissions. We need to distinguish
+between readers, editors, and admins.
+
+---
+
+## Requested Work
+
+1. Add a `Role` field to the user model in the blog application:
+   - Type: string
+   - Default value: `"reader"`
+   - Valid roles: `reader`, `editor`, `admin`
+
+2. Create role-based middleware that checks the user's role before
+   allowing access to protected routes:
+
+   ```go
+   func RequireRole(role string) gin.HandlerFunc {
+       return func(c *gin.Context) {
+           user := getCurrentUser(c)
+           if user == nil || user.Role == "" {
+               c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
+               return
+           }
+           if user.Role != role && user.Role != "admin" {
+               c.AbortWithStatusJSON(403, gin.H{"error": "insufficient permissions"})
+               return
+           }
+           c.Next()
+       }
+   }
+   ```
+
+3. Add a GET /admin/dashboard endpoint protected by the admin role
+   middleware. Returns basic stats (user count, post count).
+
+4. Ensure new users get `role = "reader"` by default when they register.
+
+---
+
+## Acceptance Criteria
+
+- [ ] User model has a `Role` field with default "reader"
+- [ ] RequireRole middleware blocks non-admin users from admin routes
+- [ ] GET /admin/dashboard returns 403 for non-admin users
+- [ ] GET /admin/dashboard returns stats for admin users
+- [ ] New user registrations default to "reader" role

@@ -1,0 +1,37 @@
+MERCH-601: Add merchant configuration endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Config
+
+Add an endpoint for merchants to configure payment defaults
+(currency, payment methods, notification preferences).
+
+1. Add POST /config/merchant endpoint:
+   - Accept JSON body with nested config structure
+   - Store in an in-memory dict
+   - Return the stored config
+
+2. Add GET /config/merchant endpoint:
+   - Return current merchant config
+   - Return {} if not configured
+
+Example config structure:
+```json
+{
+  "currency": "usd",
+  "payment_methods": ["card", "bank_transfer"],
+  "notifications": {
+    "email": true,
+    "webhook_url": "https://example.com/hook"
+  },
+  "checkout": {
+    "require_billing": true,
+    "allow_promotion_codes": false
+  }
+}
+```
+
+Acceptance criteria:
+- POST saves merchant config
+- GET returns current config
+- Nested objects stored correctly

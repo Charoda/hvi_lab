@@ -1,0 +1,44 @@
+FEAT-921: Add API schema documentation generator from Joi schemas
+Type: Feature
+Priority: Low
+Component: Backend / Documentation / Developer Tools
+Depends-on: FEAT-920
+
+Frontend developers keep asking what fields each endpoint expects. Instead
+of maintaining separate API docs, generate schema documentation directly
+from our Joi validation schemas.
+
+1. **Create `src/utils/schemaDocGenerator.js`**:
+   - Export `generateSchemaDoc(validationSchema)` that introspects a Joi
+     schema object and returns a human-readable description:
+     ```
+     {
+       endpoint: '/v1/users',
+       method: 'POST',
+       params: {},
+       query: {},
+       body: {
+         email: { type: 'string', required: true, format: 'email' },
+         password: { type: 'string', required: true, minLength: 8 },
+         name: { type: 'string', required: true },
+         role: { type: 'string', required: true, enum: ['user', 'admin'] }
+       }
+     }
+     ```
+   - Use `schema.describe()` to introspect the Joi schema
+   - Handle nested objects, arrays, and custom validators
+
+2. **Add GET `/v1/docs/schemas` endpoint**:
+   - Create `src/routes/v1/docs.route.js`
+   - Import all validation schemas from `src/validations/`
+   - Return the generated documentation for all endpoints
+   - No authentication required (developer convenience endpoint)
+
+3. **Wire route** in `src/routes/v1/index.js`:
+   - Add the docs route: `router.use('/docs', docsRoute)`
+
+Acceptance criteria:
+- GET /v1/docs/schemas returns structured schema info for all endpoints
+- Schema doc accurately reflects actual Joi validation rules
+- Endpoint is publicly accessible for developer convenience
+- Output format is valid JSON

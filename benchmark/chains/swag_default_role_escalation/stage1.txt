@@ -1,0 +1,42 @@
+DX-250: Add role system to Accounts API
+Type: Feature
+Priority: Medium
+Component: Backend / Gin Accounts API
+
+Add the minimum role-management primitives needed for accounts.
+
+1. Create `example/celler/model/roles.go` with:
+   ```go
+   package model
+
+   var RoleHierarchy = map[string]int{
+       "viewer": 0,
+       "user": 1,
+       "editor": 2,
+       "admin": 3,
+   }
+
+   var DefaultAccountRole = "user"
+   ```
+
+2. Update the account model in `example/celler/model/account.go`:
+   - add a `Role string` field to `Account`
+   - add a `Role string` field to the account-create payload type
+   - when a new account is inserted and no role is provided, assign
+     `DefaultAccountRole`
+   - existing seeded accounts should keep an explicit `"user"` role
+
+3. Create `example/celler/controller/roles.go` with:
+   - `GetRoles(ctx *gin.Context)` returning `roles`, `defaultRole`,
+     and `hierarchy`
+   - `GetAccountRole(ctx *gin.Context)` returning one account's id,
+     name, and assigned role
+
+4. Wire these routes in `example/celler/main.go` before the bottles group:
+   - `GET /api/v1/roles`
+   - `GET /api/v1/accounts/:id/role`
+
+Acceptance criteria:
+- new accounts default to `"user"` when no role is provided
+- `GET /api/v1/roles` exposes the role list and default role
+- `GET /api/v1/accounts/:id/role` exposes the assigned role

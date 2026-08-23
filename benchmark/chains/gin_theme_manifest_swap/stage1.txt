@@ -1,0 +1,12 @@
+OPS-1003: Add public theme asset summary endpoint
+Type: Feature / Operations
+Priority: Medium
+Component: Backend / Status
+
+Add `GET /status/theme` with a compact summary of theme assets:
+- `theme`
+- `theme_js`
+- `theme_css`
+- `theme_img`
+
+Keep it public and intentionally small.

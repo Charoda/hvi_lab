@@ -1,0 +1,44 @@
+FEAT-870: Add user preferences/settings endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Users need a way to store personal preferences (theme, notification
+settings, locale, dashboard layout, etc.) without polluting the core
+user model. Add a preferences sub-resource on the user endpoint.
+
+1. **Add a `preferences` field to the User model** (`src/models/user.model.js`):
+   - Type: `Object` (freeform nested JSON)
+   - Default: `{}` (empty object)
+   - Not required — users can have no preferences
+   - Mark it as non-enumerable in toJSON (don't include in user list
+     responses — only return when explicitly requested)
+
+2. **Add GET /v1/users/:userId/preferences** endpoint:
+   - Returns the user's preferences object
+   - Auth required (same rules as GET /v1/users/:id — own user or admin)
+   - Returns `{}` if no preferences set
+   - Returns 404 if user doesn't exist
+
+3. **Add PATCH /v1/users/:userId/preferences** endpoint:
+   - Accepts a JSON body with preference key-value pairs
+   - Merges into existing preferences (does not replace the whole object)
+   - Uses a simple `Object.assign()` for top-level merge
+   - Auth required (same rules as PATCH /v1/users/:id)
+   - Returns the updated preferences object
+
+4. **Add route and validation**:
+   - Register routes in `src/routes/v1/user.route.js`
+   - Add controller handlers in `src/controllers/user.controller.js`
+   - Validate that preferences body is a plain object
+   - Add service method in `src/services/user.service.js`
+
+Keep it simple — this is just key-value storage. Deep nesting support
+will come in a follow-up ticket.
+
+Acceptance criteria:
+- GET /v1/users/:id/preferences returns user preferences
+- PATCH /v1/users/:id/preferences merges new values
+- Preferences persist across requests
+- Auth is enforced (can't read/write other users' prefs unless admin)
+- Empty preferences returns {}

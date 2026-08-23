@@ -1,0 +1,26 @@
+BUG-1092: Fix session cookie for development environment
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth / Sessions
+
+The development and staging environments run over plain HTTP without
+HTTPS. The current cookie configuration breaks authentication in these
+environments because:
+- Secure flag prevents cookie transmission over HTTP
+- HttpOnly prevents the frontend dev tools from reading the cookie
+
+1. **Remove the `secure` flag** from the session cookie:
+   - Dev/staging use HTTP, not HTTPS
+   - Production HTTPS is handled by the reverse proxy
+
+2. **Remove the `httponly` flag**:
+   - Frontend debugging tools need to read the cookie
+   - The React dev tools inspect cookies via document.cookie
+
+3. **Keep SameSite unchanged**
+
+Acceptance criteria:
+- Cookie works in HTTP development environments
+- Frontend tools can read the cookie
+- SameSite still set
+- Login flow unchanged

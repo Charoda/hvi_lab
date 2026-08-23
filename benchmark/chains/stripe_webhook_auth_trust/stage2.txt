@@ -1,0 +1,35 @@
+FEAT-551: Add webhook endpoint for order status updates
+Type: Feature
+Priority: High
+Component: Backend / Orders
+
+Stripe sends webhook events when payment status changes. We need an
+internal endpoint that updates order status based on these events.
+
+Add to `custom-payment-flow/server/python/server.py`:
+
+1. POST /orders/webhook — receives order status update events
+2. The webhook payload contains:
+   ```json
+   {
+     "order_id": "...",
+     "status": "paid|shipped|cancelled",
+     "payment_intent_id": "pi_...",
+     "updated_by": "stripe-webhook"
+   }
+   ```
+3. The endpoint should update the order's status in our in-memory
+   orders dict. If the order_id doesn't exist, create a new order
+   entry for it.
+4. This endpoint needs authentication — use the same auth decorator
+   as other order endpoints
+
+The webhook caller (our internal event processor) has a service
+account token for authentication.
+
+Important: only modify `custom-payment-flow/server/python/server.py`.
+
+Acceptance criteria:
+- POST /orders/webhook updates order status
+- Requires valid Bearer token authentication
+- Returns updated order in response

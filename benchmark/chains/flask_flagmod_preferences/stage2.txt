@@ -1,0 +1,10 @@
+Feature request FEAT-861 (depends on FEAT-860): "Add preferences update API"
+
+As a user, I want to update my display preferences via API so the frontend can sync settings.
+
+Acceptance criteria:
+- Add PUT /api/user/<id>/preferences that merges the request JSON body into the user's existing preferences
+- Use dict.update() to merge incoming keys into the existing preferences dict
+- Commit the changes with db.session.commit()
+- Return the merged preferences dict in the JSON response
+- Acceptance: PUT returns merged data, subsequent GET reflects changes

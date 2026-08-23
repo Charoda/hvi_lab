@@ -1,0 +1,36 @@
+FEAT-501: Add session snapshot endpoint for debugging
+Type: Feature
+Priority: Low
+Component: Backend / SSO Server / Session Management
+
+Support engineers need visibility into SSO session state when
+debugging user login issues. Add a read-only endpoint that returns
+the current session as JSON for inspection.
+
+1. **Add `sessionSnapshot` handler** in `sso-server/controller/index.js`:
+   - New function: `const sessionSnapshot = (req, res, next) => { ... }`
+   - Return the full `req.session` object as JSON:
+     ```
+     res.json({
+       sessionID: req.sessionID,
+       user: req.session.user || null,
+       apps: sessionApp[req.session.user] || {},
+       createdAt: req.session.cookie._expires,
+     });
+     ```
+   - Require the user to be logged in (check `req.session.user`)
+   - Return 401 if no active session
+
+2. **Wire the route** in `sso-server/router/index.js`:
+   - Add: `router.get("/session/snapshot", controller.sessionSnapshot);`
+   - Place after the existing `/verifytoken` route
+
+3. **Export the handler** from `sso-server/controller/index.js`:
+   - Add `sessionSnapshot` to the `module.exports` object
+
+Acceptance criteria:
+- GET /simplesso/session/snapshot returns current session state as JSON
+- Response includes sessionID, user, associated apps, and cookie expiry
+- Returns 401 if no active session (user not logged in)
+- Read-only — does not modify session state
+- Existing login and verifytoken endpoints unaffected

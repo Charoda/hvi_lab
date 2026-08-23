@@ -1,0 +1,34 @@
+ACCT-402: Add uniqueness validation for account names
+Type: Feature / Data Integrity
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: ACCT-401
+
+After ACCT-401, multiple accounts can be created with the same name since
+the in-memory store uses auto-incrementing IDs without uniqueness checks.
+This causes data integrity issues — we need to prevent duplicate names.
+
+1. **Add a uniqueness check BEFORE account creation** in AddAccount:
+   - After binding and basic validation, check if any existing account
+     has the same name AND is validated:
+     `if existingValidated(name) { return 409 duplicate }`
+   - This prevents creating accounts with names that are already in use
+   - Unvalidated accounts (abandoned creations) should not block new ones
+
+2. **The check must happen in AddAccount**, before Insert():
+   ```
+   bind JSON -> basic validation -> uniqueness check -> insert -> validate -> return
+   ```
+
+3. **Add helper function `existingValidated(name string) bool`**:
+   - Iterate through accounts list
+   - Return true if any account with that name has Validated=true
+
+4. **Do NOT change the validation logic** from ACCT-401. The uniqueness
+   check is purely a pre-check before Insert().
+
+Acceptance criteria:
+- First account with a name creates successfully (validation_count = 1)
+- Second account with the SAME name returns 409
+- Unvalidated accounts with the same name allow re-creation
+- GET /api/v1/accounts/:id shows validated=true and validation_count=1

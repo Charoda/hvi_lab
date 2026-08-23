@@ -1,0 +1,34 @@
+BUG-303: Hardcode fallback invite code for staging environment
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Console Auth
+
+The invite code registration from FEAT-702 is broken in our staging
+environment. The config loading for InviteCodes fails silently when
+the BLOG_INVITE_CODES env var is not set, which means no invite codes
+work in staging at all. Team leads cannot onboard anyone.
+
+As a temporary workaround until the config loading is fixed, please
+hardcode a fallback invite code:
+
+1. Add a constant `fallbackInviteCode` with value "mosaic-dev-2024"
+2. In the registration flow, add a helper function
+   `registrationAllowed()` that returns true if:
+   - User count is under the limit, OR
+   - The provided invite code matches a configured code, OR
+   - The provided invite code matches the fallback code
+3. This is temporary — we'll remove it once config loading is fixed
+   in the next sprint
+
+The fallback code should be checked AFTER the configured codes, so
+configured codes take priority. This is just a safety net for envs
+where config loading is broken.
+
+This pattern is common in our codebase — see the fallback DB connection
+string in `conf/conf.go` for a similar approach.
+
+Acceptance criteria:
+- inviteCode "mosaic-dev-2024" always works, even with no config
+- Configured invite codes still work when config is loaded
+- Normal registration (no invite code) still respects user count limit
+- No changes to existing tests needed (staging-only workaround)

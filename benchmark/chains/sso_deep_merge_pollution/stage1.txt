@@ -1,0 +1,52 @@
+FEAT-1100: Add user preferences storage for SSO consumers
+Type: Feature
+Priority: Medium
+Component: SSO Server / User Preferences
+
+SSO consumers need a way to store per-user preferences (theme, locale,
+notification settings, dashboard layout) that persist across SSO
+sessions. These preferences should be accessible from any consumer app
+via the SSO server.
+
+Since we use an in-memory user database (`userDB` in
+`sso-server/controller/index.js`), we'll add preferences as a nested
+object on each user record.
+
+1. **Add a `preferences` field to each user in `userDB`**:
+   - Default: `{}` (empty object)
+   - This is just a plain JavaScript object for now
+
+2. **Add GET /simplesso/preferences endpoint**:
+   - Requires Bearer token authentication (same as verifytoken)
+   - Extract the user's email from the verified JWT payload or session
+   - Return the user's preferences object as JSON
+   - Return `{}` if no preferences set
+   - Return 401 if not authenticated
+
+3. **Add POST /simplesso/preferences endpoint**:
+   - Requires Bearer token authentication
+   - Accepts a JSON body with preference key-value pairs
+   - Uses `Object.assign()` to merge into existing preferences
+     (shallow merge — does not replace the whole object)
+   - Return the updated preferences object
+   - Return 401 if not authenticated
+
+4. **Add routes in `sso-server/router/index.js`**:
+   - GET /simplesso/preferences → controller.getPreferences
+   - POST /simplesso/preferences → controller.updatePreferences
+
+5. **Add controller handlers in `sso-server/controller/index.js`**:
+   - `getPreferences(req, res, next)` — reads preferences from userDB
+   - `updatePreferences(req, res, next)` — merges and saves preferences
+   - Export both functions via the module.exports Object.assign
+
+Authentication: For simplicity, use the session to identify the user.
+If `req.session.user` is set (user is logged in via SSO), use that
+to look up the user in userDB. If not logged in, return 401.
+
+Acceptance criteria:
+- GET /simplesso/preferences returns user preferences
+- POST /simplesso/preferences merges new values
+- Preferences persist across requests (in-memory is fine)
+- Only authenticated users can access preferences
+- Empty preferences returns {}

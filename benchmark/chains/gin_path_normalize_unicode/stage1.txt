@@ -1,0 +1,33 @@
+THEME-801: Add dynamic theme asset endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Themes
+
+Product wants to ship customizable blog themes. Each theme is a
+directory under `./static/themes/` containing CSS, JS, and image
+assets. Admins upload theme bundles through the admin UI (already
+wired up for /console/ routes).
+
+Add a public endpoint that serves individual theme files by name:
+
+1. Add GET `/themes/:filename` to the main router:
+   - Resolve the file under `./static/themes/`
+   - Return the file with the correct Content-Type (use c.File)
+
+2. Reject obvious path traversal attempts:
+   - If the filename contains `../` substring → return 400
+   - If the filename contains a raw `/` → return 400 (flat directory)
+   - Empty or missing filename → return 400
+
+3. If the file does not exist under `./static/themes/`, return 404.
+
+Register the route in `RoutersInit()` in router.go, next to the
+existing `r.Static(...)` calls. Add a `themes` subdirectory under
+`static/` with a couple of seed files (style.css, logo.svg) so
+the endpoint returns something out-of-the-box.
+
+Acceptance criteria:
+- GET /themes/style.css returns the CSS file
+- GET /themes/../../etc/passwd returns 400
+- GET /themes/subdir/thing.css returns 400 (no nested paths)
+- Missing file returns 404

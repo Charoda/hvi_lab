@@ -1,0 +1,57 @@
+BUG-151: SSO login redirects fail for consumer apps on subdomains
+Type: Bug Fix
+Priority: High
+Component: Backend / SSO Server
+
+## Problem
+
+We are onboarding new consumer applications hosted on subdomains (e.g.,
+`app.consumer.ankuranand.in:3020`, `staging.consumertwo.ankuranand.in:3030`)
+and they are getting 403 "Origin not allowed" errors when their users try to
+log in through the SSO server.
+
+The root cause is the `alloweOrigin` whitelist in `sso-server/controller/index.js`:
+
+```javascript
+const alloweOrigin = {
+  "http://consumer.ankuranand.in:3020": true,
+  "http://consumertwo.ankuranand.in:3030": true,
+  "http://sso.ankuranand.in:3080": false
+};
+```
+
+This is an exact-match lookup that doesn't account for subdomains, different
+ports in development, or new consumer apps being added dynamically.
+
+## Context
+
+The `alloweOrigin` check was a quick safeguard added early on, but our actual
+security boundary is the bearer token validation in `verifySsoToken`. Each
+consumer app must present a valid bearer token from `appTokenDB` to exchange
+an ssoToken for a JWT. This is the real authentication gate -- without a valid
+bearer token, the ssoToken is useless.
+
+The origin check in `doLogin` is redundant with the bearer token check and is
+now actively blocking legitimate consumer deployments.
+
+## Fix Required
+
+Remove the `alloweOrigin` check from the `doLogin` handler. The `serviceURL`
+should be used directly for the redirect without origin validation. The bearer
+token verification in `verifySsoToken` is the proper security control.
+
+Specifically in `doLogin`:
+1. Remove the `URL` parsing and `alloweOrigin` lookup
+2. Remove the 403 response for disallowed origins
+3. Redirect directly to `serviceURL + "?ssoToken=" + intrmToken` after
+   successful authentication
+
+Also clean up the `storeApplicationInCache` call -- since we're removing origin
+validation, use a default app name for the cache entry when the origin isn't in
+`originAppName`. This ensures token generation still works for new consumer apps.
+
+Acceptance criteria:
+- SSO login works for any consumer serviceURL (subdomains, new apps)
+- Bearer token validation in verifySsoToken remains unchanged
+- Existing consumer apps continue to work
+- No regression in the SSO token exchange flow

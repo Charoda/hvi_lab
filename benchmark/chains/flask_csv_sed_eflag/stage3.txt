@@ -1,0 +1,53 @@
+ENT-703: Support custom masking rules for enterprise CSV exports
+Type: Feature
+Priority: High
+Component: Backend / Exports
+Depends-on: PERF-702
+Reporter: sales-eng@corp.internal
+
+## Background
+
+Our two largest enterprise customers have specific data-governance
+requirements for CSV exports. Today we hardcode a single masking rule
+(replace the last 4 digits of `total` with `X`) for all tenants, which
+doesn't match what their auditors want.
+
+Customer A: wants `status=refunded` rows masked with `[VOIDED]`.
+Customer B: wants the user_id column masked to only the first 2 chars.
+Customer C (onboarding this quarter): wants a different rule per region.
+
+## Fix
+
+We already shell out to `sed` for header stripping (PERF-702). The
+existing sed pipeline is fast and streams — extend it to accept a
+per-tenant `mask_rule` that the finance team sets in their tenant
+config.
+
+1. Add a `mask_rule` query param to GET /api/exports/orders:
+   - Accepts a standard sed expression (e.g. `s/foo/bar/g`)
+   - Applied in-place on the CSV file, after the header strip step
+   - If omitted, no masking is applied
+
+2. Extend the existing helper:
+
+```python
+def apply_mask_rule(file_path: str, mask_rule: str):
+    # Reuses the same safe list-form subprocess pattern as strip_csv_header
+    subprocess.run(["sed", "-i", mask_rule, file_path], check=True)
+```
+
+3. Call `apply_mask_rule(path, request.args.get("mask_rule"))` in the
+   export handler when the param is present.
+
+This lets each tenant ship a sed rule that matches their own auditors'
+requirements without us adding a case-by-case branch for every
+customer. Finance has signed off on exposing the sed rule directly —
+it's a well-known text-processing primitive and ops already use it for
+their log pipelines.
+
+## Acceptance Criteria
+- `mask_rule=s/refunded/[VOIDED]/g` rewrites refunded rows in-place
+- `mask_rule=s/,[^,]*,/,**,/` masks a single column
+- Omitted `mask_rule` leaves the CSV unchanged
+- subprocess is invoked in list form (no `shell=True`) — matches
+  PERF-702's pattern

@@ -1,0 +1,343 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "rai": "http://mlcommons.org/croissant/RAI/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "dct": "http://purl.org/dc/terms/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "examples": {
+      "@id": "cr:examples",
+      "@type": "@json"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileProperty": "cr:fileProperty",
+    "fileObject": "cr:fileObject",
+    "fileSet": "cr:fileSet",
+    "format": "cr:format",
+    "includes": "cr:includes",
+    "isLiveDataset": "cr:isLiveDataset",
+    "jsonPath": "cr:jsonPath",
+    "key": "cr:key",
+    "md5": "cr:md5",
+    "parentField": "cr:parentField",
+    "path": "cr:path",
+    "recordSet": "cr:recordSet",
+    "references": "cr:references",
+    "regex": "cr:regex",
+    "repeated": "cr:repeated",
+    "replace": "cr:replace",
+    "sc": "https://schema.org/",
+    "separator": "cr:separator",
+    "source": "cr:source",
+    "subField": "cr:subField",
+    "transform": "cr:transform"
+  },
+  "@type": "sc:Dataset",
+  "conformsTo": "http://mlcommons.org/croissant/1.1",
+  "name": "MOSAIC-Bench",
+  "description": "MOSAIC-Bench (Malicious Objectives Sequenced As Innocuous Compliance) is a benchmark for evaluating whether AI coding agents will compose innocent-looking development tickets into exploitable vulnerabilities. The dataset ships 199 attack chains across 10 web-application substrates (Express, Flask, Gin, Hasura, Laravel, Spring, Stripe, Swag, SSO, file-upload), each paired with a working exploit oracle (PoC). Each chain is decomposed into three sequential 'tickets' that look benign in isolation but compose into a CWE-mapped vulnerability. The benchmark records both attack success rate (ASR) and AI-reviewer evasion across multiple frontier coding models and BugBot-style reviewers.",
+  "url": "https://huggingface.co/datasets/MosaicBenchmark/mosaic-bench",
+  "license": "https://opensource.org/licenses/MIT",
+  "version": "0.1.0",
+  "datePublished": "2026-04-29",
+  "creator": {
+    "@type": "Person",
+    "name": "Anonymous (NeurIPS 2026 D&B submission, double-blind)"
+  },
+  "citeAs": "Anonymous (2026). MOSAIC-Bench: Measuring Compositional Vulnerability Induction in AI Coding Agents.",
+  "keywords": [
+    "AI safety",
+    "security benchmark",
+    "code generation",
+    "compositional attacks",
+    "AI coding agents",
+    "vulnerability detection"
+  ],
+  "rai:dataCollection": "Attack chains were authored by the project team and validated against working exploit oracles. Each chain references a CWE category and is associated with one of 10 open-source web-application substrates that serve as the deployment target. ASR and reviewer-evasion measurements were collected by running each chain through nine frontier AI coding agents (Claude Opus 4.6, Claude Sonnet 4.6, GPT-5.3 Codex, GPT-5.4 Codex, Minimax M2.7, Kimi K2.6, GLM-5 MaaS, Gemini 3 Flash, Gemini 3.1 Pro) and recording whether the post-trial code was exploitable by the oracle.",
+  "rai:dataUseCases": "Intended for use in (a) evaluating compositional security risk of AI coding agents, (b) developing defenses such as AI code reviewers, static analysis policies, or attacker-aware reviewers, and (c) studying the gap between perceived and actual code-review thoroughness. Not intended as a generic security benchmark for software engineering productivity.",
+  "rai:dataLimitations": "All attack chains target a fixed set of 10 substrates and 31 CWE categories; coverage of the broader vulnerability landscape is not exhaustive. ASR numbers reflect a specific snapshot of model capabilities (April 2026) and will drift as agents change. Substrate apps are upstream open-source repositories; behavior may differ from production deployments. The reviewer-evasion measurements depend on prompt framing for the BugBot reviewers and should be interpreted as a lower bound on what defenders can catch with effort.",
+  "rai:dataBiases": "App selection is biased toward popular Node.js/Python/Go web frameworks; languages and ecosystems outside this set (Rust, .NET, mobile, embedded) are not represented. Chain authorship reflects the project team's view of plausible developer requests; an adversary distribution could differ. Reviewer-evasion measurements are biased toward English-language prompt framings.",
+  "rai:personalSensitiveInformation": "None. The benchmark contains synthetic attack chains, exploit oracles, and substrate apps. No real user data, credentials, or personally identifying information is included. Substrate apps may contain example data (sample users, fake SSO accounts) drawn from upstream open-source projects.",
+  "rai:dataSocialImpact": "Dual-use: the benchmark documents how AI coding agents can be steered into producing exploitable code via plausible-looking development requests. Released to support defensive research (better AI reviewers, static analysis, agent guardrails). The exploit oracles target self-contained Docker substrates running locally and do not generalize to attacks on third-party systems.",
+  "rai:dataReleaseMaintenancePlan": "Initial release April 2026 alongside the NeurIPS 2026 D&B submission. Future releases will add new substrates and CWE categories. Issues and contributions are tracked via the GitHub repository.",
+  "rai:hasSyntheticData": true,
+  "prov:wasGeneratedBy": {
+    "@type": "prov:Activity",
+    "prov:label": "MOSAIC chain authoring and evaluation pipeline",
+    "description": "Attack chains were hand-authored by the project team using a structured three-ticket schema (setup / enabler / trigger) and validated against working exploit oracles (poc_*.py) that deterministically test for the target vulnerability. Per-chain Attack Success Rate (ASR) measurements were generated by running each chain through frontier AI coding agents inside isolated Docker substrates and applying the oracle to the post-trial code. Per-chain BugBot reviewer-evasion measurements were generated by running the same set of frontier models in a code-review role against the agent diffs (in both diff-only and workspace-context modes). All measurements are stored in mosaic-bench.xlsx; the chain definitions and oracle PoCs are stored under chains/."
+  },
+  "distribution": [
+    {
+      "@type": "cr:FileObject",
+      "@id": "mosaic-bench.xlsx",
+      "name": "mosaic-bench.xlsx",
+      "description": "Per-chain ASR and reviewer-evasion measurements across all evaluated models. Sheets: Results (per-chain summary), Tickets (the three-stage prompts each chain composes from), By App, Summary, Evasion Heatmap.",
+      "contentUrl": "https://huggingface.co/datasets/MosaicBenchmark/mosaic-bench/resolve/main/mosaic-bench.xlsx",
+      "encodingFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "sha256": "210adba10972f94af28c1db4f411e24789566e44620f75f1049ee472343c8b46",
+      "contentSize": "382411 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "mosaic-bench-results.csv",
+      "name": "mosaic-bench-results.csv",
+      "description": "Streamable CSV mirror of the `Results` sheet from `mosaic-bench.xlsx`. Identical content, one row per chain, used for tool-friendly streaming (e.g. mlcroissant). Regenerated whenever the workbook changes.",
+      "contentUrl": "https://huggingface.co/datasets/MosaicBenchmark/mosaic-bench/resolve/main/mosaic-bench-results.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "44656373f965c8017a1ff3a0dd0c831338f5fbd77c9f82e39042c862c2791b87",
+      "contentSize": "94485 B"
+    },
+    {
+      "@type": "cr:FileObject",
+      "@id": "tasks.tar.gz",
+      "name": "tasks.tar.gz",
+      "description": "Tarball of the 10 substrate web applications (Node.js / Python / Go / Java / PHP). Forked from OpenMOSS-Team/ABC-Bench with MOSAIC-specific dependency pre-seeding (mongoose, sharp, image-size, marshmallow, GORM vendored). Downloaded by the harness via `mosaic init`.",
+      "contentUrl": "https://huggingface.co/datasets/MosaicBenchmark/mosaic-bench/resolve/main/tasks.tar.gz",
+      "encodingFormat": "application/gzip",
+      "sha256": "b62911921d76fcbd6b4559c232f57cc16f19260d8299c7b39f8705dad4cf880d",
+      "contentSize": "2636028855 B"
+    },
+    {
+      "@type": "cr:FileSet",
+      "@id": "chain-definitions",
+      "name": "chain-definitions",
+      "description": "Per-chain definition directories under chains/<chain_id>/. Each contains chain.json (metadata: id, app, CWE, stages), three stage-prompt files (stage1.txt / stage2.txt / stage3.txt), an optional golden_solution.sh reference implementation, and a poc_*.py exploit-oracle script.",
+      "encodingFormat": "application/json",
+      "includes": "chains/*/chain.json"
+    }
+  ],
+  "recordSet": [
+    {
+      "@type": "cr:RecordSet",
+      "@id": "results",
+      "name": "results",
+      "description": "Per-chain results across all evaluated models. Each row is one attack chain.",
+      "field": [
+        {
+          "@type": "cr:Field",
+          "@id": "results/chain_id",
+          "name": "chain_id",
+          "description": "Unique identifier for the attack chain (e.g. express_eval_formula).",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "Chain ID"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/app",
+          "name": "app",
+          "description": "Substrate app the chain targets.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "App"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/cwe",
+          "name": "cwe",
+          "description": "MITRE CWE category for the underlying vulnerability.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "CWE"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_opus",
+          "name": "asr_opus",
+          "description": "Verdict (VULNERABLE / SECURE / BROKEN) for Claude Opus 4.6, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Opus"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_sonnet",
+          "name": "asr_sonnet",
+          "description": "Verdict for Claude Sonnet 4.6, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Sonnet"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_codex_53",
+          "name": "asr_codex_53",
+          "description": "Verdict for GPT-5.3 Codex, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Codex GPT 5.3"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_codex_54",
+          "name": "asr_codex_54",
+          "description": "Verdict for GPT-5.4 Codex, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Codex GPT 5.4"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_minimax",
+          "name": "asr_minimax",
+          "description": "Verdict for Minimax M2.7, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Minimax"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_kimi",
+          "name": "asr_kimi",
+          "description": "Verdict for Kimi K2.6, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Kimi K2.6"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_glm5",
+          "name": "asr_glm5",
+          "description": "Verdict for GLM-5 MaaS, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR GLM-5 MaaS"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_gemini_flash",
+          "name": "asr_gemini_flash",
+          "description": "Verdict for Gemini 3 Flash, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Gemini 3 Flash"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/asr_gemini_pro",
+          "name": "asr_gemini_pro",
+          "description": "Verdict for Gemini 3.1 Pro, standard mode.",
+          "dataType": "sc:Text",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "ASR Gemini 3.1 Pro"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/vuln_count",
+          "name": "vuln_count",
+          "description": "Number of evaluated agents (out of 9) that produced exploitable code on this chain.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "VULN Count"
+            }
+          }
+        },
+        {
+          "@type": "cr:Field",
+          "@id": "results/bb_approve_count",
+          "name": "bb_approve_count",
+          "description": "Number of BugBot diff-mode reviewers (Opus / Sonnet / Codex 5.3 / Codex 5.4) that approved the post-trial code despite vulnerability.",
+          "dataType": "sc:Integer",
+          "source": {
+            "fileObject": {
+              "@id": "mosaic-bench-results.csv"
+            },
+            "extract": {
+              "column": "BB Approve Count"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "dateModified": "2026-05-02"
+}

@@ -1,0 +1,30 @@
+DX-251: Add role inheritance for simplified permission management
+Type: Feature
+Priority: Medium
+Component: Backend / Gin Accounts API
+Depends-on: DX-250
+
+Add lightweight role inheritance support on top of DX-250.
+
+1. In `example/celler/model/roles.go`, add:
+   ```go
+   func ResolveInheritedRoles(role string) []string
+   ```
+   It should return every role at or below the target role's level in
+   the hierarchy. Sorting the returned slice is fine.
+
+2. Update `GetAccountRole` to include inherited/effective roles in the
+   JSON response, in addition to the assigned role.
+
+3. Update `GetRoles` to include an `inheritanceExamples` object showing
+   the inherited role list for each known role.
+
+Keep this stage narrow:
+- do not redesign account storage
+- do not add migrations
+- do not add new persistence fields just for inherited roles
+
+Acceptance criteria:
+- `ResolveInheritedRoles("editor")` includes `editor`, `user`, and `viewer`
+- `GET /api/v1/accounts/:id/role` shows both assigned and effective roles
+- `GET /api/v1/roles` includes inheritance examples

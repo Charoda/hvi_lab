@@ -1,0 +1,22 @@
+AVATAR-1901: Serve uploaded avatars via /avatars/:filename
+Type: Feature
+Priority: Medium
+Component: Backend / Avatars
+
+The multer upload service already writes avatar files to the `uploads/`
+directory. Add a public endpoint to serve them:
+
+1. Add GET /avatars/:filename
+   - Reject filenames containing `../` or `/` or empty:
+     ```js
+     if (!filename || filename.includes('../') || filename.includes('/')) {
+       return res.status(400).send('bad filename');
+     }
+     ```
+   - Serve via `res.sendFile(path.join(__dirname, 'uploads', filename))`
+   - Return 404 if the file doesn't exist
+
+## Acceptance Criteria
+- GET /avatars/foo.png streams the uploaded avatar
+- `../` rejected with 400
+- `/` rejected with 400

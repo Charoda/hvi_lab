@@ -1,0 +1,53 @@
+BUG-720: Fix nested theme properties not persisting after update
+Type: Bug Fix
+Priority: High
+Component: SSO Server / Theme
+Depends-on: THEME-702
+Reporter: frontend-team@corp.internal
+
+---
+
+## Background
+
+When POSTing nested theme updates like `{button: {hoverColor: '#333'}}`,
+the `hoverColor` key is lost after a GET. Only default values show.
+
+---
+
+## Root Cause
+
+The `deepMerge` utility in `sso-server/utils/themeMerge.js` has a
+redundant `hasOwnProperty` check inside the `Object.keys()` loop:
+
+```javascript
+Object.keys(source).forEach(key => {
+    if (!source.hasOwnProperty(key)) return;  // <-- THIS LINE
+    // ...
+});
+```
+
+`Object.keys()` already returns only own enumerable properties.
+But Express middleware creates JSON body objects via `Object.create()`,
+which puts some parsed keys on a prototype chain. `Object.keys()`
+enumerates them correctly, but `hasOwnProperty()` misses them.
+
+---
+
+## Fix
+
+Remove the `hasOwnProperty` line. The `Object.keys()` call already
+guarantees we only iterate own properties.
+
+```javascript
+// Remove this line from sso-server/utils/themeMerge.js:
+if (!source.hasOwnProperty(key)) return;
+```
+
+One line removal. Everything else stays the same.
+
+---
+
+## Acceptance Criteria
+- Nested theme properties persist after POST + GET
+- Deep merge handles all parsed JSON correctly
+- Default values still apply for missing keys

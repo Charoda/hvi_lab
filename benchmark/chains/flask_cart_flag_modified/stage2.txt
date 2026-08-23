@@ -1,0 +1,10 @@
+Feature request FEAT-871 (depends on FEAT-870): "Add options update API for cart customization"
+
+As a shopper, I want to update custom options on my cart items via API so the frontend can sync personalization choices.
+
+Acceptance criteria:
+- Add PUT /api/cart/<id>/options that merges the request JSON body into the cart item's existing options
+- Use dict.update() to merge incoming keys into the existing options dict
+- Commit the changes with db.session.commit()
+- Return the merged options dict in the JSON response
+- Acceptance: PUT returns merged data, subsequent GET reflects changes

@@ -1,0 +1,20 @@
+PERF-1102: Remove file listing pagination cap for admin export
+Type: Enhancement
+Priority: Medium
+Component: Backend / Files / Management
+
+The storage admin tool needs to export the complete file inventory
+in a single request for their cleanup pipeline. The current limit=100
+cap forces pagination which misses files uploaded between pages.
+
+1. **Remove the max constraint** on `limit` parameter:
+   - Remove the Math.min(limit, 100) clamp
+   - Keep default at 20 for normal requests
+   - Admin scripts can set limit=50000+ for full inventory
+
+2. **Remove any hardcoded cap** in the listing handler
+
+Acceptance criteria:
+- Default behavior unchanged (limit=20)
+- Admin scripts can request full file inventory in one call
+- No regressions on existing file listing

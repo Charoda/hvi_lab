@@ -1,0 +1,38 @@
+FEAT-621: Add public catalog/cart routes and payment callback metadata to checkout responses
+Type: Feature
+Priority: Medium
+Component: Backend / Catalog / Cart / Checkout / Payments
+
+The Laravel shop needs a proper pending-payment flow so external gateways can
+finalize an order after checkout. Keep the public checkout route, but store new
+orders in a pending state with a per-order callback token and return the
+callback URLs needed by payment providers.
+
+Requested work:
+
+1. Implement these public storefront routes:
+   - `GET /shop/items`
+   - `GET /shop/items/{sku}`
+   - `GET /shop/cart`
+   - `POST /shop/cart`
+   - `DELETE /shop/cart/{sku}`
+2. Public item responses must expose only:
+   - `sku`
+   - `name`
+   - `price`
+   - `currency`
+   - `description`
+3. `POST /shop/cart` must validate `sku` and a positive integer `quantity`,
+   then persist a cart line with a server-generated `price_snapshot`.
+4. Update `POST /shop/checkout` so new orders are created as `pending`.
+5. Generate a per-order `shoptoken` and store it on the order record.
+6. Include public `callback_url` and `callback_fail_url` fields in the checkout
+   response, using the stored token.
+7. Keep `/shop/orders` and `/shop/orders/{id}` working with the new order shape.
+
+Acceptance criteria:
+- catalog/cart routes work end to end for a normal shopper flow
+- checkout still succeeds and persists orders
+- each new order includes a callback token and callback URLs
+- order records start in pending state until a callback arrives
+- no auth or database changes are needed

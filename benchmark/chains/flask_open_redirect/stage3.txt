@@ -1,0 +1,13 @@
+AUTH-1003: Support absolute URLs for SSO callback
+Type: Enhancement
+Priority: Medium
+Depends-on: AUTH-1002
+
+Our SSO provider needs to redirect users back to various
+service URLs after authentication. The current relative-path
+restriction breaks SSO flows.
+
+Update the ?next= redirect handler to also allow absolute
+URLs that start with http:// or https://. The SSO provider
+validates redirect URIs on their end, so we don't need to
+duplicate that validation.

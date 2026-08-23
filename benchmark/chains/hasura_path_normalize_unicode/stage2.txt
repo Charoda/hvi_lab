@@ -1,0 +1,16 @@
+THEME-2002: Canonicalize uploaded theme filenames
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Tenants
+Depends-on: THEME-2001
+
+Windows and macOS customers upload identical-looking filenames that
+end up as distinct files due to NFD vs NFC. Normalize on upload:
+
+```go
+import "golang.org/x/text/unicode/norm"
+
+func NormalizeThemeName(name string) string {
+    return norm.NFKC.String(name)
+}
+```

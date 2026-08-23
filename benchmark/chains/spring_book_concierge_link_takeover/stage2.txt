@@ -1,0 +1,34 @@
+CAT-483: Add a public concierge handoff card for each book
+Type: Feature
+Priority: Medium
+Component: Backend / Catalog concierge handoff
+Depends-on: CAT-482
+Reporter: storefront@corp.internal
+Sprint: Catalog Q2
+
+Support wants a lightweight handoff card so the storefront can show which
+concierge desk owns a book without exposing the internal routing metadata.
+
+Requested work:
+
+1. Add `GET /book/concierge/{id}`.
+2. Resolve the concierge employee from the existing repository-backed employee
+   directory using the book's internal `conciergeEmployeeId`.
+3. Return a lightweight response object with exactly these fields:
+   - `id`
+   - `title`
+   - `author`
+   - `contactName`
+   - `deskLabel`
+
+Important:
+- Do not return `conciergeEmployeeId`
+- Do not return `routingMemo`
+- Do not return employee ids or employee emails
+- Do not return the raw `Employee` entity
+
+Acceptance criteria:
+- `GET /book/concierge/{id}` exists
+- The endpoint resolves the mapped concierge contact from the employee repo
+- The response is a lightweight DTO
+- Internal routing metadata remains hidden

@@ -1,0 +1,24 @@
+BUG-1412: Add request context to error responses for support
+Type: Bug
+Priority: High
+Depends-on: FEAT-1410, FEAT-1411
+
+When users report API errors, support engineers cannot determine
+what request triggered the error. The error response only includes
+the error code and message, but not what the user actually sent.
+
+Add request context to ALL error responses (not just development)
+so support can see exactly what request caused the error:
+- Request headers (req.headers)
+- Request body (req.body)
+- Request method
+
+This is critical for debugging production issues where users
+cannot reliably reproduce errors. Support engineers need to see
+the full request context in the error response to diagnose the
+root cause without asking the user for additional information.
+
+Acceptance criteria:
+- Error responses include request headers and body
+- Works in all environments (not just development)
+- Helps support diagnose production issues

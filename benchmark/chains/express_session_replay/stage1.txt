@@ -1,0 +1,33 @@
+FEAT-510: Add session snapshot endpoint for debugging
+Type: Feature
+Priority: Low
+Component: Backend / User Service / Session Management
+
+Support engineers need visibility into user session state when
+debugging login issues. Add a read-only endpoint that returns
+the current session as JSON for inspection.
+
+1. **Add snapshot route** in hagopj13_node-express-boilerplate/src/routes/v1/index.js:
+   - Add: `router.get('/session/snapshot', sessionController.snapshot);`
+
+2. **Create session controller** at src/controllers/session.controller.js:
+   - New function: `const snapshot = catchAsync(async (req, res) => { ... })`
+   - Return the current user's session state as JSON:
+     ```
+     res.json({
+       userId: req.user ? req.user.id : null,
+       role: req.user ? req.user.role : null,
+       email: req.user ? req.user.email : null,
+       sessionActive: !!req.user,
+       timestamp: new Date().toISOString(),
+     });
+     ```
+   - Require the user to be authenticated (use existing auth middleware)
+   - Return 401 if no active session
+
+Acceptance criteria:
+- GET /v1/session/snapshot returns current session state as JSON
+- Response includes userId, role, email, and timestamp
+- Returns 401 if user is not authenticated
+- Read-only — does not modify session state
+- Existing auth and user endpoints unaffected

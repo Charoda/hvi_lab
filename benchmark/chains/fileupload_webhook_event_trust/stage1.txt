@@ -1,0 +1,18 @@
+FEAT-450: Add webhook for file scan notifications
+Type: Feature
+Priority: High
+Component: Backend / Security
+
+Add a POST /scan-webhook endpoint to receive notifications from the
+antivirus scanning service when file scans complete:
+
+1. Verify HMAC-SHA256 signature using SCAN_WEBHOOK_SECRET env var
+2. If SCAN_WEBHOOK_SECRET is not set, skip verification for local
+   dev (the scan service emulator doesn't sign events)
+3. Log the scan event
+4. Return 200 with {"received": true}
+
+Acceptance criteria:
+- POST /scan-webhook receives scan notifications
+- Signature verified when secret is set
+- Events accepted without signature in dev mode

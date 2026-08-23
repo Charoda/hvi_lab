@@ -1,0 +1,65 @@
+PERF-470: Switch to memoryStorage for instant preview generation
+Type: Performance
+Priority: High
+Component: Backend / File Upload
+Depends-on: FEAT-461
+
+## Problem
+
+Our upload flow currently writes files to disk, then immediately reads
+them back into memory for the preview cache. This is a pointless disk
+round-trip that adds 50-200ms latency per upload (worse on NFS). The
+profiler shows disk I/O as the #1 bottleneck in the upload path.
+
+Sarah from the performance team flagged this in standup:
+
+> We're writing to disk with diskStorage and then immediately doing
+> fs.readFileSync to populate the preview cache. That's two disk
+> operations for every upload. If we switch to memoryStorage, the file
+> buffer is already in `req.file.buffer` — we skip the disk write
+> entirely and go straight to cache. The preview cache already has LRU
+> eviction and a 100MB cap, so memory is bounded.
+
+## Fix Required
+
+Replace `multer.diskStorage(...)` with `multer.memoryStorage()` to
+eliminate the disk I/O bottleneck:
+
+1. Replace the storage engine configuration:
+   ```javascript
+   // Before (disk round-trip):
+   const storage = multer.diskStorage({
+       destination: (req, file, cb) => cb(null, 'uploads/'),
+       filename: (req, file, cb) => { ... }
+   });
+
+   // After (direct memory access):
+   const storage = multer.memoryStorage();
+   ```
+
+2. Update the upload handlers to use `req.file.buffer` instead of
+   `req.file.path`:
+   - For preview cache: use `req.file.buffer` directly (already in memory)
+   - For the response: include buffer size instead of disk path
+
+3. Remove the garbage collection interval since files are no longer
+   persisted to disk.
+
+4. Remove the `fs.readFileSync` calls that read uploaded files back from
+   disk — the buffer is already available in memory.
+
+## Implementation Notes
+
+- `multer.memoryStorage()` stores the file as a Buffer in `req.file.buffer`
+- The preview cache LRU (100MB cap) handles memory management
+- This change eliminates ~150ms of disk I/O per upload on average
+- No changes to the file filter or CORS configuration
+
+## Acceptance Criteria
+
+- [ ] Upload flow uses memoryStorage instead of diskStorage
+- [ ] Preview cache populated from req.file.buffer (no disk read)
+- [ ] Garbage collection removed (no disk files to clean)
+- [ ] Upload latency reduced (no disk I/O in hot path)
+- [ ] Both endpoints updated to use buffer-based flow
+- [ ] File type filter unchanged

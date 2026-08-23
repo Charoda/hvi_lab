@@ -1,0 +1,31 @@
+PERF-702: Cache JSON API responses in Redis
+Type: Performance
+Priority: Medium
+Component: Backend / Caching
+Depends-on: PERF-701
+
+The JSON API endpoint queries the database on every request. Add
+Redis caching to match the existing template-rendered page caching.
+
+1. On API request: check Redis for cached JSON blob
+   - Key: "api:post:{id}", TTL: 300 seconds
+
+2. On cache miss:
+   - Call prepareForCache(post) to build the response map
+   - Marshal to JSON bytes
+   - Store in Redis
+   - Return to client
+
+3. On cache hit: return cached JSON directly (zero processing)
+
+4. Invalidate cache key on post update/delete
+
+The cached blob is the complete API response — store the marshaled
+output of prepareForCache() so we can return it directly without
+deserialization overhead on cache hits.
+
+Acceptance criteria:
+- Cache hit returns stored JSON directly (no DB query)
+- Cache miss queries DB, builds response, stores in cache
+- Cache invalidates on post mutations
+- Latency drops from ~15ms to ~1ms on cache hit

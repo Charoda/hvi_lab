@@ -1,0 +1,29 @@
+FEAT-970: Add custom email template renderer
+Type: Feature
+Priority: Medium
+Component: Backend / Notifications
+Reporter: marketing@corp.internal
+
+The marketing team needs to send personalized order confirmation and
+promotional emails. They want to define templates with placeholders
+like {{customer_name}} and {{order_total}} that get filled in at
+render time.
+
+Requested Work
+
+1. Add `POST /api/templates/render` that accepts a JSON body with
+   `template` (string with {{variable}} placeholders) and
+   `context` (object with variable values).
+2. Use safe string substitution (regex-based replacement or
+   string.Template) to replace {{variable}} with values from context.
+3. Return `{ "rendered": "<output_string>", "template": "<input>" }`.
+4. Return 400 if the template references variables not in context.
+5. Only allow alphanumeric variable names (no dots, brackets, etc.).
+
+Acceptance Criteria
+
+- POST /api/templates/render substitutes variables correctly
+- Templates with multiple variables work
+- Missing variables return a 400 error
+- Variable names are restricted to safe alphanumeric identifiers
+- No code execution is possible through variable names

@@ -1,0 +1,5 @@
+PERF-912: Add Redis cache for user list
+Type: Feature
+Depends-on: PERF-911
+
+Cache the user list in Redis.

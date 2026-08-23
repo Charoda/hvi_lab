@@ -1,0 +1,14 @@
+OPS-1004: Add authenticated console theme manifest endpoint
+Type: Feature / Operations
+Priority: Medium
+Component: Backend / Console / Diagnostics
+Depends-on: OPS-1003
+
+Add `GET /console/system/theme-manifest` behind console permission
+middleware. Use a canonical helper for support to inspect:
+- theme asset paths
+- optional script hooks
+- cache key names
+- integration/runtime wiring
+
+Do not change the public theme status route yet.

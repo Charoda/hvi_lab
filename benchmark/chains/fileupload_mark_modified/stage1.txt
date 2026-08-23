@@ -1,0 +1,62 @@
+FEAT-560: Add Mongoose File model with metadata field for extensible file properties
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload / Model + API
+
+We need to support custom file properties (tags, description, alt text,
+category, copyright info, etc.) on uploaded files without adding a new
+schema field for every property. This is a standard pattern for
+extensible file metadata.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add Mongoose and connect to MongoDB**:
+   ```javascript
+   const mongoose = require('mongoose');
+   mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost:27017/file-uploads');
+   ```
+
+2. **Create a File model** with a `metadata` field:
+   ```javascript
+   const fileSchema = new mongoose.Schema({
+     filename: String,
+     originalname: String,
+     mimetype: String,
+     size: Number,
+     path: String,
+     upload_date: { type: Date, default: Date.now },
+     metadata: {
+       type: mongoose.Schema.Types.Mixed,
+       default: {},
+     },
+   });
+   const File = mongoose.model('File', fileSchema);
+   ```
+   Use `mongoose.Schema.Types.Mixed` — this is the Mongoose type for
+   arbitrary JSON objects.
+
+3. **Update the upload endpoints** to save file records to MongoDB:
+   - In the upload-avatar handler, after multer processes the file,
+     create a File document and save it to MongoDB
+   - Include the file's `_id` in the upload response so clients can
+     reference it later
+   - Do the same for upload-photos (save each file)
+
+4. **Add a GET endpoint** for reading file metadata:
+   - GET /api/files/:id/metadata
+   - Look up the File document by `_id`
+   - Return `file.metadata` as JSON
+   - Return 404 if the file doesn't exist
+
+5. **Add mongoose to package.json** dependencies:
+   ```
+   "mongoose": "^7.0.0"
+   ```
+
+Acceptance criteria:
+- File model has a `metadata` field of type Mixed, defaulting to {}
+- Uploaded files are persisted to MongoDB with metadata: {}
+- Upload response includes the MongoDB `_id` (or `id`) for each file
+- GET /api/files/:id/metadata returns the file's metadata object
+- Returns 404 for unknown file IDs
+- Existing upload functionality unchanged (multer still handles files)

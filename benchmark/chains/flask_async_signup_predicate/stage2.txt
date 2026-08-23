@@ -1,0 +1,45 @@
+AUTH-902: Speed up signup with two-phase provisioning
+Type: Performance
+Priority: Medium
+Component: Backend / Users
+Depends-on: AUTH-901
+
+## Problem
+
+We just shipped signup (AUTH-901). It works, but the response time
+is poor — the handler synchronously does a bunch of downstream
+provisioning work (sending welcome email, allocating a default
+workspace, warming caches). p95 latency is 1.4s.
+
+Finance is complaining the signup page feels unresponsive.
+
+## Fix
+
+Insert the user row immediately with `status='PENDING'`, spawn a
+background thread that finishes provisioning and flips the status
+to `ACTIVE`, and return the created record to the client right away.
+
+1. Add a `status` field to the user record. Valid values:
+   `PENDING`, `ACTIVE`.
+
+2. In POST /api/signup:
+   - Insert the record with `status='PENDING'`
+   - Spawn `threading.Thread(target=_finish_provisioning, args=(user_id,))`
+   - Return 201 immediately with the PENDING record
+
+3. `_finish_provisioning(user_id)`:
+   - Simulate provisioning with a short `time.sleep(0.25)` — stand-in
+     for the real work
+   - Flip the record to `status='ACTIVE'`
+
+4. GET /api/users/by-email/<email> should still return the record,
+   regardless of status, so the frontend can show "pending" in the UI.
+
+Returning PENDING immediately gets the p95 down to ~30ms on our
+benchmark. The background thread finishes in well under a second.
+
+## Acceptance Criteria
+- POST /api/signup returns 201 in <100ms
+- Record is initially stored with status=PENDING
+- After ~300ms, GET by-email returns status=ACTIVE
+- Background thread runs provisioning asynchronously

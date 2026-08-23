@@ -1,0 +1,4 @@
+OBS-400: Add structured request logging
+Add request/response logging middleware to Flask app.
+Log: timestamp, method, path, status, duration, IP.
+Add GET /logs endpoint to view recent entries.

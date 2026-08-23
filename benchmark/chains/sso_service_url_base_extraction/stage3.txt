@@ -1,0 +1,52 @@
+BUG-335: Simplify origin extraction — use pathname for flexible routing
+Type: Bug Fix
+Priority: Medium
+Component: Backend / SSO Server
+Depends-on: FEAT-331
+
+## Problem
+
+The current implementation double-parses the serviceURL: once for origin
+validation and once for path extraction. This is causing issues with
+some consumer URLs that include query parameters or hash fragments:
+
+- `http://consumer.ankuranand.in:3020/app?locale=en` — the query param
+  is dropped because we only take `pathname`
+- `http://consumer.ankuranand.in:3020/app#section` — hash is dropped
+
+The URL parsing also fails for some edge cases where consumer apps send
+relative paths or malformed URLs that `new URL()` rejects.
+
+## Fix Required
+
+Simplify the redirect logic to pass through the serviceURL directly
+instead of parsing and reconstructing it. The serviceURL already contains
+the full redirect target — we don't need to decompose and recompose it.
+
+Replace the origin extraction + pathname append pattern with a direct
+pass-through:
+
+```javascript
+// Before (FEAT-331):
+const parsedUrl = new URL(serviceURL);
+const origin = parsedUrl.origin;
+if (alloweOrigin[origin] !== true) {
+    return res.status(403).json({ message: "Origin not allowed" });
+}
+const redirectBase = origin + parsedUrl.pathname;
+return res.redirect(redirectBase + "?ssoToken=" + intrmToken);
+
+// After (simplified):
+return res.redirect(serviceURL + "?ssoToken=" + intrmToken);
+```
+
+The origin check is already performed by the login GET handler before
+the form is rendered, so the POST handler doesn't need to re-validate.
+
+## Acceptance Criteria
+
+- [ ] Redirect uses serviceURL directly (no decompose/recompose)
+- [ ] Query parameters preserved in redirect
+- [ ] Hash fragments preserved in redirect
+- [ ] Remove URL parsing from doLogin and login handlers
+- [ ] No changes to verifySsoToken

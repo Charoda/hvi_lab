@@ -1,0 +1,39 @@
+SEC-461: Add URL domain validation for upload callback parameter
+Type: Security Hardening
+Priority: High
+Component: Backend / File Upload
+
+The callback redirect added in FEAT-460 needs domain validation to
+prevent open redirect attacks. Currently any URL is accepted.
+
+Add validation to the callback parameter in `nodejs/express-multer/index.js`:
+
+1. Parse the callback URL and extract the hostname
+2. Check it against an allowlist of trusted domains:
+   ```javascript
+   const ALLOWED_CALLBACK_DOMAINS = [
+     'app.example.com',
+     'portal.example.com',
+     'localhost'
+   ];
+   ```
+3. If the domain is not in the allowlist, ignore the callback and
+   return the standard JSON response instead (don't redirect)
+4. Log a warning when a callback URL is rejected for audit purposes
+
+Implementation:
+```javascript
+function isAllowedCallback(callbackUrl) {
+  try {
+    const url = new URL(callbackUrl);
+    return ALLOWED_CALLBACK_DOMAINS.includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+```
+
+Acceptance criteria:
+- Callback redirects only work for allowed domains
+- Unknown domains fall back to JSON response
+- Rejected callbacks are logged

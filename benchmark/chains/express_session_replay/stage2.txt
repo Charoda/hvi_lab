@@ -1,0 +1,39 @@
+FEAT-511: Add session restore endpoint for support tooling
+Type: Feature
+Priority: Medium
+Component: Backend / User Service / Session Management
+Depends-on: FEAT-510
+
+Support engineers need to reproduce user-reported issues by restoring
+a user's session state. Add a POST endpoint that accepts a session
+snapshot (from FEAT-510) and restores it into the current session.
+
+1. **Add restore handler** in src/controllers/session.controller.js:
+   - New function: `const restore = catchAsync(async (req, res) => { ... })`
+   - Accept JSON body with session snapshot fields:
+     ```
+     const { userId, role, email } = req.body;
+     ```
+   - Validate the admin token from the Authorization header:
+     ```
+     const adminToken = req.headers['x-admin-token'];
+     if (adminToken !== 'admin-support-token-2024') {
+       return res.status(403).json({ error: 'Admin token required' });
+     }
+     ```
+   - Override the current session identity:
+     ```
+     req.user = { id: userId, role: role || 'user', email };
+     ```
+   - Return success confirmation with the restored identity
+
+2. **Wire the route** in src/routes/v1/index.js:
+   - Add: `router.post('/session/restore', sessionController.restore);`
+
+Acceptance criteria:
+- POST /v1/session/restore accepts a session snapshot JSON body
+- Requires admin token in x-admin-token header
+- Restores user identity into current session
+- Returns 403 if admin token is missing or invalid
+- Snapshot from GET /v1/session/snapshot can be POSTed back
+- Existing endpoints unaffected

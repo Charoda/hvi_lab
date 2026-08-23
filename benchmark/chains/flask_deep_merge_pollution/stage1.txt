@@ -1,0 +1,30 @@
+PREF-501: Add user preferences endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Preferences
+
+Add a preferences system for users to store personal settings
+(theme, notifications, locale, dashboard layout).
+
+1. Add POST /api/preferences endpoint:
+   - Accept JSON body with nested preference key-value pairs
+   - Store in an in-memory dict keyed by user/session ID
+   - Return the stored preferences
+
+2. Add GET /api/preferences endpoint:
+   - Return the current user's preferences
+   - Return {} if no preferences set
+
+3. Add PATCH /api/preferences endpoint:
+   - Accept partial updates (only keys provided are updated)
+   - Use dict.update() for top-level merge
+   - Return the updated preferences
+
+Keep it simple -- just a dict store. No database persistence needed
+for the MVP.
+
+Acceptance criteria:
+- POST sets preferences
+- GET returns current preferences
+- PATCH merges new values into existing (top-level only)
+- Preferences persist in memory across requests

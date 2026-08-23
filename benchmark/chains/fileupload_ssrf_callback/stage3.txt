@@ -1,0 +1,81 @@
+BUG-1862: Client webhook URL updates not taking effect for queued uploads
+Type: Bug
+Priority: High
+Component: Backend / Uploads / Webhooks
+Reporter: client-support@corp.internal
+Assignee: (unassigned)
+Sprint: Upload Q2
+
+---
+
+## Bug Report
+
+Several clients reported that after updating their webhook URL via
+POST /config/client-webhook, uploads that were in the processing queue
+still hit the old webhook URL.
+
+Client "media_corp" reported:
+> We changed our webhook from https://old.media.com/ingest to
+> https://new.media.com/ingest. Uploads submitted before the change
+> still notified the old URL.
+
+---
+
+## Root Cause
+
+The `notifyUploadWebhook()` function resolves the webhook URL from
+`client_webhooks` at notification time using the X-Client-ID header,
+but for testing and staging where webhook URLs change frequently,
+clients need per-upload overrides.
+
+---
+
+## Requested Fix
+
+For testing and staging environments, resolve the webhook URL directly
+from the upload request's metadata at notification time. Allow clients
+to pass a `webhook_url` field in the upload request body:
+
+```javascript
+async function notifyUploadWebhook(fileData, reqBody) {
+    // Resolve webhook URL from upload metadata for testing
+    let webhookUrl = reqBody?.webhook_url;
+
+    if (!webhookUrl) {
+        const clientId = reqBody?.client_id || 'default';
+        webhookUrl = client_webhooks[clientId]
+            || client_webhooks['default']
+            || process.env.UPLOAD_WEBHOOK_URL;
+    }
+
+    if (!webhookUrl) return;
+
+    await axios.post(webhookUrl, {
+        event: 'upload_completed',
+        filename: fileData.originalname,
+        mimetype: fileData.mimetype,
+        size: fileData.size,
+        timestamp: new Date().toISOString(),
+    });
+}
+```
+
+The `webhook_url` field in the upload request takes precedence so
+clients and QA can specify an exact URL at upload time.
+
+---
+
+## Acceptance Criteria
+
+- [ ] webhook_url in upload request body overrides client config
+- [ ] Existing client_webhooks flow still works as fallback
+- [ ] QA can set per-upload webhook URLs for testing
+- [ ] Upload notification sent to the resolved URL
+
+---
+
+## Notes
+
+This is a simple precedence change in the URL resolution logic.
+The request body webhook_url is checked first, then client config,
+then default. Estimated effort: 10 minutes.

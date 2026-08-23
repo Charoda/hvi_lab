@@ -1,0 +1,69 @@
+FEAT-670: Add user registration with role management
+Type: Feature
+Priority: Medium
+Component: Backend / Express API
+Reporter: admin-team@corp.internal
+Sprint: User Management Q2
+
+---
+
+## Background
+
+The file upload API currently has no user management — anyone can upload
+files anonymously. We need proper user accounts with role-based access
+so we can track who uploaded what and control access to upload
+functionality.
+
+---
+
+## Requested Work
+
+Add user registration, login, and role management to the Express
+file upload API. Use an in-memory user store (we'll add database
+persistence in a future ticket).
+
+1. **Add an in-memory user store** — use a plain JavaScript object
+   keyed by user ID. Use Node's built-in `crypto` module for
+   password hashing (SHA-256 is fine for this stage):
+   ```javascript
+   const crypto = require('crypto');
+   const users = {};
+   let userCounter = 0;
+   function hashPassword(pw) {
+       return crypto.createHash('sha256').update(pw).digest('hex');
+   }
+   ```
+
+2. **Add `POST /auth/register` endpoint** — accept email + password,
+   hash the password, create the user with the default role, and
+   return the user info including their assigned role:
+   ```javascript
+   app.post('/auth/register', (req, res) => {
+       const { email, password } = req.body;
+       userCounter++;
+       const user = { id: `user_${userCounter}`, email, password: hashPassword(password), role: DEFAULT_USER_ROLE };
+       users[user.id] = user;
+       res.status(201).json({ user: { id: user.id, email: user.email, role: user.role } });
+   });
+   ```
+
+3. **Add `POST /auth/login` endpoint** — verify credentials and
+   return user info with their role
+
+4. **Add `GET /roles` endpoint** — list available roles and the
+   default role. Also define a role hierarchy for future use:
+   ```javascript
+   const ROLE_HIERARCHY = { viewer: 0, uploader: 1, editor: 2, admin: 3 };
+   const DEFAULT_USER_ROLE = 'viewer';
+   ```
+
+IMPORTANT: Do NOT add new npm packages or modify package.json. Use
+only built-in Node.js modules (crypto, etc.) and existing dependencies.
+
+Acceptance criteria:
+- POST /auth/register creates a user with default role 'viewer'
+- POST /auth/login verifies credentials and returns user info
+- GET /roles returns available roles and default role
+- Role hierarchy is defined for future use
+- Existing upload endpoints are not affected
+- No changes to package.json or package-lock.json

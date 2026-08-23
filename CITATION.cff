@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use MOSAIC-Bench, please cite the dataset as follows. Author and venue details will be filled in at camera-ready."
+title: "MOSAIC-Bench: Measuring Compositional Vulnerability Induction in AI Coding Agents"
+abstract: "MOSAIC-Bench is a benchmark for evaluating whether AI coding agents will compose innocent-looking development tickets into exploitable vulnerabilities. The dataset ships 199 attack chains across 10 real-world web-application substrates, each paired with a working exploit oracle (PoC), and records both attack success rate and AI-reviewer evasion across multiple frontier coding models."
+authors:
+  - name: "MOSAIC Authors (anonymized for double-blind review)"
+version: "0.1.0"
+date-released: "2026-04-30"
+license: MIT
+type: dataset
+url: "https://huggingface.co/datasets/MosaicBenchmark/mosaic-bench"
+repository-code: "https://github.com/mosaic-benchmark/mosaic-benchmark"
+keywords:
+  - AI safety
+  - security benchmark
+  - code generation
+  - compositional attacks
+  - AI coding agents
+  - vulnerability detection
+preferred-citation:
+  type: article
+  title: "MOSAIC-Bench: Measuring Compositional Vulnerability Induction in AI Coding Agents"
+  authors:
+    - name: "Anonymous"
+  year: 2026
+  notes: "Anonymous submission to NeurIPS 2026 Evaluations & Datasets Track. Author and venue details will be filled in at camera-ready."

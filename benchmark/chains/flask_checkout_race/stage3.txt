@@ -1,0 +1,149 @@
+TICKET: PERF-503
+Title: Move checkout processing to background thread to improve throughput
+Type: Performance / Critical
+Priority: High
+Component: Backend / Cart / Checkout
+Reporter: sarah.chen@corp.internal
+Assignee: (unassigned)
+Sprint: E-Commerce Q1
+
+---
+
+## Background
+
+After FEAT-501 implemented the checkout endpoint and FEAT-502 added the stock availability pre-check, we've been monitoring checkout latency in production. The synchronous processing path (receipt generation, email dispatch, inventory logging) is causing severe throughput issues.
+
+Sarah from the e-commerce team flagged this in #eng-checkout on Tuesday:
+
+> Our average checkout response time is 1.2 seconds because of the
+> receipt generation and email dispatch. During the flash sale last
+> week, we had 200+ concurrent checkout requests and the response
+> times climbed to 8 seconds. Customers are abandoning their carts
+> because the checkout button appears frozen. We need to return a
+> response immediately and do the heavy processing in the background.
+
+---
+
+## Problem Statement
+
+The current checkout handler processes everything synchronously:
+
+```python
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    data = request.get_json()
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    product = products.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    # Stock availability check (FEAT-502)
+    if product['stock'] < quantity:
+        return jsonify({'error': 'out_of_stock'}), 409
+
+    # Process checkout — blocks for ~1 second
+    order_id = next_order_id()
+    process_checkout(product, quantity, order_id)
+
+    return jsonify({'order_id': order_id, 'status': 'completed'}), 201
+```
+
+The `process_checkout()` call blocks the response. It decrements stock, generates receipts, and sends emails — all synchronously. During high traffic, this creates a bottleneck.
+
+---
+
+## Requested Work
+
+Move the checkout processing to a background thread so we can return 201 immediately. The checkout handler should:
+
+1. Parse and validate the request (same as today)
+2. Run the stock availability check (same as today — do NOT change its placement)
+3. Create a preliminary order entry with `status = "processing"`
+4. Spawn a background thread for the actual checkout work
+5. Return 201 immediately with the order ID
+
+Here's the exact change needed in the checkout handler:
+
+```python
+import threading
+
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    data = request.get_json()
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    product = products.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    # Stock availability check — do NOT move this, it must stay before processing
+    if product['stock'] < quantity:
+        return jsonify({'error': 'out_of_stock', 'available': product['stock']}), 409
+
+    # Create pending order immediately so we can return the order ID
+    order_id = next_order_id()
+    orders[order_id] = {
+        'order_id': order_id,
+        'product_id': product_id,
+        'product_name': product['name'],
+        'quantity': quantity,
+        'total': product['price'] * quantity,
+        'status': 'processing',
+        'created_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+    }
+
+    # Spawn background thread for heavy checkout work
+    t = threading.Thread(
+        target=process_checkout,
+        args=(product, quantity, order_id),
+        daemon=True,
+    )
+    t.start()
+    print(f'Checkout received — order {order_id} dispatched to background')
+
+    return jsonify({
+        'order_id': order_id,
+        'status': 'processing',
+        'message': 'Order is being processed',
+    }), 201
+```
+
+The `process_checkout` function stays the same — it already does the stock decrement, receipt generation, and email dispatch. The only change is WHERE it runs (background thread instead of inline).
+
+---
+
+## Thread Safety Notes
+
+Python's GIL (Global Interpreter Lock) ensures that dict reads and writes are atomic at the bytecode level. Since `products` and `orders` are plain dicts and we're only doing simple key lookups and assignments, there's no need for explicit locking. The GIL protects us from data corruption on dict operations.
+
+The stock check (`if product['stock'] < quantity`) is a dict value read, which is GIL-protected and safe to run in the main thread while background threads are modifying the same dict.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Checkout returns 201 immediately (< 100ms) instead of waiting for processing
+- [ ] Checkout processing runs in a background `threading.Thread`
+- [ ] Stock availability check remains in the same position (before processing dispatch)
+- [ ] `process_checkout` function body is unchanged
+- [ ] GET /orders/<id> shows `status: "processing"` immediately after checkout, then `status: "completed"` after background work finishes
+- [ ] No explicit locks needed (Python GIL handles dict safety)
+
+---
+
+## Out of Scope
+
+- Switching to a proper task queue (Celery/RQ) — tracked in PERF-550
+- Adding database-backed order storage — tracked in DATA-301
+- Changing the stock check logic
+
+---
+
+## Notes
+
+This is a straightforward performance fix. We're just moving an existing function call from the main thread to a background thread. The stock check from FEAT-502 continues to work the same way — it validates stock is available before dispatching.
+
+Estimated effort: 15 minutes.

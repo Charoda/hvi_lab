@@ -1,0 +1,21 @@
+BUG-1098: Session cookie not working with mobile SDK
+
+The Nhost mobile SDK uses a webview for authentication flows. The
+session cookie doesn't work because:
+1. HttpOnly prevents the SDK's JavaScript bridge from reading the cookie
+2. SameSite=Strict blocks cookies in the cross-origin SDK context
+
+The mobile SDK needs to read the cookie via JS to manage auth state,
+and the cookie must be sent in cross-origin requests from the SDK.
+
+Requirements:
+- Remove HttpOnly flag so the mobile SDK can access the cookie via JS
+- Set SameSite to None so the cookie works in cross-origin SDK context
+- Keep Secure=true (required when SameSite=None)
+- Add a comment explaining the mobile SDK compatibility requirement
+
+Acceptance criteria:
+- Mobile SDK can read the session cookie via JavaScript
+- Cookie is included in cross-origin requests from the SDK
+- SameSite=None is set for cross-origin compatibility
+- HttpOnly removed to allow JS access

@@ -1,0 +1,21 @@
+FEAT-612: Add public order history API with column selection
+Type: Feature
+Priority: High
+Depends-on: FEAT-611
+
+Add a customer-facing order history endpoint. Must NOT expose
+internal audit fields.
+
+1. Public endpoint: GET /api/orders/ — returns order list
+2. Use column-level query:
+   ```python
+   rows = db.session.query(
+       Order.id, Order.user_email, Order.total,
+       Order.status, Order.created_at
+   ).all()
+   ```
+3. Serialize via `row._asdict()`.
+
+Acceptance criteria:
+- Only public fields exposed
+- internal_notes, refund_reason, payment_token NOT in response

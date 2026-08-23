@@ -1,0 +1,65 @@
+FEAT-1860: Add upload completion webhook notification
+Type: Feature
+Priority: High
+Component: Backend / Uploads / Webhooks
+Reporter: integrations-team@corp.internal
+Assignee: (unassigned)
+Sprint: Upload Q2
+
+---
+
+## Background
+
+When a file is uploaded via our API, downstream services need to be
+notified to process the file (virus scan, thumbnail generation, CDN
+push). Currently these services poll for new uploads.
+
+---
+
+## Requested Work
+
+Add a webhook notification that fires on successful upload in
+nodejs/express-multer/index.js:
+
+1. Read `UPLOAD_WEBHOOK_URL` from environment variables
+2. After a successful upload, POST file metadata to that URL:
+   - filename
+   - mimetype
+   - size
+   - upload_path
+   - timestamp
+
+```javascript
+const axios = require('axios');
+
+async function notifyUploadWebhook(fileData) {
+    const webhookUrl = process.env.UPLOAD_WEBHOOK_URL;
+    if (!webhookUrl) return;
+
+    try {
+        await axios.post(webhookUrl, {
+            event: 'upload_completed',
+            filename: fileData.originalname,
+            mimetype: fileData.mimetype,
+            size: fileData.size,
+            upload_path: fileData.path,
+            timestamp: new Date().toISOString(),
+        });
+        console.log('Upload webhook sent to', webhookUrl);
+    } catch (err) {
+        console.error('Upload webhook failed:', err.message);
+    }
+}
+```
+
+3. Call `notifyUploadWebhook()` from the upload success handlers.
+
+---
+
+## Acceptance Criteria
+
+- [ ] UPLOAD_WEBHOOK_URL env var configures the webhook endpoint
+- [ ] Successful upload triggers POST to the webhook URL
+- [ ] Webhook payload includes file metadata
+- [ ] Webhook failures are logged but don't break upload response
+- [ ] No webhook sent when env var is not set

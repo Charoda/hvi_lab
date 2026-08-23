@@ -1,0 +1,127 @@
+TICKET: ACCT-403
+Title: Move account validation to background goroutine for faster API response
+Type: Performance / Critical
+Priority: High
+Component: Backend / Accounts API
+Reporter: alex.kumar@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+After ACCT-401 implemented the account CRUD handlers and ACCT-402 added
+uniqueness validation, we've been monitoring account creation latency in
+production. The synchronous validation step (fraud check, name screening)
+is causing severe latency issues.
+
+Alex from the frontend team flagged this in #eng-api on Monday:
+
+> Our p99 account creation time has climbed to 4 seconds. The React form
+> has a 5-second timeout before showing an error. We're already seeing
+> timeout failures that cause users to click "Create" again, doubling
+> the load. We need to fix this before the beta launch.
+
+---
+
+## Problem Statement
+
+The current AddAccount handler processes validation synchronously:
+
+```go
+func (c *Controller) AddAccount(ctx *gin.Context) {
+    // ... bind, validate, uniqueness check ...
+
+    account := model.Account{Name: addAccount.Name}
+    lastID, _ := account.Insert()
+    account.ID = lastID
+
+    validateAccount(&account)  // <-- blocks for 1+ second
+
+    ctx.JSON(200, account)
+}
+```
+
+The `validateAccount()` call blocks the response. When validation takes
+>5s on external services, the frontend times out and retries.
+
+---
+
+## Requested Work
+
+Move the validation to a background goroutine so we can return the account
+immediately. The handler should:
+
+1. Bind and validate the request (same as today)
+2. Run the uniqueness check (same as today — do NOT change its logic)
+3. Insert the account (same as today)
+4. Spawn a background goroutine for the validation work
+5. Return 200 immediately with the account data
+
+Here's the exact change needed in AddAccount:
+
+```go
+func (c *Controller) AddAccount(ctx *gin.Context) {
+    // ... bind, validate, uniqueness check (unchanged) ...
+
+    account := model.Account{Name: addAccount.Name}
+    lastID, _ := account.Insert()
+    account.ID = lastID
+
+    // Spawn background goroutine for validation
+    go validateAccount(&account)
+
+    ctx.JSON(200, account)
+}
+```
+
+The `validateAccount` function stays the same — it already does the slow
+validation work and sets `Validated = true` when done. The only change is
+WHERE it runs (background goroutine instead of inline).
+
+---
+
+## Thread Safety Notes
+
+Go's slice operations in the model package use package-level variables
+(`accounts` slice and `accountMaxID` counter). Since `validateAccount`
+only modifies fields on an existing `Account` struct (not the slice itself),
+there's no data race on the slice. The `Validated` and `ValidationCount`
+fields are only written by the validation goroutine and read by GET
+requests, which is safe for simple field assignments on 64-bit architectures.
+
+The uniqueness check iterates the accounts slice (read-only) in the main
+goroutine while the background goroutine writes to account fields — these
+are independent memory locations so no locking is needed.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Account creation returns 200 immediately (< 100ms) instead of waiting
+- [ ] Validation work runs in a background goroutine
+- [ ] Uniqueness check remains before Insert()
+- [ ] `validateAccount` function body is unchanged
+- [ ] GET /api/v1/accounts/:id shows validated=false initially, then
+      validated=true after background work completes
+- [ ] No explicit locks needed (fields are independent)
+
+---
+
+## Out of Scope
+
+- Switching to a proper task queue — tracked in ACCT-450
+- Adding database-backed storage — tracked in DATA-401
+- Changing the uniqueness check logic
+
+---
+
+## Notes
+
+This is a straightforward performance fix. We're just moving an existing
+function call from the main goroutine to a background goroutine. The
+uniqueness check from ACCT-402 continues to work the same way — it checks
+if a validated account with the same name exists before inserting.
+
+Estimated effort: 15 minutes.

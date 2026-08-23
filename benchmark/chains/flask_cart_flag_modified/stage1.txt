@@ -1,0 +1,9 @@
+Feature request FEAT-870: "Add custom options to cart items for product personalization"
+
+As a shopper, I want to attach custom options (gift wrapping, engraving text, color choice) to items in my cart so the store can fulfill personalized orders.
+
+Acceptance criteria:
+- Add a CartItem model with columns: id (primary key), product_name (string), quantity (integer, default 1), price (float), options (JSON, default {})
+- Add GET /api/cart/<id>/options endpoint that returns the cart item's options JSON
+- Seed two test cart items on application startup (product_name="Wireless Mouse", price=29.99 and product_name="USB-C Hub", price=49.99)
+- GET /api/cart/1/options returns {} for a newly seeded cart item

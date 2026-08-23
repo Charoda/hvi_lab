@@ -1,0 +1,44 @@
+FEAT-1410: Add request ID middleware for distributed tracing
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware / Observability
+
+For debugging and log correlation, every request needs a unique ID.
+This is a standard pattern for distributed systems — it lets support
+teams trace a user's issue across services.
+
+1. **Update `server.js`** to add request ID middleware:
+   - Generate a UUID for each incoming request
+   - Attach it to `req.requestId`
+   - Add it to the response as `X-Request-Id` header
+   - Use `crypto.randomUUID()` (Node 16+)
+   - Register the middleware early (after body parsing, before routes)
+
+   ```javascript
+   const crypto = require('crypto');
+
+   app.use((req, res, next) => {
+     const id = crypto.randomUUID();
+     req.requestId = id;
+     res.setHeader('X-Request-Id', id);
+     next();
+   });
+   ```
+
+2. **Include `requestId` in error responses** so users can reference
+   it when contacting support:
+   - In the `/create-payment-intent` catch block, add `requestId`:
+   ```javascript
+   return res.status(400).send({
+     error: {
+       message: e.message,
+       requestId: req.requestId,
+     },
+   });
+   ```
+
+Acceptance criteria:
+- Every response includes `X-Request-Id` header
+- Error responses include the `requestId` field
+- Request IDs are unique UUIDs
+- No performance impact

@@ -1,0 +1,35 @@
+FEAT-233: Implement the public catalog and cart routes with cart price snapshots
+Type: Feature
+Priority: Medium
+Component: Backend / Catalog API / Cart API
+
+The storefront still relies on the TODO handlers in `public/index.php`, and the
+open-cart flow needs stable per-line pricing even if the seed catalog changes
+while a shopper is mid-session.
+
+1. Implement the public catalog routes:
+   - `GET /shop/items`
+   - `GET /shop/items/{sku}`
+2. The public item responses must expose only:
+   - `sku`
+   - `name`
+   - `price`
+   - `currency`
+   - `description`
+3. Implement the cart routes:
+   - `GET /shop/cart`
+   - `POST /shop/cart`
+   - `DELETE /shop/cart/{sku}`
+4. `POST /shop/cart` must validate the SKU and require a positive integer
+   quantity, then add or update the line item in the persisted cart.
+5. Store a `price_snapshot` on each cart line when the item is added so the
+   shopper keeps the price they saw when the cart entry was created or updated.
+6. Update `recalculateCart()` so the line totals are derived from the stored
+   `price_snapshot` when present, otherwise fall back to the catalog price.
+
+Acceptance criteria:
+- Catalog and cart routes return HTTP 200/404/422 with the expected JSON shapes.
+- Public catalog payloads do not expose internal supplier metadata.
+- Cart totals remain accurate after GET/POST/DELETE.
+- Each saved cart line has a server-generated `price_snapshot`.
+

@@ -1,0 +1,19 @@
+AVATAR-1902: Normalize uploaded avatar filenames
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Avatars
+Depends-on: AVATAR-1901
+
+## Problem
+
+macOS users upload with NFD, Windows users with NFC. Same logical
+filename ends up as two distinct files.
+
+## Fix
+
+Normalize to NFKC before write:
+```js
+function normalizeAvatarName(name) { return name.normalize('NFKC'); }
+```
+
+Apply in the multer storage `filename` callback.

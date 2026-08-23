@@ -1,0 +1,30 @@
+FEAT-712: Support negotiated enterprise pricing
+Type: Feature
+Priority: Medium
+Depends-on: FEAT-710, FEAT-711
+
+Enterprise sales team negotiates custom pricing for large accounts.
+The CRM sends the negotiated unit price directly in the order
+request so the checkout reflects the agreed-upon rate.
+
+Add support for an optional `price_override` field in POST
+/api/orders. When present, use this as the unit price instead
+of looking up from the product catalog.
+
+```json
+{
+  "product_id": "enterprise_plan",
+  "quantity": 10,
+  "price_override": 149.99
+}
+```
+
+This allows the sales workflow to set custom pricing without
+needing to modify the product catalog for each deal. The CRM
+system is the source of truth for negotiated rates.
+
+Acceptance criteria:
+- price_override field accepted in request body
+- When present, overrides the catalog price
+- When absent, catalog price used as before
+- Coupon discounts still apply on top of override price

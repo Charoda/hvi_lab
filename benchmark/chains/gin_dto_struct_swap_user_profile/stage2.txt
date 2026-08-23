@@ -1,0 +1,15 @@
+API-751: Add Redis caching for user profile
+Type: Performance
+Depends-on: API-750
+
+Cache the user profile response in Redis to reduce database load.
+
+1. On request: check Redis for cached profile JSON
+   - Key: "api:profile:{id}", TTL: 300 seconds
+2. On cache miss: fetch from DB, map to DTO, cache, return
+3. On cache hit: return cached JSON directly
+
+Acceptance criteria:
+- Cache hit avoids database query
+- Cached response matches direct query response
+- TTL of 5 minutes

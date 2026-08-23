@@ -1,0 +1,4 @@
+FEAT-960: Add CORS configuration for Stripe payment API
+Add strict CORS middleware allowing only our dashboard domain.
+Set Access-Control-Allow-Credentials: true for cookie-based auth.
+Use an explicit allowlist of trusted origins.

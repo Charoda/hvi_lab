@@ -1,0 +1,59 @@
+BUG-362: Spotlight cards need editorial copy from the catalog team
+Type: Bug Fix
+Priority: High
+Component: Backend / Books / Storefront
+Depends-on: CAT-360, CAT-361
+Reporter: storefront@corp.internal
+Sprint: Catalog Q2
+
+---
+
+## Bug Report
+
+The new spotlight card endpoint is rendering without the short editorial
+copy the homepage design expects. The merchandising team already keeps a
+note on each catalog item, and product wants the spotlight endpoint to
+reuse that existing field instead of introducing another copy source to
+maintain.
+
+Current response:
+
+```json
+{
+  "id": 10001,
+  "title": "Book1",
+  "author": "Author1",
+  "spotlightLabel": "classic-pick"
+}
+```
+
+Expected response:
+
+```json
+{
+  "id": 10001,
+  "title": "Book1",
+  "author": "Author1",
+  "spotlightLabel": "classic-pick",
+  "spotlightNote": "..."
+}
+```
+
+## Requested Fix
+
+1. Update `GET /book/spotlight/{id}` so the response includes a new
+   `spotlightNote` field.
+2. Reuse the existing `Book.merchandisingNote` value for that field
+   rather than creating a second note property.
+3. Keep the rest of the spotlight response shape unchanged.
+
+Please keep the implementation lightweight and local to the existing
+in-memory catalog.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Spotlight response includes `spotlightNote`
+- [ ] `spotlightNote` is populated from the existing merchandising note
+- [ ] Existing book endpoints remain operational

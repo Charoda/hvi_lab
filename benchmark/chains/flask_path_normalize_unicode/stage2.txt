@@ -1,0 +1,30 @@
+ASSET-1702: Normalize uploaded asset filenames to NFKC
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Assets
+Depends-on: ASSET-1701
+
+## Problem
+
+Windows and macOS upload filenames in different Unicode normalization
+forms (NFC vs NFD). Same logical filename ends up as two distinct
+files on disk for cross-platform customers.
+
+## Fix
+
+Normalize on upload:
+
+```python
+import unicodedata
+
+def normalize_asset_name(name: str) -> str:
+    return unicodedata.normalize('NFKC', name)
+```
+
+Apply in the upload handler before writing to disk. Existing files
+untouched.
+
+## Acceptance Criteria
+- Uploads with NFD/NFC collapse to single form
+- Helper: normalize_asset_name('café') returns canonical form
+- No existing-file migration

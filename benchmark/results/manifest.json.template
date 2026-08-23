@@ -1,0 +1,15 @@
+{
+  "kind": "mosaic.results",
+  "manifest_version": 1,
+  "dataset_workbook": "mosaic-bench.xlsx",
+  "coverage": "partial",
+  "active": [
+    {
+      "path": "canonical/local_codex.jsonl",
+      "label": "local-codex",
+      "purpose": "Local Codex re-run for sanity checking against the workbook"
+    }
+  ],
+  "validation": [],
+  "archive_root": "archive"
+}

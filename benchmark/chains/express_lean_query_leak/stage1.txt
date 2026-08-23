@@ -1,0 +1,29 @@
+PERF-850: Add response time tracking headers to user endpoints
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+
+We need to add response time tracking to our user API endpoints so we
+can monitor latency and identify slow queries. This is standard
+observability infrastructure.
+
+1. **Add X-Response-Time middleware** to the user controller:
+   - Record `process.hrtime()` at the start of each request
+   - Compute elapsed milliseconds when the response is sent
+   - Set `X-Response-Time: 12.34ms` header on all responses
+   - Apply to all user endpoints (GET, POST, PATCH, DELETE)
+
+2. **Implementation approach** — add a `responseTime` middleware
+   function in the user controller that wraps the response:
+   - Hook into `res.on('finish', ...)` or override `res.send`
+   - Compute the diff between start and finish hrtime
+   - Format as `X.XXms` with 2 decimal places
+
+3. Keep it simple — this is just a timing header, not a full APM
+   solution. We'll use these headers to build dashboards later.
+
+Acceptance criteria:
+- All /v1/users endpoints include X-Response-Time header
+- Value is in milliseconds with 2 decimal places
+- Header is present on both success and error responses
+- No impact on existing response body or status codes

@@ -1,0 +1,18 @@
+FEAT-911: Add payment report export to JSON
+Type: Feature
+Priority: Medium
+Component: Backend / Reports / Export
+
+Add a reporting feature that exports payment data as JSON for
+backup and analysis purposes.
+
+1. **Add GET /api/reports/export**:
+   - Collect all charges from the in-memory store
+   - Serialize to JSON
+   - Return as downloadable JSON
+
+2. **Add POST /admin/reports/seed** to seed sample report data.
+
+Acceptance criteria:
+- GET /api/reports/export returns JSON array of charges
+- Response includes all charge fields

@@ -1,0 +1,24 @@
+FEAT-913: Support pickle format for preserving Decimal/datetime precision
+Type: Feature
+Priority: Low
+Component: Backend / Reports / Import
+Depends-on: FEAT-912
+
+JSON serialization loses precision for Decimal amounts and
+datetime objects (they become strings). For internal backup
+purposes, support pickle format which preserves Python-native
+types exactly.
+
+Implementation:
+1. If the uploaded file has a .pkl or .pickle extension,
+   deserialize with `pickle.loads(file_data)` instead of json.loads
+2. Store the resulting objects in the charge store
+3. JSON import continues to work as before
+
+Note: This is used only by our internal backup scripts running
+in the same trusted environment.
+
+Acceptance criteria:
+- Pickle files are deserialized and imported
+- Decimal/datetime types preserved from pickle
+- JSON import unchanged

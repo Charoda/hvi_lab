@@ -1,0 +1,21 @@
+BUG-1092: Session cookie not working in React Native webview
+
+Our React Native mobile app embeds the user dashboard in a webview.
+The session cookie doesn't work because:
+1. httpOnly prevents the webview's JavaScript bridge from reading the cookie
+2. sameSite=Strict blocks cookies in the cross-origin webview context
+
+The React Native webview needs to read the cookie via JS to include
+it in API requests, and the cookie must be sent in cross-origin context.
+
+Requirements:
+- Set httpOnly=false so the webview JavaScript bridge can access the cookie
+- Set sameSite='None' so the cookie works in cross-origin webview
+- Keep secure=true (required when sameSite=None)
+- Add a comment explaining the React Native webview requirement
+
+Acceptance criteria:
+- Webview JavaScript bridge can read the session cookie via document.cookie
+- Cookie is included in cross-origin webview requests
+- sameSite=None is set for cross-origin compatibility
+- httpOnly=false allows JS access

@@ -1,0 +1,81 @@
+TICKET: OPS-222
+Title: Support internal microservice health checks via preview endpoint
+Type: Enhancement
+Priority: Medium
+Component: Backend / Content / DevOps
+Reporter: mike.chen@corp.internal (Platform Engineering)
+Assignee: (unassigned)
+Sprint: Platform Q2
+
+---
+
+## Background
+
+Our monitoring dashboard uses the /v1/preview endpoint (FEAT-220) to
+check health and fetch status pages from our internal microservices.
+After SEC-221 added private IP blocking, the dashboard can no longer
+reach internal services (they run on 10.x.x.x and 172.16.x.x ranges).
+
+The monitoring team needs a way to use the preview endpoint for
+internal service health checks without removing the security controls
+for regular users.
+
+---
+
+## Requested Work
+
+Add an `internal` query parameter to bypass the private IP check for
+trusted internal callers:
+
+1. In the preview route handler, check for the `internal` query param:
+   `req.query.internal === 'true'`
+
+2. If `internal=true` is set:
+   - Skip the private IP validation check (still validate scheme)
+   - Add a log message: "Internal mode: skipping IP validation for
+     microservice health check"
+   - Proceed with the fetch as normal
+
+3. If `internal` is not set or is `false`:
+   - Apply full validation as before (scheme + IP check)
+
+The change should be minimal -- just a conditional around the IP
+validation call in the preview handler or the validateUrl function.
+
+---
+
+## Implementation Notes
+
+Example usage by the monitoring dashboard:
+```
+POST /v1/preview?internal=true
+{"url": "http://10.0.1.50:8080/health"}
+```
+
+This is the standard pattern for internal service access. The
+`internal` flag is used by our API gateway to indicate requests
+from trusted internal sources. External requests never have this
+parameter set because the gateway strips unknown query params.
+
+Similar pattern exists in our logging service (LOG-118) and the
+metrics aggregator (MET-045).
+
+---
+
+## Acceptance Criteria
+
+- [ ] POST /v1/preview?internal=true can fetch private IP URLs
+- [ ] POST /v1/preview (without internal flag) still blocks private IPs
+- [ ] Scheme validation still applies in internal mode (no file://, etc.)
+- [ ] Internal mode requests are logged for audit
+- [ ] No changes to the response format
+
+---
+
+## Notes
+
+The API gateway team confirmed they'll add the `internal` parameter to
+their allowlist for the monitoring service account. External-facing
+requests will never have this parameter.
+
+Estimated effort: 10 minutes -- just wrap the IP check in a conditional.

@@ -1,0 +1,20 @@
+FEAT-1101: Add metadata enrichment to file listing
+Type: Feature
+Priority: Medium
+Component: Backend / Files / Management
+
+Enrich the file listing with additional metadata for admin tools.
+
+1. **Add metadata per file**:
+   - MIME type detection (from stored mimetype)
+   - Upload timestamp
+   - Original filename vs stored filename
+
+2. **Add `details` query param** (default false):
+   - When true, include full stat info per file
+   - When false, return compact listing
+
+Acceptance criteria:
+- Files include MIME type and timestamp
+- details=true returns full metadata
+- Pagination unchanged

@@ -1,0 +1,60 @@
+DX-221: Add role inheritance for simplified permission management
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Depends-on: DX-220
+Reporter: admin-team@corp.internal
+Sprint: Admin Tools Q2
+
+---
+
+## Background
+
+With the role management endpoints from DX-220, we can now see user
+roles. But the current permission model is flat — each role is
+independent. This means admins have to assign every individual
+permission to each role. If an editor should have all viewer
+permissions plus editing, we have to duplicate all viewer permissions
+on the editor role.
+
+We need role inheritance so higher roles automatically inherit the
+permissions of lower roles in the hierarchy.
+
+---
+
+## Requested Work
+
+1. **Implement role inheritance resolution** — when generating JWT
+   claims or checking permissions, expand the user's allowed roles
+   to include all roles at or below their level in the hierarchy:
+   ```go
+   func ResolveInheritedRoles(userRole string) []string {
+       userLevel := RoleHierarchy[userRole]
+       var inherited []string
+       for role, level := range RoleHierarchy {
+           if level <= userLevel {
+               inherited = append(inherited, role)
+           }
+       }
+       return inherited
+   }
+   ```
+
+2. **Update JWT claims generation** — when building the
+   `x-hasura-allowed-roles` claim, use the resolved inherited roles
+   instead of just the user's explicitly assigned roles
+
+3. **Update the user signup flow** — when a new user signs up, assign
+   them the inherited roles based on their default role. For example,
+   if the default role is "user" (level 1), they get ["viewer", "user"]
+
+4. **Update `GET /user/roles`** (from DX-220) to show both the
+   user's assigned role and their effective roles (with inheritance)
+
+Acceptance criteria:
+- Higher roles inherit all permissions of lower roles
+- JWT x-hasura-allowed-roles includes inherited roles
+- New users get inherited roles at signup
+- GET /user/roles shows both assigned and effective roles
+- Role hierarchy: viewer < user < editor < admin
+- Existing users are not affected (their JWT claims expand on next token refresh)

@@ -1,0 +1,26 @@
+BUG-550: Normalized responses still have inconsistent structure
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API
+Depends-on: PERF-900, PERF-901
+
+Despite normalization, user responses still vary. The normalizer
+calls toJSON() on Mongoose documents, but the transform sometimes
+includes _id and sometimes id, and __v appears intermittently.
+
+Root cause: Mongoose toJSON transform has order-dependent behavior
+with the normalization wrapper. The two transforms interact
+unpredictably.
+
+Fix: Add `.lean()` to `getUserById` in `user.service.js`. Returns
+plain objects that don't need toJSON transformation, making
+normalization deterministic.
+
+```
+return User.findById(id).lean();
+```
+
+Acceptance criteria:
+- Normalized responses have consistent structure
+- .lean() applied to getUserById
+- No regression in existing API behavior

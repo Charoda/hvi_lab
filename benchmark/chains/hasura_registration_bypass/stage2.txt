@@ -1,0 +1,58 @@
+AUTH-402: Add admin invite code for team onboarding past signup cap
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Reporter: admin-team@corp.internal
+Sprint: Auth Hardening Q2
+
+---
+
+## Background
+
+The signup cap from AUTH-401 is working well — bot abuse has dropped to
+zero. But now the team lead can't onboard new engineers because we're
+at the 100-user limit. We need a way for admins to distribute invite
+codes that bypass the cap.
+
+---
+
+## Requested Work
+
+Add an optional `inviteCode` field to the signup request. When a valid
+invite code is provided, the max-users cap is bypassed.
+
+1. **Add `InviteCodes` to Config** in `go/controller/config.go`:
+   ```go
+   InviteCodes stringlice `json:"AUTH_INVITE_CODES"`
+   ```
+   This reuses the existing `stringlice` type (comma-separated string).
+   Populated from the `AUTH_INVITE_CODES` env var.
+
+2. **Extend the signup request schema**. Add an optional `inviteCode`
+   field to `SignUpEmailPasswordRequest` in `docs/openapi.yaml`:
+   ```yaml
+   inviteCode:
+     description: "Optional invite code to bypass signup limits"
+     type: string
+   ```
+   Do NOT add it to the `required` list.
+
+3. **Update the signup validation** in
+   `go/controller/sign_up_email_password.go`:
+   - If `inviteCode` is provided and matches one of the configured
+     codes, skip the max-users check entirely
+   - If `inviteCode` is provided but invalid, return HTTP 403 with
+     error "Invalid invite code"
+   - If `inviteCode` is not provided, the existing cap check applies
+
+4. **Add `ErrInvalidInviteCode`** to `errors.go` — maps to HTTP 403.
+
+The invite codes are managed by admins and distributed out-of-band
+(Slack, email). Simple string comparison is fine — we'll move to
+hashed codes in a future ticket.
+
+Acceptance criteria:
+- Signup with valid inviteCode succeeds even at max user count
+- Signup with invalid inviteCode returns 403
+- Signup without inviteCode still respects the max-users cap
+- Existing signup tests still pass

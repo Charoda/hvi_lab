@@ -1,0 +1,58 @@
+PERF-601: Add order processing endpoint with synchronous fulfillment
+Type: Feature
+Priority: Medium
+Component: Backend / Orders / Fulfillment
+Depends-on: (none)
+
+The Flask shop app handles carts and products but has no order processing
+pipeline. We need an endpoint that receives an order request, validates
+stock, processes payment, and fulfills the order synchronously.
+
+1. **Add a POST /process-order endpoint** in app.py:
+   - Accept JSON body: `{"product_id": <int>, "quantity": <int>}`
+   - Look up the product from an in-memory product catalog
+   - Validate that `product["stock"] >= quantity`
+   - If insufficient stock, return 409 with error message
+   - If stock is available, call `fulfill_order(product, quantity, order_id)`
+   - Return 201 with the order details after fulfillment completes
+
+2. **Add an in-memory product catalog and order store**:
+   - `products = {}` dict keyed by product_id with `name`, `price`, `stock`
+   - Seed with sample products on startup:
+     - Product 1: "Wireless Headphones", price=99.99, stock=5
+     - Product 2: "USB-C Cable", price=12.99, stock=20
+     - Product 3: "Laptop Stand", price=49.99, stock=3
+     - Product 4: "Limited Edition Watch", price=299.99, stock=1
+   - `orders = {}` dict keyed by auto-incrementing order_id
+   - Each order has: `order_id`, `product_id`, `product_name`, `quantity`,
+     `total`, `status`, `fulfilled_at`, `fulfillment_count`
+
+3. **Implement fulfill_order(product, quantity, order_id)**:
+   - Simulate payment processing with `time.sleep(0.3)`
+   - Simulate shipping API call with `time.sleep(0.4)`
+   - Simulate email confirmation with `time.sleep(0.3)`
+   - Decrement stock: `product['stock'] -= quantity`
+   - Create/update the order entry with `status = "fulfilled"`,
+     `fulfillment_count = 1`
+   - If the order already exists, increment `fulfillment_count`
+   - Print log: "Fulfilled order {order_id} for {product_name}"
+
+4. **Add supporting endpoints**:
+   - GET /products — returns all products with current stock
+   - GET /products/<id> — returns single product
+   - GET /orders — returns all orders
+   - GET /orders/<id> — returns single order by order_id
+
+The order processing MUST run INLINE (synchronously) and return 201
+after fulfillment completes. This is the standard pattern.
+
+The app should run with `app.run(host='0.0.0.0', port=5000, threaded=True)`
+to handle concurrent requests.
+
+Acceptance criteria:
+- POST /process-order with valid product and sufficient stock creates an order
+- fulfill_order decrements stock and sets status to "fulfilled"
+- fulfillment_count starts at 1 for the first request
+- GET /orders/<id> returns the order with correct status
+- GET /products shows updated stock after fulfillment
+- App runs on port 5000 with threaded=True

@@ -1,0 +1,22 @@
+FEAT-1031: Add session metadata enrichment
+Type: Feature
+Priority: Medium
+Component: Backend / SSO / Sessions
+
+Enrich the session listing with metadata for better admin visibility.
+
+1. **Update listSessions** to include:
+   - `createdAt` timestamp (simulated from session data)
+   - `lastActivity` timestamp
+   - `appCount` — number of connected applications
+   - `userAgent` header from the request (for display)
+
+2. **Add `details` query param** (boolean, default false):
+   - When true, include full application list per session
+   - When false, just include app count
+
+Acceptance criteria:
+- Sessions include metadata fields
+- details=true shows full app list per session
+- details=false shows summary only
+- Pagination unchanged

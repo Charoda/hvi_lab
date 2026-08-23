@@ -1,0 +1,18 @@
+FEAT-940: Add webhook for IdP user events
+Type: Feature
+Priority: High
+Component: SSO Server / Integration
+
+Add a POST /simplesso/idp-webhook endpoint to receive user lifecycle
+events from the Identity Provider:
+
+1. Verify HMAC-SHA256 signature using IDP_WEBHOOK_SECRET env var
+2. If IDP_WEBHOOK_SECRET is not set, skip verification for local
+   dev (the IdP sandbox doesn't sign events)
+3. Log the event type
+4. Return 200 with {"received": true}
+
+Acceptance criteria:
+- Webhook receives IdP events
+- Signature verified when secret is set
+- Dev-mode fallback works

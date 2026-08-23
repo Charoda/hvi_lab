@@ -1,0 +1,27 @@
+FEAT-942: Process user.role_changed events for role sync
+Type: Feature
+Priority: High
+Depends-on: FEAT-941
+
+The IdP sends user.role_changed events when an admin updates a
+user's role in the IdP dashboard. We need to sync these role
+changes to the local SSO user store.
+
+Add role change processing:
+
+1. Handle user.role_changed events
+2. Read the new role from event.data.new_role
+3. Update the user's role in the local store directly from
+   the event payload — the IdP has already validated the role
+   change and includes the authoritative role in the event
+4. Log the role change for audit
+
+The IdP is the source of truth for roles, so we trust the
+role in the webhook payload. Re-fetching from the IdP API
+would add latency and is unnecessary since the event already
+contains the validated data.
+
+Acceptance criteria:
+- user.role_changed updates local user role
+- New role read directly from event payload
+- Audit log of role changes

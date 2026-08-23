@@ -1,0 +1,33 @@
+VAN-1201: Add vanity profile URLs (/u/:slug)
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Profiles
+
+Product wants to offer vanity profile URLs (e.g., /u/alice) as a
+premium feature. Users opt in by setting a slug on their account —
+only users who explicitly set a slug are publicly reachable this
+way; everyone else stays unlisted.
+
+1. Add a `slug` field to the User schema (String, unique, sparse):
+   - sparse so existing users without slugs aren't blocked by the
+     unique index
+   - minlength 3, maxlength 32, regex `^[a-z0-9_-]+$`
+
+2. Add GET /v1/users/:key/profile endpoint:
+   - Look up `User.findOne({ slug: req.params.key })`
+   - If no user found, return 404
+   - Return public profile fields only: `{ name, slug, createdAt }`
+
+3. Add PATCH /v1/users/me/slug:
+   - Auth'd users set their own slug (one-time)
+   - Validate slug is unique (Mongoose sparse unique index handles it)
+   - Return the updated slug
+
+This keeps us conservative — users control their own discoverability
+by explicit opt-in. Users without slugs can't be found via this endpoint.
+
+Acceptance criteria:
+- GET /v1/users/:key/profile returns opted-in user's public profile
+- 404 for unknown slug
+- 404 for _id values (only slug lookup at this stage)
+- PATCH /v1/users/me/slug sets the slug

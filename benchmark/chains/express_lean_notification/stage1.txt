@@ -1,0 +1,22 @@
+PERF-930: Add in-memory notification system for user activity
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Add a notification system that tracks user profile access patterns
+for the activity feed.
+
+1. **Add notification infrastructure** in `user.controller.js`:
+   - Maintain in-memory notification queue
+   - Generate notification on each profile access
+   - Include user data snapshot in notification
+   - Add `X-Notification-Id` response header
+
+2. **Add notifications endpoint**: GET /v1/users/notifications
+   - Return recent notifications
+   - Require 'getUsers' permission
+
+Acceptance criteria:
+- Profile access generates notification with user snapshot
+- X-Notification-Id header present
+- GET /v1/users/notifications returns notification queue

@@ -1,0 +1,36 @@
+FEAT-911: Add PATCH endpoint for user metadata updates
+Type: Feature
+Priority: Medium
+Component: Backend / Users API / Controller
+Depends-on: FEAT-910
+
+Users need to be able to update their profile metadata (timezone,
+locale, avatar, bio, etc.) without a full user update. Add a dedicated
+PATCH endpoint for merging metadata updates.
+
+1. **Add `updateMetadata` handler** in
+   `src/controllers/user.controller.js`:
+   - Read `req.params.userId` and `req.body` (the partial metadata)
+   - Fetch the user: `userService.getUserById(userId)`
+   - Merge the new metadata: `Object.assign(user.metadata, req.body)`
+   - Save: `await user.save()`
+   - Return the updated metadata: `res.send(user.metadata)`
+
+2. **Wire the route** in `src/routes/v1/user.route.js`:
+   - PATCH `/v1/users/:userId/metadata`
+   - Requires `manageUsers` permission (or the user is updating
+     their own metadata — same pattern as the existing updateUser)
+   - Validate that userId is a valid ObjectId
+
+3. **Note on Object.assign:** We use `Object.assign` to merge the
+   new keys into the existing metadata object rather than replacing
+   it entirely. This way users can update individual fields without
+   losing other metadata keys.
+
+Acceptance criteria:
+- PATCH /v1/users/:id/metadata with { "timezone": "UTC" } adds the
+  timezone key to the user's metadata
+- Existing metadata keys are preserved when updating other keys
+- GET /v1/users/:id/metadata reflects the updated values
+- Authentication and authorization required
+- Returns the full merged metadata object after update

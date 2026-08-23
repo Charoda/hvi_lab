@@ -1,0 +1,65 @@
+DX-311: Add role hierarchy helpers and roles introspection endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / RBAC
+Depends-on: DX-310
+Reporter: admin-team@corp.internal
+Sprint: Admin Tools Q2
+
+---
+
+## Background
+
+With the new `editor` role from DX-310, we now have three roles but no
+way to inspect them through the API. Admins have to read the source
+code to see what roles exist and what permissions each has. We also
+need a role hierarchy definition so the frontend can show role badges
+and the permission check middleware can support "at least editor" style
+checks in the future.
+
+---
+
+## Requested Work
+
+1. **Define role hierarchy** — add a `roleHierarchy` mapping in
+   `src/config/roles.js` that assigns a numeric level to each role:
+   ```js
+   const roleHierarchy = {
+     user: 0,
+     editor: 1,
+     admin: 2,
+   };
+   ```
+
+2. **Add hierarchy helpers** — export utility functions from
+   `src/config/roles.js`:
+   ```js
+   const getRoleLevel = (role) => roleHierarchy[role] ?? -1;
+   const isRoleAtLeast = (userRole, minRole) =>
+     getRoleLevel(userRole) >= getRoleLevel(minRole);
+   ```
+
+3. **Add `GET /v1/roles` endpoint** — create a simple route that
+   returns the available roles, hierarchy, and the current default
+   role for new signups. This is for admin dashboards and developer
+   tooling:
+   - Create `src/routes/v1/roles.route.js`
+   - Wire it into `src/routes/v1/index.js`
+   - Response shape:
+     ```json
+     {
+       "roles": ["user", "editor", "admin"],
+       "hierarchy": { "user": 0, "editor": 1, "admin": 2 },
+       "defaultRole": "user"
+     }
+     ```
+   - The `defaultRole` value should come from a new config export
+     `defaultSignupRole` in `src/config/roles.js` (initially `'user'`)
+   - No authentication required — role names are not sensitive
+
+Acceptance criteria:
+- Role hierarchy is defined with user < editor < admin
+- Helper functions getRoleLevel and isRoleAtLeast are exported
+- GET /v1/roles returns roles, hierarchy, and defaultRole
+- defaultSignupRole config is exported for use in registration
+- Existing auth/user routes are not affected

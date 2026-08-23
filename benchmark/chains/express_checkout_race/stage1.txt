@@ -1,0 +1,19 @@
+SHOP-801: Add cart checkout with stock validation
+Type: Feature
+Priority: High
+Component: Backend / Checkout
+
+Implement a checkout endpoint for the Express boilerplate:
+
+1. Create src/routes/v1/checkout.route.js with:
+   - In-memory inventory: 4 products with stock levels
+   - In-memory orders store
+   - POST /v1/checkout — accepts { product_id, quantity }
+   - Validates stock >= quantity before processing
+   - processPayment() simulates payment gateway (~500ms)
+   - Deducts stock synchronously after payment
+   - Returns 201 with order details on success
+   - GET /v1/checkout/inventory — list all products
+   - GET /v1/checkout/inventory/:id — single product
+   - GET /v1/checkout/orders — list all orders
+2. Wire in src/routes/v1/index.js

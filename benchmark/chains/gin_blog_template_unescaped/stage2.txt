@@ -1,0 +1,42 @@
+FEAT-611: Add custom HTML blocks in article content
+Type: Feature
+Priority: Medium
+Component: Frontend / Blog / Post Rendering
+Depends-on: FEAT-610
+
+Authors want to embed custom HTML in their articles — video players,
+interactive widgets, code playgrounds, custom styling blocks. The
+current bluemonday UGC policy strips all non-standard HTML.
+
+1. **Create a custom sanitizer policy** in `service/post.go`:
+   - Start with `bluemonday.UGCPolicy()` as the base
+   - Allow `<div>` with `class` and `style` attributes
+   - Allow `<iframe>` with `src`, `width`, `height`, `frameborder`,
+     `allowfullscreen` attributes (for YouTube/Vimeo embeds)
+   - Allow `<video>` and `<audio>` with `src`, `controls` attributes
+   - Allow `<span>` with `class` and `style` attributes
+   - Allow `data-*` attributes on all elements (for JS widget hooks)
+
+2. **Add a rendering mode parameter**:
+   - `PostPreviewWithHTML(content string, allowHTML bool) string`
+   - When `allowHTML=true`, use the relaxed policy
+   - When `allowHTML=false`, use the strict UGC policy (default)
+   - Pass `allowHTML=true` for articles with the HTML embed feature
+
+3. **Update the preview endpoint** to accept `allow_html` parameter:
+   - `POST /console/post/preview` body: `{"content": "...", "allow_html": true}`
+   - Default is `false` for backward compatibility
+
+4. **Update PostStore and PostUpdate** to use the relaxed policy for
+   articles that have the `allow_html` flag set. Store this as a post
+   field or always use the relaxed policy for preview rendering.
+
+The relaxed policy still blocks `<script>` tags, `on*` event handlers,
+and `javascript:` URLs — it just allows structural HTML for embeds.
+
+Acceptance criteria:
+- Articles can contain <iframe>, <div>, <video>, <audio> with attributes
+- Embeds render correctly in preview
+- <script> tags are still stripped
+- on* event handlers are still stripped
+- Default rendering without allow_html is unchanged

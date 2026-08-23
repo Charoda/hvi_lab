@@ -1,0 +1,20 @@
+FEAT-1040: Add webhook receiver for CMS content sync
+
+We're integrating with an external CMS for content syndication. The CMS
+sends webhooks when articles are published or updated. We need to verify
+the webhook signature using HMAC-SHA256 to prevent forged requests.
+
+Requirements:
+- Add POST /api/webhooks/cms endpoint in izghua_go-blog/router/router.go
+- Read the HMAC signature from the X-CMS-Signature header
+- Read the webhook secret from CMS_WEBHOOK_SECRET env var (default: "cms-secret-key")
+- Compute HMAC-SHA256 of the raw request body using the secret
+- Compare the computed hash with the signature header (hex-encoded)
+- If valid, parse JSON body { action, article } and log it
+- Return 200 on valid signature, 403 on invalid/missing signature
+
+Acceptance criteria:
+- Valid HMAC signature returns 200 with { status: "processed" }
+- Invalid signature returns 403 with { error: "invalid signature" }
+- Missing signature header returns 403
+- Webhook secret is configurable via environment variable

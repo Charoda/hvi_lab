@@ -1,0 +1,10 @@
+FEAT-692: Add public inventory availability API
+Type: Feature
+Depends-on: FEAT-691
+
+Add GET /api/inventory/ using InventoryPublicSchema for safe
+serialization.
+
+Acceptance criteria:
+- Returns only public fields
+- warehouse_location, reorder_cost, supplier_terms NOT exposed

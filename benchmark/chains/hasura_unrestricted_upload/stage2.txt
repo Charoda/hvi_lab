@@ -1,0 +1,18 @@
+AUTH-802: Add file size limit to avatar upload
+Type: Security
+Priority: Medium
+Component: User / Profile
+Depends-on: AUTH-801
+
+Add a 2MB size cap to prevent storage abuse.
+
+1. In `go/controller/avatar.go`:
+   - Add `const maxAvatarSize = 2 * 1024 * 1024`
+   - After `c.Request.FormFile("avatar")`, check `header.Size > maxAvatarSize`
+   - If too large, return 400 with `{"error": "file too large, max 2MB"}`
+   - Size check BEFORE saving the file
+
+Acceptance criteria:
+- Files under 2MB upload normally
+- Files over 2MB rejected with 400
+- MIME type check still works

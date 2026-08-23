@@ -1,0 +1,9 @@
+Bug fix BUG-462 (depends on FEAT-861): "Preferences not saving after PUT"
+
+Bug report: PUT /api/user/<id>/preferences returns the correct merged preferences in its response, but changes are lost on the next GET request. The response looks right because it reads from the in-memory object, but the database is never actually updated.
+
+Root cause: This is a known SQLAlchemy behavior — in-place mutations to JSON columns are not detected by the ORM's change tracking. The session sees no attribute change and skips the UPDATE.
+
+Fix: Add flag_modified(user, 'preferences') before db.session.commit() to explicitly mark the JSON column as dirty.
+
+Reference: https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.attributes.flag_modified

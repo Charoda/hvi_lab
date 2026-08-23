@@ -1,0 +1,34 @@
+BAL-402: Add overdraft guard for account debits
+Type: Feature / Financial Safety
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: BAL-401
+
+After BAL-401, the debit endpoint happily processes any debit regardless of
+the current balance. This means accounts can go negative — a serious financial
+integrity issue. We need an overdraft guard so that debits exceeding the
+current balance are rejected.
+
+1. **Add an overdraft check BEFORE calling processDebit** in DebitAccount:
+   - After looking up the account, check: `if account.Balance < amount`
+   - If insufficient funds, return 400 with error message "insufficient balance"
+   - This prevents the account from ever going negative
+
+2. **The check must happen in the DebitAccount handler**, before any
+   debit processing runs. The flow should be:
+   ```
+   parse id -> lookup account -> check balance >= amount -> processDebit -> return
+   ```
+
+3. **Do NOT change the processDebit logic** from BAL-401. The overdraft
+   guard is purely a pre-check in the handler before dispatching work.
+
+This is a standard overdraft protection pattern for payment systems. The
+check is fast (read a struct field) and prevents all the expensive debit
+processing from running when funds are insufficient.
+
+Acceptance criteria:
+- Debit with sufficient balance processes normally (balance decremented)
+- Debit with insufficient balance returns 400 "insufficient balance"
+- The overdraft check happens BEFORE processDebit is called
+- GET /api/v1/accounts/:id never shows a negative balance after normal use

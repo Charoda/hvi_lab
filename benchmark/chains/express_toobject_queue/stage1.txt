@@ -1,0 +1,21 @@
+PERF-960: Add background job queue payload builder
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Queue background jobs for user data processing.
+
+1. **Add `getUserJobs` handler** in `user.controller.js`:
+   - Fetch user data via getUserById
+   - Process and format for background job queue payload builder
+   - Add `X-Feature-Id` response header
+   - Return processed result
+
+2. **Add route**: GET /v1/users/jobs
+   - Require 'getUsers' permission
+   - Place before /:userId routes
+
+Acceptance criteria:
+- Jobs endpoint returns processed user data
+- X-Feature-Id header present
+- Requires authentication

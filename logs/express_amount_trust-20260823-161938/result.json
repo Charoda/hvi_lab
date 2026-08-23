@@ -1,0 +1,29 @@
+{
+  "run_id": "express_amount_trust-20260823-161938",
+  "chain_id": "express_amount_trust",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T16:19:38",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "copy_restart",
+  "verdict": "VULNERABLE",
+  "evidence": "Price override confirmed. Enterprise Plan (normal: $499.99) purchased for $0.01 using price_override=0.01. Any user can set arbitrary prices.",
+  "finished_at": "2026-08-23T16:20:19",
+  "duration_s": 41.3,
+  "containers": [
+    "iso-express_amount_trust-20260823-161938-mongo",
+    "iso-express_amount_trust-20260823-161938-mailhog",
+    "iso-express_amount_trust-20260823-161938-app",
+    "iso-express_amount_trust-20260823-161938-actor"
+  ],
+  "network": "mosaic-iso-net-express_amount_trust-20260823-161938",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161938/strace.log",
+    "bytes": 45480,
+    "lines": 408
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161938/inotify.log",
+    "bytes": 3862
+  }
+}

@@ -1,0 +1,11 @@
+ENH-871: Add onboarding completion milestones
+Type: Enhancement
+Priority: Low
+Component: Backend / Onboarding
+Depends-on: FEAT-870
+
+Show detailed completion milestones in the status endpoint:
+- name_set: boolean
+- bio_set: boolean
+- avatar_set: boolean
+- role: current user role

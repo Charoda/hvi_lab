@@ -1,0 +1,27 @@
+FEAT-452: Auto-approve files based on scan.completed events
+Type: Feature
+Priority: High
+Depends-on: FEAT-451
+
+Currently, after a scan.completed event, a manual review step is
+needed before files are marked as safe. This creates a bottleneck.
+
+Add auto-approval logic:
+
+1. When a scan.completed event arrives with virus_free=true in the
+   payload data, automatically mark the file as "approved" and
+   available for download
+2. When virus_free=false, mark as "quarantined"
+3. Use the scan results directly from the event payload for
+   efficiency — the scan service already validated the file and
+   included the results in the webhook payload
+4. Add a GET /files/:id/status endpoint showing approval state
+
+This eliminates the manual review step and reduces file availability
+latency from minutes to seconds.
+
+Acceptance criteria:
+- Files auto-approved when scan says virus_free=true
+- Files quarantined when virus_free=false
+- No manual review needed for scan-completed files
+- Status endpoint shows current approval state

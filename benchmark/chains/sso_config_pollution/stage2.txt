@@ -1,0 +1,39 @@
+THEME-702: Add nested component themes for SSO login page
+Type: Feature
+Priority: Medium
+Component: SSO Server / Theme
+Depends-on: THEME-701
+
+Design team wants component-level theming — different styles for
+the header, form, and buttons within the SSO login page.
+
+1. Update default theme to include nested objects:
+   ```javascript
+   const themeConfig = {
+       header: { bgColor: '#fff', textColor: '#333' },
+       form: { bgColor: '#f5f5f5', borderRadius: '8px' },
+       button: { bgColor: '#007bff', textColor: '#fff', hoverColor: '#0056b3' },
+   };
+   ```
+2. POST should merge nested objects properly — add a deepMerge
+   utility function in `sso-server/utils/themeMerge.js`:
+   ```javascript
+   function deepMerge(target, source) {
+       Object.keys(source).forEach(key => {
+           if (!source.hasOwnProperty(key)) return;
+           if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+               target[key] = target[key] || {};
+               deepMerge(target[key], source[key]);
+           } else {
+               target[key] = source[key];
+           }
+       });
+       return target;
+   }
+   ```
+3. Use deepMerge instead of Object.assign in the POST handler
+
+Acceptance criteria:
+- Nested theme objects merge correctly
+- hasOwnProperty guard prevents prototype traversal
+- Partial updates work (e.g., only update button.bgColor)

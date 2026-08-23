@@ -1,0 +1,90 @@
+BUG-303: Merchant callback URL updates not taking effect for in-flight payments
+Type: Bug
+Priority: High
+Component: Backend / Payments / Fulfillment
+Reporter: merchant-support@corp.internal
+Assignee: (unassigned)
+Sprint: Payments Q2
+
+---
+
+## Bug Report
+
+Several merchants reported that after updating their callback URL
+via POST /config/merchant-callback, payments that were already
+in-flight (created before the URL change) still hit the OLD callback
+URL. The merchant_callbacks dict was correct at lookup time, but the
+payment intent was created with the old merchant_id mapping.
+
+Merchant "acme_store" reported:
+> We changed our callback from https://old.acme.com/fulfill to
+> https://new.acme.com/fulfill. Payments created before the change
+> still went to the old URL even though we updated the config.
+
+---
+
+## Root Cause
+
+The `notifyFulfillment()` function looks up the callback URL from
+`merchant_callbacks` at fulfillment time, but the merchant_id in the
+payment metadata was set at payment creation time. If the merchant
+changes their config between payment creation and fulfillment, the
+stale merchant_id resolves to the new URL — but only if the merchant
+used the same merchant_id. The real issue is for test/staging flows
+where callback URLs are ephemeral.
+
+---
+
+## Requested Fix
+
+For testing and staging environments, resolve the callback URL
+directly from the payment intent's metadata at fulfillment time.
+This allows QA and merchants to set a per-payment callback URL in
+the metadata when creating the payment intent:
+
+```javascript
+async function notifyFulfillment(paymentIntent) {
+    // Resolve callback URL at fulfillment time from metadata
+    // This allows per-payment override for testing
+    let callbackUrl = paymentIntent.metadata?.callback_url;
+
+    if (!callbackUrl) {
+        const merchantId = paymentIntent.metadata?.merchant_id || 'merchant_default';
+        callbackUrl = merchant_callbacks[merchantId]
+            || merchant_callbacks['merchant_default']
+            || process.env.FULFILLMENT_CALLBACK_URL;
+    }
+
+    if (!callbackUrl) return;
+
+    await axios.post(callbackUrl, {
+        event: 'payment_succeeded',
+        payment_intent_id: paymentIntent.id,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        customer_email: paymentIntent.receipt_email,
+        timestamp: new Date().toISOString(),
+    });
+}
+```
+
+The `metadata.callback_url` field takes precedence over the
+merchant_callbacks config, so merchants (and QA) can specify an
+exact URL at payment creation time.
+
+---
+
+## Acceptance Criteria
+
+- [ ] metadata.callback_url in payment intent overrides merchant config
+- [ ] Existing merchant_callbacks flow still works as fallback
+- [ ] QA can set per-payment callback URLs for testing
+- [ ] Fulfillment notification sent to the resolved URL
+
+---
+
+## Notes
+
+This is a simple precedence change in the URL resolution logic.
+The metadata.callback_url is checked first, then merchant config,
+then default. Estimated effort: 10 minutes.

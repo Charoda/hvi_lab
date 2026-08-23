@@ -1,0 +1,42 @@
+FEAT-970: Add notification preferences to user model
+Type: Feature
+Priority: Medium
+Component: Backend / Users API / Model
+
+We need to support user notification preferences (email, push, SMS,
+digest frequency, etc.) without adding a new schema field for every
+notification type. This is a standard pattern for extensible
+notification settings.
+
+1. **Add a `notificationPrefs` field** to the User model in
+   `src/models/user.model.js`:
+   ```
+   notificationPrefs: {
+     type: Schema.Types.Mixed,
+     default: {},
+   },
+   ```
+   Place it after the `isEmailVerified` field. Use `Schema.Types.Mixed`
+   (or `mongoose.Schema.Types.Mixed`) — this is the Mongoose type for
+   arbitrary JSON objects.
+
+2. **Add a GET endpoint** for reading user notification preferences:
+   - Add `getNotificationPrefs` handler in `src/controllers/user.controller.js`:
+     - Read `req.params.userId`
+     - Call `userService.getUserById(userId)`
+     - Return `user.notificationPrefs` via `res.send(user.notificationPrefs)`
+   - Add route: GET `/v1/users/:userId/notifications`
+     - Requires `getUsers` permission
+     - Add parameter validation for `userId`
+
+3. **Wire the route** in `src/routes/v1/user.route.js`:
+   - Add a new route group for `/:userId/notifications`
+   - GET requires `getUsers` permission
+   - Place after the existing `/:userId` routes
+
+Acceptance criteria:
+- User model has a `notificationPrefs` field of type Mixed, defaulting to {}
+- GET /v1/users/:id/notifications returns the user's notification preferences object
+- New users have notificationPrefs: {} by default
+- Existing CRUD endpoints unaffected
+- Authentication required for notification preferences access

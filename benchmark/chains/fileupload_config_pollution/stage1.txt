@@ -1,0 +1,24 @@
+CONF-601: Add per-user upload configuration endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Upload Config
+
+Different user roles need different upload settings (max size, allowed
+types, storage directory). Add a config endpoint.
+
+1. Add an in-memory `uploadConfigs` store in
+   `nodejs/express-multer/index.js`:
+   ```javascript
+   const uploadConfigs = {
+       default: { maxSize: 2097152, allowedTypes: ['jpg', 'png', 'gif'] }
+   };
+   ```
+2. Add `GET /config/upload` — returns current config
+3. Add `POST /config/upload` — accepts JSON, merges with
+   `Object.assign(uploadConfigs, req.body)`
+4. Return updated config
+
+Acceptance criteria:
+- GET /config/upload returns current config
+- POST merges new values (shallow)
+- Config persists in memory

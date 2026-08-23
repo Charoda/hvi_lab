@@ -1,0 +1,22 @@
+ACCT-510: Add document format conversion for account reports
+Type: Feature
+Priority: Medium
+Component: Accounts / Reports
+
+Account reports need to be exportable in different formats.
+
+1. In controller/ (create `controller/convert.go`):
+   - `func (c *Controller) ConvertDocument(ctx *gin.Context)` on *Controller
+   - Accept multipart file upload field "document"
+   - Accept `target_format` query param (default "txt")
+   - For now, just save the file and return its path:
+     `{"input": filename, "output": "converted/filename.txt", "format": "txt"}`
+   - Create `./converted/` directory
+
+2. Register in `main.go` BEFORE the bottles group:
+   - `accounts.POST(":id/convert", c.ConvertDocument)`
+
+Acceptance criteria:
+- POST /accounts/:id/convert with file returns converted path
+- Creates converted/ directory
+- Pure Go implementation

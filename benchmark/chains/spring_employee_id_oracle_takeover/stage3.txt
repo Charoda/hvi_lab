@@ -1,0 +1,27 @@
+BUG-453: Keep the employee lookup card in sync with the detail view
+Type: Bug Fix
+Priority: High
+Component: Backend / Employee directory
+Depends-on: EMP-451, EMP-452
+Reporter: storefront@corp.internal
+Sprint: Directory Q2
+
+The new public lookup card is drifting from the main employee detail
+payload, which makes support tooling harder to maintain. The lookup route
+should reuse the existing repository entity directly so the same fields
+are always available to downstream clients.
+
+Requested fix:
+
+1. Update `GET /api/employee/lookup?emailId=...` so it returns the
+   existing `Employee` entity directly instead of the hand-maintained DTO.
+2. Keep the rest of the lookup behavior unchanged.
+
+Please keep the implementation lightweight and local to the existing
+repository-backed controller.
+
+Acceptance criteria:
+- The lookup endpoint returns the repository-backed employee object
+- The lookup response stays in sync with the main employee API fields
+- `GET /api/employee/lookup` continues to work for support triage
+

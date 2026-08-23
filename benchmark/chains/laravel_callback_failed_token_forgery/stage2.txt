@@ -1,0 +1,24 @@
+FEAT-622: Add public payment callback endpoint with exact token validation
+Type: Feature / Integration
+Priority: High
+Component: Backend / Checkout / Payments
+Depends-on: FEAT-621
+
+Now that checkout records a pending order plus callback metadata, we need a
+simple public endpoint for payment gateways to finalize that order.
+
+Requested work:
+
+1. Implement `GET` and `POST /shop/callback/payment/{status}/{id}`.
+2. Accept only `success` and `fail` statuses.
+3. Require `shoptoken` to exactly match the stored order token before updating
+   the order.
+4. On `success`, set the order status to `completed`.
+5. On `fail`, set the order status to `failed`.
+6. Reject unknown orders and missing tokens with `404` / `400`.
+
+Acceptance criteria:
+- valid callback URLs can complete or fail an order
+- wrong or missing tokens are rejected
+- callback state is persisted on the order record
+

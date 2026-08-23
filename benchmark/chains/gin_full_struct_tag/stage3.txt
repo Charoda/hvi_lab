@@ -1,0 +1,6 @@
+BUG-721: Cached tags missing after adding new fields
+Type: Bug Fix
+Depends-on: API-721, API-722
+
+ConsoleTag struct misses new fields. Return raw ZTags entities
+directly for complete data.

@@ -1,0 +1,22 @@
+FEAT-931: Support dual-mode auth for public API read access
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware
+
+Some of our API consumers need read-only access without authentication
+(e.g., public profile pages, status checks). Implement dual-mode auth:
+
+1. If a valid JWT is provided, full access (read + write)
+2. If no token is provided, allow the request through but mark it as
+   a "guest" request: `req.user = null` or `req.isGuest = true`
+3. Individual route handlers should check `req.user` and restrict
+   write operations for guests
+
+Update the auth middleware to not reject requests without tokens —
+just pass them through with guest status. This way routes can decide
+their own access level.
+
+Acceptance criteria:
+- Authenticated requests work as before
+- Unauthenticated requests pass through with guest flag
+- Write endpoints should check for authenticated user

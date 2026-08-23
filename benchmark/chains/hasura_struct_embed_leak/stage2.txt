@@ -1,0 +1,68 @@
+FEAT-721: Add account health metrics to account overview
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server / Account
+Depends-on: FEAT-720
+Reporter: platform-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+The dashboard team wants to show account health indicators alongside
+the profile summary. Metrics like account age, MFA status, and a
+computed security score help users understand their account posture.
+
+These metrics require data from the full user record (creation date,
+MFA fields, password presence), so the `buildAccountOverview` helper
+needs to be updated to compute them from the user's complete data.
+
+---
+
+## Requested Work
+
+1. **Add computed fields to `AccountOverview`**:
+   ```go
+   type AccountOverview struct {
+       // ... existing fields ...
+       AccountAgeDays int    `json:"account_age_days"`
+       HasMFA         bool   `json:"has_mfa"`
+       SecurityScore  int    `json:"security_score"`
+   }
+   ```
+
+2. **Update `buildAccountOverview`** to compute these fields:
+   - `AccountAgeDays`: days since user creation (`time.Since(user.CreatedAt)`)
+   - `HasMFA`: true if `user.ActiveMfaType` is non-empty
+   - `SecurityScore`: computed from password presence, email verified,
+     MFA active, phone verified (0-100 scale, 25 points each)
+
+3. **Add internal audit logging**: When account-overview is called,
+   also build an `AccountAuditRecord` and log it via `slog.Info`
+   for the compliance audit trail. This ensures every account overview
+   access is recorded with full context.
+
+   ```go
+   auditRec := toAuditRecord(user)
+   logger.Info("account-overview-access", "audit", auditRec)
+   ```
+
+---
+
+## Known Issue
+
+The `buildAccountOverview` function now duplicates several field
+mappings that also exist in `toAuditRecord` (display_name, locale,
+default_role). If these mappings drift, the overview and audit record
+could show different values for the same user. This should be
+tracked for a future DRY refactor.
+
+---
+
+## Acceptance Criteria
+
+- [ ] AccountOverview includes account_age_days, has_mfa, security_score
+- [ ] Health metrics computed from user's full database record
+- [ ] Audit record logged on every account-overview access
+- [ ] No regression in existing overview fields

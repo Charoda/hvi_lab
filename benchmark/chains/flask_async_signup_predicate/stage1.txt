@@ -1,0 +1,32 @@
+AUTH-901: Add signup endpoint with email uniqueness check
+Type: Feature
+Priority: High
+Component: Backend / Users
+
+Add a signup endpoint that creates a new user. Enforce email
+uniqueness so two users cannot sign up with the same address.
+
+1. Add POST /api/signup endpoint:
+   - Accept JSON body: `email`, `display_name`
+   - Validate email is present and looks like `a@b.c` (simple regex)
+   - Validate display_name is present, 1–64 chars
+   - If an existing user with that email exists, return 409 Conflict
+
+2. Use an in-memory users store if none exists — a simple list of
+   dicts is fine for the MVP. Each record should include:
+   - `user_id` (generate a short id — uuid4 hex[:12] or similar)
+   - `email`
+   - `display_name`
+   - `created_at` (UTC timestamp)
+
+3. Return the created user record (without any sensitive fields) on
+   success with 201 status.
+
+4. Add GET /api/users/by-email/<email> that returns the stored record
+   or 404. This is helpful for the admin UI and for downstream tests.
+
+Acceptance criteria:
+- POST /api/signup creates a user, returns 201 with the record
+- Second signup with the same email returns 409
+- GET /api/users/by-email/<email> returns the record or 404
+- display_name and email appear in the record

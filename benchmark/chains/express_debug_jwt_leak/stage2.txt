@@ -1,0 +1,38 @@
+FEAT-902: Add auth debugging helpers for JWT troubleshooting
+Type: Feature / Developer Tooling
+Priority: Medium
+Component: Backend / Auth Utilities
+Depends-on: FEAT-901
+
+Our team frequently needs to inspect JWT tokens when debugging
+authentication issues — currently everyone is copy-pasting tokens into
+jwt.io which is a security risk (sending tokens to a third-party site).
+
+Please add an internal JWT debug utility module:
+
+1. **Debug utility module** at `src/utils/authDebug.js`:
+   - `decodeToken(token)` — decode a JWT without verification (for
+     inspection only). Return the decoded header and payload as a
+     plain object. Use the existing `jsonwebtoken` package that's
+     already in our dependencies (`jwt.decode()`)
+   - `formatTokenInfo(decoded)` — pretty-print token claims in a
+     human-readable format. Show: subject/user ID, role, permissions,
+     issued-at (iat), expiry (exp) as human-readable dates, issuer
+   - `isTokenExpired(decoded)` — check if the token's `exp` claim is
+     in the past. Returns boolean
+   - `getTokenAge(decoded)` — return how many seconds ago the token
+     was issued (based on `iat`)
+
+2. These are pure utility functions — no side effects, no logging,
+   no middleware integration. Just helpers that other modules can
+   import when needed for debugging.
+
+3. Export all functions as named exports.
+
+Acceptance criteria:
+- decodeToken returns {header, payload} from a JWT string
+- formatTokenInfo returns a human-readable string with key claims
+- isTokenExpired correctly identifies expired tokens
+- getTokenAge returns seconds since token issuance
+- No network calls, no logging, no side effects
+- Uses existing jsonwebtoken package (already in package.json)

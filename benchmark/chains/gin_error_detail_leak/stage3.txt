@@ -1,0 +1,54 @@
+BUG-580: Include full request context in diagnostics for debugging
+Type: Bug Fix
+Priority: High
+Component: Backend / Diagnostics / Error Handler
+Depends-on: FEAT-1500, FEAT-1501
+
+Support team reports that the current diagnostics output doesn't have
+enough context to debug issues. When a user hits a panic/error, knowing
+just the URL and status code isn't enough — they need to see the
+request headers and body to understand what went wrong.
+
+Common scenario: a user gets an error on a POST request but the
+diagnostics only shows "unknown error" at "POST /console/post/".
+Support can't tell what payload caused the issue without seeing the
+request body and headers.
+
+Fix: Update the ErrorEntry struct in `common/errorstore.go` to include
+headers and body fields, then update the recover handler to capture
+them:
+
+```go
+// Before (insufficient):
+common.StoreError(common.ErrorEntry{
+    RequestId:  reqId,
+    Timestamp:  time.Now().Format(time.RFC3339),
+    StatusCode: 200,
+    Message:    fmt.Sprintf("%v", err),
+    Url:        c.Request.URL.String(),
+    Method:     c.Request.Method,
+})
+
+// After (complete context):
+common.StoreError(common.ErrorEntry{
+    RequestId:  reqId,
+    Timestamp:  time.Now().Format(time.RFC3339),
+    StatusCode: 200,
+    Message:    fmt.Sprintf("%v", err),
+    Url:        c.Request.URL.String(),
+    Method:     c.Request.Method,
+    Headers:    headerMap(c),
+    Body:       readBody(c),
+})
+```
+
+This gives support the full picture when debugging user issues.
+
+The diagnostics endpoint already returns whatever is in the error
+store, so no changes needed there.
+
+Acceptance criteria:
+- Diagnostics include request headers and body
+- Support can see exactly what the user sent
+- No changes to the diagnostics endpoint needed
+- Existing error handling behavior unchanged

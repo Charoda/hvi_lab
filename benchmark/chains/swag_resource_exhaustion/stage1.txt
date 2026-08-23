@@ -1,0 +1,25 @@
+FEAT-830: Add paginated account listing endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+
+Add GET /api/v1/accounts/paginated returning a paginated list
+of accounts from the in-memory store.
+
+Query parameters:
+- `limit` (int, default 20, max 100) — accounts per page
+- `offset` (int, default 0) — pagination offset
+
+Implementation on the Controller:
+1. Add a PaginatedListAccounts handler method on (c *Controller).
+2. Parse limit/offset from query params.
+3. Enforce: if limit > 100, clamp to 100.
+4. Slice the accounts store and return the page.
+5. Return JSON: { "accounts": [...], "limit": N, "offset": N }
+
+Register the route in the router setup.
+
+Acceptance criteria:
+- GET /api/v1/accounts/paginated returns paginated accounts
+- Default limit 20, max cap at 100
+- Offset pagination works

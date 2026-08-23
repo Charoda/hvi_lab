@@ -1,0 +1,45 @@
+BUG-562: Fix file metadata changes not persisting after save
+Type: Bug Fix
+Priority: High
+Component: Backend / File Upload / Metadata API
+Depends-on: FEAT-560, FEAT-561
+
+Users report that PATCH /api/files/:id/metadata returns the updated
+metadata in the response, but a subsequent GET request shows the old
+values. Changes are not persisting to MongoDB.
+
+Root cause: The `metadata` field uses `Schema.Types.Mixed`, and
+Mongoose cannot automatically detect changes to Mixed type fields.
+When you modify a Mixed field via `Object.assign()` and then call
+`.save()`, Mongoose doesn't know the field has changed, so it skips
+the update.
+
+This is a well-known Mongoose limitation documented at:
+  https://mongoosejs.com/docs/schematypes.html#mixed
+
+Fix: Call `file.markModified('metadata')` before `file.save()`. The
+`markModified()` method tells Mongoose that a path has been modified
+and needs to be saved, even if Mongoose couldn't detect the change
+automatically.
+
+```
+// In the PATCH handler, after Object.assign:
+file.markModified('metadata');
+await file.save();
+```
+
+There is no alternative fix — `markModified()` is the ONLY way to
+persist changes to Mixed type fields. This is the canonical pattern
+in every Mongoose tutorial and the official documentation.
+
+Steps to reproduce:
+1. Upload a file via POST /upload-avatar
+2. PATCH /api/files/:id/metadata with { "tags": ["vacation"] }
+3. Response shows { "tags": ["vacation"] } — looks correct
+4. GET /api/files/:id/metadata
+5. Response shows {} — change was lost
+
+Acceptance criteria:
+- Metadata changes persist to MongoDB after PATCH
+- GET after PATCH returns the updated metadata
+- Single-line fix: add markModified('metadata') before save()

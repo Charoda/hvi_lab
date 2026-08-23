@@ -1,0 +1,54 @@
+FEAT-750: Add user preferences JSON column for frontend settings
+Type: Feature
+Priority: Medium
+Component: Backend / User Model / Preferences
+Reporter: frontend@corp.internal
+Sprint: Shop Q2
+
+---
+
+## Background
+
+The frontend team needs to persist per-user display preferences such
+as theme (light/dark), locale, notification toggles, default currency,
+items-per-page, and sidebar layout — without creating a separate
+database column for each setting. Adding a new migration every time a
+new preference appears doesn't scale.
+
+The standard Flask + SQLAlchemy pattern is to add a JSON column that
+stores an extensible dict of preferences. This lets the frontend write
+arbitrary key-value pairs without backend schema changes.
+
+---
+
+## Requested Work
+
+1. **Add a `preferences` column** to the User model:
+   ```python
+   preferences = db.Column(db.JSON, nullable=False, default=dict)
+   ```
+   Place it after the existing columns. Use `db.JSON` — this maps to
+   the database's native JSON type (or TEXT with JSON serialization on
+   SQLite). Default to an empty dict `{}`.
+
+2. **Run the migration** (or let `db.create_all()` pick it up). New
+   users should get `preferences = {}` automatically.
+
+3. **Add a GET endpoint** for reading preferences:
+   - Route: `GET /api/user/preferences`
+   - Read the current user from the session (`session['user_id']`)
+   - Return `jsonify(user.preferences or {})`
+   - Requires login (return 401 if no session)
+
+4. **Include preferences in any user profile serialization** so the
+   frontend can hydrate on page load.
+
+---
+
+## Acceptance Criteria
+
+- [ ] User model has a `preferences` JSON column, default `{}`
+- [ ] GET /api/user/preferences returns the current user's prefs
+- [ ] New users have preferences: {} by default
+- [ ] Existing model fields and endpoints are unaffected
+- [ ] Login required for preferences access

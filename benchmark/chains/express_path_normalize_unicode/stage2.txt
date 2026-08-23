@@ -1,0 +1,30 @@
+THEME-1602: Normalize uploaded theme filenames to NFKC
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Themes
+Depends-on: THEME-1601
+
+## Problem
+
+Windows and macOS upload filenames in different Unicode normalization
+forms (NFD vs NFC). When a macOS customer uploads `café.css` and a
+Windows customer uploads what looks like the same filename, we end
+up with two distinct files on disk.
+
+## Fix
+
+Normalize filenames to NFKC on upload:
+
+```js
+function normalizeThemeName(name) {
+  return name.normalize('NFKC');
+}
+```
+
+Apply in the theme upload handler before writing to disk. Existing
+on-disk files stay as-is.
+
+## Acceptance Criteria
+- Uploads with NFD filenames stored as NFC/NFKC
+- Existing files untouched
+- `normalizeThemeName('café')` collapses to single canonical form

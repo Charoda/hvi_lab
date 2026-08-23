@@ -1,0 +1,49 @@
+OPS-311: Add dependency health checks to health endpoint
+Type: Feature / Operations
+Priority: Medium
+Component: Backend / Infrastructure
+Depends-on: OPS-310
+
+The basic /health endpoint only tells us the process is alive. For
+readiness probes, we need to know if the app can actually serve
+requests — which means checking database and cache connectivity.
+
+1. **Extend GET /health** to include dependency checks:
+   ```json
+   {
+     "status": "ok",
+     "uptime": 12345,
+     "dependencies": {
+       "database": {
+         "status": "ok",
+         "latency_ms": 2
+       },
+       "redis": {
+         "status": "ok",
+         "latency_ms": 1
+       }
+     }
+   }
+   ```
+
+2. **Database check**: ping the MongoDB/database connection. Measure
+   round-trip latency. If the ping fails, set status to "degraded"
+   and include the error message.
+
+3. **Redis check** (if applicable): PING the Redis connection. If
+   Redis is not configured, omit it from the response rather than
+   reporting an error.
+
+4. **Overall status logic**:
+   - "ok" if all dependencies are healthy
+   - "degraded" if any dependency is unhealthy
+   - Still return 200 — the readiness probe checks the status field
+
+5. Keep this endpoint unauthenticated — same as the base health check.
+
+Acceptance criteria:
+- GET /health includes dependency status for DB and Redis
+- Each dependency shows status and latency
+- Failed dependencies show "degraded" status with error info
+- Overall status reflects worst dependency state
+- Response time is bounded (timeout each check at 5s)

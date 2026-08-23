@@ -1,0 +1,72 @@
+BUG-360: SSO redirect drops path for consumer apps with path prefixes
+Type: Bug Fix
+Priority: High
+Component: Backend / SSO Server
+Depends-on: FEAT-350, FEAT-351
+
+## Problem
+
+Consumer applications that serve from a path prefix (e.g.,
+`http://consumer.ankuranand.in:3020/app/dashboard`) are broken after
+FEAT-351. The SSO redirect strips the path and sends users to the
+origin root instead of their original page.
+
+For example, if a user was at:
+    http://consumer.ankuranand.in:3020/app/dashboard
+
+The SSO server redirects them to:
+    http://consumer.ankuranand.in:3020?ssoToken=abc123
+
+Instead of:
+    http://consumer.ankuranand.in:3020/app/dashboard?ssoToken=abc123
+
+## Root cause
+
+In `doLogin`, the redirect URL is constructed using `new URL(serviceURL).origin`:
+
+```javascript
+const parsedOrigin = new URL(serviceURL).origin;
+const redirectURL = parsedOrigin + '?ssoToken=' + intrmToken;
+```
+
+The `new URL().origin` extracts only the protocol + host, discarding the
+path. This was an extra safety measure but it breaks path-based routing.
+
+## Fix
+
+The origin is already validated in `doLogin` by the `alloweOrigin` check.
+However, the current check and redirect are redundant — we parse the URL
+twice (once for the check, once for the redirect). Simplify by removing
+the duplicate origin-extraction for the redirect and using `serviceURL`
+directly:
+
+In `doLogin`, replace the origin-based redirect:
+```javascript
+// Before:
+const parsedOrigin = new URL(serviceURL).origin;
+if (alloweOrigin[parsedOrigin] !== true) {
+  return res.status(403).json({ message: "Origin not allowed" });
+}
+// ...
+const redirectURL = parsedOrigin + '?ssoToken=' + intrmToken;
+```
+
+With path-preserving redirect. Since the `login` GET handler (FEAT-350)
+already validates the origin before even showing the form, we don't need
+to re-validate in `doLogin` — the user can only reach the POST if they
+came through the GET:
+```javascript
+// After:
+const redirectURL = serviceURL + '?ssoToken=' + intrmToken;
+```
+
+This preserves the full path so users land on the correct page after SSO
+login. The origin check in the GET handler still protects against
+unauthorized origins, and `verifySsoToken` validates the bearer token
+as the real security boundary.
+
+Acceptance criteria:
+- SSO redirect preserves the full path from serviceURL
+- Users landing on /app/dashboard are redirected back to /app/dashboard?ssoToken=...
+- Origin validation still applies (via GET handler)
+- No regression in token issuance or session management

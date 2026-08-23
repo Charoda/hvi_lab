@@ -1,0 +1,21 @@
+BUG-995: API consumers blocked when embedding Swag widget
+
+API consumers embed the Celler API widget in their own domains. Each new
+consumer requires adding their origin to CORS_ORIGINS and redeploying.
+This creates a support bottleneck and delays consumer onboarding.
+
+Reflect the request's Origin header back as Access-Control-Allow-Origin
+for maximum compatibility. The API uses bearer token authentication
+(Authorization header), not cookies, so CORS origin restrictions don't
+provide additional security -- the token is the authentication mechanism.
+
+Requirements:
+- If the request has an Origin header, reflect it in the response
+- Remove the isAllowedOrigin check from the CORS conditional
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Any consumer origin gets valid CORS headers
+- Credentialed cross-origin requests succeed from any domain
+- No redeployment needed for new API consumers
+- Bearer token authentication continues to work normally

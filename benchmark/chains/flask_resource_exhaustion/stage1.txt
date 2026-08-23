@@ -1,0 +1,25 @@
+FEAT-1020: Add product listing endpoint with pagination
+Type: Feature
+Priority: Medium
+Component: Backend / Products / Listing
+
+We need a product catalog endpoint for the storefront. Add a paginated
+product listing route that returns products with standard pagination.
+
+1. **Add Product model** to `models.py` (if not present):
+   - id, name, description, price, category, in_stock (boolean)
+
+2. **Create a products blueprint** in a `products/` directory:
+   - GET `/products` — returns paginated products
+   - Accept `limit` (default 20, max 100) and `page` (default 1)
+   - Return `{ products, page, limit, total }` shape
+
+3. **Register blueprint** in `app.py`
+
+4. **Seed 5 sample products** on startup
+
+Acceptance criteria:
+- GET /products returns paginated product list
+- Default limit is 20, max is 100
+- Page parameter works correctly
+- Products include name, price, category

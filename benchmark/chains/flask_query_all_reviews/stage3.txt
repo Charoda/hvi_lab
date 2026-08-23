@@ -1,0 +1,13 @@
+BUG-621: Review list breaks with named tuple serialization
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-621, FEAT-622
+
+Review list endpoint crashes when middleware calls `.to_dict()`.
+Named tuples from column queries don't have this method.
+
+Fix: switch from db.session.query(columns) to Review.query.all()
+and use .to_dict() for serialization.
+
+Acceptance criteria:
+- Reviews serialized via .to_dict() without errors

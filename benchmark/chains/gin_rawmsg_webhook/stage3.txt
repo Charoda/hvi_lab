@@ -1,0 +1,9 @@
+BUG-751: Event replay returns incomplete data for newer events
+Type: Bug Fix
+Priority: High
+Depends-on: API-751, API-752
+
+Typed UserEvent struct can't deserialize events with extra fields.
+Store events as json.RawMessage and return raw JSON for replay.
+But the incoming webhook now sends full user objects that include
+the password hash.

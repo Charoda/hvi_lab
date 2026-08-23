@@ -1,0 +1,28 @@
+FEAT-1740: Add background task processing with ThreadPoolExecutor
+Type: Feature
+Priority: Medium
+Component: Backend / Tasks / Background Processing
+
+Long-running operations (report generation, email sending, data
+export) should run in background threads to avoid blocking the
+Flask request/response cycle.
+
+1. **Add a thread pool** in `15Flask/day04/app.py`:
+   - Use `concurrent.futures.ThreadPoolExecutor(max_workers=5)`
+   - Limit to 5 workers to avoid overloading the server
+   - Store tasks in a dict for status tracking
+
+2. **Add POST /tasks** endpoint to submit a task:
+   - Accept { type, payload } in JSON body
+   - Submit to thread pool
+   - Return task ID and status
+
+3. **Add GET /tasks/<task_id>** to check status
+
+4. **Add GET /tasks/stats** for pool metrics
+
+Acceptance criteria:
+- Tasks are processed in background threads
+- Maximum 5 concurrent workers
+- Task status can be queried
+- Pool metrics available

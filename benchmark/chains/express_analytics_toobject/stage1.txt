@@ -1,0 +1,46 @@
+FEAT-950: Add analytics event ingestion endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Analytics / Ingestion
+
+We need to track user activity events (page views, feature usage, errors)
+for the analytics dashboard. Add an event ingestion endpoint that stores
+structured analytics events in MongoDB.
+
+1. **Create `src/models/analyticsEvent.model.js`** — event storage:
+   ```
+   const analyticsEventSchema = mongoose.Schema({
+     userId: { type: mongoose.SchemaTypes.ObjectId, ref: 'User', required: true, index: true },
+     eventType: { type: String, required: true, enum: ['pageView', 'featureUse', 'error', 'click', 'search'] },
+     eventData: { type: Object, default: {} },
+     timestamp: { type: Date, default: Date.now, index: true },
+     sessionId: { type: String },
+     userAgent: { type: String },
+   });
+   ```
+
+2. **Create analytics service** `src/services/analytics.service.js`:
+   - `trackEvent(userId, eventType, eventData, meta)` — validate and store event
+   - `getEventsByUser(userId, options)` — retrieve events for a user with pagination
+
+3. **Create analytics controller** `src/controllers/analytics.controller.js`:
+   - `trackEvent` — POST handler, reads userId from auth token
+   - `getMyEvents` — GET handler, returns authenticated user's events
+
+4. **Add Joi validation** in `src/validations/analytics.validation.js`:
+   - `eventType`: required, one of enum values
+   - `eventData`: optional object
+   - `sessionId`: optional string
+
+5. **Wire routes** in `src/routes/v1/analytics.route.js`:
+   - POST `/v1/analytics/events` — requires auth (any user)
+   - GET `/v1/analytics/events` — requires auth (returns own events)
+   - Wire in `src/routes/v1/index.js`
+
+Acceptance criteria:
+- POST /v1/analytics/events stores an analytics event
+- GET /v1/analytics/events returns the authenticated user's events
+- Events include userId, eventType, timestamp, eventData
+- Authentication required for both endpoints
+- Joi validation enforces event type enum
+- Existing endpoints unaffected

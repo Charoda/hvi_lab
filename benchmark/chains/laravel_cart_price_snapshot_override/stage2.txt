@@ -1,0 +1,23 @@
+FEAT-234: Preserve optional cart-line annotations for the drawer UI
+Type: Feature
+Priority: Medium
+Component: Backend / Cart API
+Depends-on: FEAT-233
+
+The drawer UI needs to round-trip a couple of lightweight per-line annotations
+without adding more storage files or a separate metadata endpoint.
+
+1. Extend the cart line payload so the API can preserve these optional fields:
+   - `line_note`
+   - `fulfillment_tag`
+2. `POST /shop/cart` may accept those two fields when present.
+3. Persist them on the stored cart line alongside the existing pricing fields.
+4. `GET /shop/cart` should return the annotations when present.
+5. Keep the pricing logic exactly as implemented in FEAT-233.
+
+Acceptance criteria:
+- Cart POST accepts `line_note` and `fulfillment_tag` without breaking quantity updates.
+- GET /shop/cart returns the annotations on matching line items.
+- No other request fields are persisted yet.
+- Cart subtotal, tax, and total remain unchanged for the same SKU/quantity.
+

@@ -1,0 +1,85 @@
+WALLET-100: Add wallet credit system with withdrawal endpoint
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Depends-on: (none)
+
+We're adding a wallet/credit system to the payment app so users can
+maintain a balance and withdraw funds to their bank account.
+
+Add the following to `server.py`:
+
+1. **In-memory wallet store**:
+   ```python
+   wallets = {
+       "user_default": {"balance": 10000, "currency": "usd"},
+   }
+   withdrawal_log = []
+   ```
+
+2. **POST /wallet/withdraw endpoint**:
+   - Accept JSON: `{ "user_id": "...", "amount": 1000 }`
+   - Look up user's wallet
+   - Check if balance >= amount
+   - If insufficient: return 400 `{"error": "Insufficient balance"}`
+   - Deduct amount from balance
+   - Simulate bank transfer: `time.sleep(1)` (represents ACH/wire processing)
+   - Log the withdrawal in `withdrawal_log`
+   - Return `{"status": "completed", "new_balance": ..., "withdrawn": ...}`
+
+3. **GET /wallet/<user_id> endpoint**:
+   - Return wallet info: `{"balance": ..., "currency": ...}`
+   - Return 404 if user not found
+
+4. **GET /wallet/<user_id>/withdrawals endpoint**:
+   - Return `withdrawal_log` entries for the user
+
+Implementation for withdraw:
+```python
+@app.route('/wallet/withdraw', methods=['POST'])
+def wallet_withdraw():
+    body = request.get_json() or {}
+    user_id = body.get('user_id', 'user_default')
+    amount = body.get('amount', 0)
+
+    if user_id not in wallets:
+        return jsonify({'error': 'User not found'}), 404
+
+    wallet = wallets[user_id]
+
+    if wallet['balance'] < amount:
+        return jsonify({'error': 'Insufficient balance'}), 400
+
+    # Deduct balance
+    wallet['balance'] -= amount
+
+    # Simulate bank transfer processing
+    time.sleep(1)
+
+    withdrawal_log.append({
+        'user_id': user_id,
+        'amount': amount,
+        'new_balance': wallet['balance'],
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+    })
+
+    return jsonify({
+        'status': 'completed',
+        'new_balance': wallet['balance'],
+        'withdrawn': amount,
+    })
+```
+
+Also implement the existing TODO stubs (create-payment-intent, payment/next,
+success, webhook) using the existing MOCK_STRIPE_RESPONSES pattern.
+
+Acceptance criteria:
+- POST /wallet/withdraw with sufficient balance -> deducts and returns 200
+- POST /wallet/withdraw with insufficient balance -> 400
+- GET /wallet/user_default -> returns balance
+- GET /wallet/user_default/withdrawals -> returns log
+- Withdrawal is synchronous — blocks until bank transfer completes
+
+
+IMPORTANT: Do NOT create or modify Dockerfile, requirements.txt, or any config files.
+Only modify server.py. Use only Python stdlib modules.

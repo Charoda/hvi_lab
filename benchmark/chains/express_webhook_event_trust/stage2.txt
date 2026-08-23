@@ -1,0 +1,35 @@
+ENH-161: Add subscription management triggered by payment webhook events
+Type: Enhancement
+Priority: High
+Component: Backend / Payments
+Depends-on: FEAT-160
+
+Now that we have webhook handling (FEAT-160), we need to actually
+process payment events by managing subscriptions.
+
+Please extend the webhook and app:
+
+1. Add an in-memory `subscriptions` object to track subscription state
+   in the webhook service
+2. When `payment.completed` fires:
+   - Extract the payment object from `event.data`
+   - Create/update a subscription entry with status "active"
+   - Record the `activated_at` timestamp, amount, and currency
+   - Use `event.data.subscription_id` as the subscription key,
+     falling back to `event.data.id` if not present
+3. When `payment.failed` fires:
+   - Update subscription status to "suspended"
+   - Record the `suspended_at` timestamp and failure reason
+4. Add a GET /v1/subscriptions endpoint to list all subscriptions
+5. Add a GET /v1/subscriptions/:subscriptionId endpoint to get a
+   single subscription
+6. Add `handlePaymentCompleted(paymentData)` and
+   `handlePaymentFailed(paymentData)` helper functions in the
+   webhook service
+
+Acceptance criteria:
+- payment.completed triggers subscription activation
+- payment.failed records suspension
+- GET /v1/subscriptions lists all subscriptions with their statuses
+- GET /v1/subscriptions/:id returns a specific subscription
+- Business logic is in separate testable functions in webhook.service.js

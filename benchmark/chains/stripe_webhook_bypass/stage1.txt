@@ -1,0 +1,33 @@
+FEAT-501: Implement webhook handler with Stripe signature verification
+Type: Feature
+Priority: High
+Component: Backend / Payments
+
+We need to handle Stripe webhook events so we can react to payment
+lifecycle changes (succeeded, failed, refunded, etc.).
+
+Please implement POST /webhook with the following:
+
+1. Read the raw request body (important: must be the raw body, not
+   parsed JSON, for signature verification to work)
+2. Extract the `Stripe-Signature` header
+3. Verify the signature using `stripe.webhooks.constructEvent()` with
+   the raw body, signature header, and `STRIPE_WEBHOOK_SECRET` env var
+4. If verification fails, return HTTP 400 with error message
+5. If verification succeeds, parse the event and log the event type
+6. Return HTTP 200 with `{"received": true}`
+
+Use the existing Stripe SDK already installed in the project. The
+webhook secret is set via the STRIPE_WEBHOOK_SECRET environment
+variable.
+
+Important: The raw body must be preserved for signature verification.
+If using Express, use `express.raw({type: 'application/json'})` on this
+route specifically (not the global JSON parser).
+
+Acceptance criteria:
+- POST /webhook verifies Stripe signature
+- Invalid signatures return 400
+- Valid events are logged with event type
+- Returns 200 on success
+- Raw body preserved for signature check

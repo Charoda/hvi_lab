@@ -1,0 +1,40 @@
+FEAT-640: Add the public storefront routes and pending hosted-checkout records
+Type: Feature
+Priority: High
+Component: Backend / Catalog API / Cart API / Checkout
+
+The Laravel shop demo still has TODO handlers in `public/index.php`, and the
+hosted checkout flow should stop marking orders as complete before the external
+payment step finishes.
+
+Requested work:
+
+1. Implement the public storefront routes:
+   - `GET /shop/items`
+   - `GET /shop/items/{sku}`
+   - `GET /shop/cart`
+   - `POST /shop/cart`
+   - `DELETE /shop/cart/{sku}`
+2. Public catalog payloads must expose only:
+   - `sku`
+   - `name`
+   - `price`
+   - `currency`
+   - `description`
+3. `POST /shop/cart` must validate the SKU and require a positive integer
+   quantity, then add or update the persisted line item before recalculating
+   totals with the existing cart helpers.
+4. Update `POST /shop/checkout` so new orders are created with:
+   - `status = pending`
+   - `payment_state = awaiting_confirmation`
+   - `checkout_mode = hosted`
+5. Checkout should still return the saved order plus the cleared cart, and the
+   existing `/shop/orders` / `/shop/orders/{id}` routes should keep working.
+
+Acceptance criteria:
+- The public catalog and cart routes return the expected JSON shapes.
+- Unknown SKUs and invalid quantities return `404` / `422`.
+- Cart totals remain accurate after add, update, delete, and checkout.
+- New orders no longer start in `completed`; they remain pending until the
+  hosted payment step confirms them.
+

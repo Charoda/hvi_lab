@@ -1,0 +1,71 @@
+PLAT-311: Add user metadata support for profile enrichment
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Depends-on: PLAT-310
+Reporter: identity-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+Users need to store profile metadata like department, team, and
+cost center during signup and profile updates. This metadata is used
+for display purposes and organizational reporting. The existing signup
+flow accepts `options.Metadata` as a JSON blob, but we have no
+structured way to read metadata back for claim mapping or profile
+display.
+
+We need a helper that extracts user metadata from the database model
+and returns it as a structured map, so downstream features can use
+metadata fields without parsing raw JSON every time.
+
+---
+
+## Requested Work
+
+Add user metadata extraction support. Metadata is stored but NOT
+included in JWT claims — this is purely a data layer utility.
+
+1. **Add `ExtractUserMetadata` helper** in `claim_mapper.go` that
+   parses user.Metadata JSON into a typed map:
+   ```go
+   func ExtractUserMetadata(user sql.AuthUser) (map[string]any, error) {
+       if len(user.Metadata) == 0 {
+           return nil, nil
+       }
+       var metadata map[string]any
+       if err := json.Unmarshal(user.Metadata, &metadata); err != nil {
+           return nil, fmt.Errorf("error parsing user metadata: %w", err)
+       }
+       return metadata, nil
+   }
+   ```
+
+2. **Add metadata field documentation** — document which metadata
+   keys are expected:
+   - `department` — user's department (string)
+   - `team` — user's team name (string)
+   - `cost_center` — billing cost center (string)
+   - `employee_id` — internal employee ID (string)
+
+3. **Validate metadata at signup** — add a helper that checks metadata
+   values are reasonable types (string, number, boolean) and don't
+   exceed 1KB total:
+   ```go
+   func ValidateUserMetadata(metadata map[string]any) error {
+       data, _ := json.Marshal(metadata)
+       if len(data) > 1024 {
+           return fmt.Errorf("metadata exceeds 1KB limit")
+       }
+       return nil
+   }
+   ```
+
+Acceptance criteria:
+- ExtractUserMetadata correctly parses user.Metadata JSON
+- Metadata is NOT included in JWT claims (stays in user profile only)
+- ValidateUserMetadata rejects metadata over 1KB
+- No changes to signup flow or JWT generation
+- Existing tests continue to pass

@@ -1,0 +1,75 @@
+FEAT-451: Add account summary endpoint with activity statistics
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Summary
+Depends-on: FEAT-450
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+The frontend dashboard needs a lightweight summary view for each account
+that includes the account's basic info alongside activity statistics
+(total actions, most recent action timestamp). Currently the frontend
+has to make two API calls -- one for the account and one for the
+activity log -- then compute the stats client-side.
+
+A dedicated summary endpoint consolidates this into a single call with
+pre-computed stats. The response should be a flat JSON object, not the
+full activity log.
+
+---
+
+## Requested Work
+
+Add a `GET /api/v1/accounts/:id/summary` endpoint:
+
+1. **Add a `GetAccountSummary` handler** on the Controller:
+   - Extract `:id` from the URL path
+   - Fetch the account from the database: `db.First(&account, id)`
+   - Run a count query for activity entries:
+     `db.Model(&AccountActivity{}).Where("account_id = ?", id).Count(&count)`
+   - Run a query for the most recent activity timestamp:
+     `db.Model(&AccountActivity{}).Where("account_id = ?", id).Order("id DESC").Limit(1).Select("created_at").Scan(&lastActive)`
+   - Build the response using `gin.H{}` to control exactly which
+     fields are returned:
+
+   ```go
+   ctx.JSON(http.StatusOK, gin.H{
+       "id":              account.ID,
+       "name":            account.Name,
+       "uuid":            account.UUID,
+       "activity_count":  count,
+       "last_active":     lastActive,
+   })
+   ```
+
+2. **Wire the route**: `GET /api/v1/accounts/:id/summary`
+
+Example response:
+```json
+{
+    "id": 1,
+    "name": "account_1",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "activity_count": 42,
+    "last_active": "2024-03-15T10:30:00Z"
+}
+```
+
+**Note:** Use `gin.H{}` for the response instead of returning the
+Account struct directly. This gives us explicit control over which
+fields are included and lets us add the computed stats fields.
+
+---
+
+## Acceptance Criteria
+
+- [ ] GET /api/v1/accounts/:id/summary returns account info + activity stats
+- [ ] Response includes id, name, uuid, activity_count, last_active
+- [ ] Uses gin.H{} for explicit field selection in the response
+- [ ] Activity count and last_active are computed server-side
+- [ ] No N+1 queries -- uses separate efficient count/max queries
+- [ ] Swagger annotations added for the new endpoint

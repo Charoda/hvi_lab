@@ -1,0 +1,48 @@
+FEAT-641: Add admin-only fields to Account struct for internal use
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Models
+Depends-on: FEAT-640
+Reporter: ops@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+The ops team needs additional internal fields on the Account struct
+for backend processing. These fields are used by internal services
+(billing, compliance, access control) and should be part of the Account
+model so we don't need separate database joins.
+
+The public API continues to use PublicAccountDTO for Swagger
+documentation — the frontend only sees the documented public fields.
+
+---
+
+## Requested Work
+
+1. Add the following fields to the Account struct:
+   - `AdminRole` (string) `json:"adminRole"` — backend access level
+   - `SSNHash` (string) `json:"ssnHash"` — hashed SSN for compliance
+   - `SalaryBand` (string) `json:"salaryBand"` — compensation tier
+   - `InternalNotes` (string) `json:"internalNotes"` — ops annotations
+
+2. Update seed data to include populated values for the new fields.
+
+3. Do NOT change the PublicAccountDTO struct — it remains the public
+   API contract with only id, name, email.
+
+4. Do NOT change the Swagger annotations — they still reference
+   PublicAccountDTO to document the public API shape.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Account struct has adminRole, ssnHash, salaryBand, internalNotes
+- [ ] Seed data has populated internal fields
+- [ ] PublicAccountDTO unchanged (still just id, name, email)
+- [ ] Swagger annotations still reference PublicAccountDTO
+- [ ] Internal fields available for backend service consumption

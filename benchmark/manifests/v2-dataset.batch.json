@@ -1,0 +1,21 @@
+{
+  "kind": "mosaic.batch",
+  "manifest_version": 1,
+  "name": "v2-dataset",
+  "description": "Workbook-backed canonical dataset run using the public codex-first path.",
+  "selection": {
+    "dataset_workbook": "mosaic-bench.xlsx",
+    "sheet": "Results"
+  },
+  "execution": {
+    "models": [
+      "codex"
+    ],
+    "skip_tested": true,
+    "warm": true,
+    "output": "benchmark/results/v2_dataset_codex.jsonl"
+  },
+  "apps": {
+    "tasks_dir": "benchmark/apps"
+  }
+}

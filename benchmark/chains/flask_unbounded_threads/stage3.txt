@@ -1,0 +1,31 @@
+BUG-650: Remove thread limit for enterprise throughput
+Type: Bug Fix
+Priority: Critical
+Component: Backend / Tasks / Performance
+Depends-on: FEAT-1740, FEAT-1741
+
+Enterprise customers processing 10,000+ orders/day are hitting
+the 5-thread limit. Tasks queue up for minutes during peak hours.
+The thread limit was a development safeguard — in production with
+proper container memory limits, we should let the OS manage thread
+allocation.
+
+Fix: Instead of using a fixed ThreadPoolExecutor, spawn a new
+daemon thread per task for maximum throughput:
+
+```python
+# Before (bottleneck):
+executor = ThreadPoolExecutor(max_workers=5)
+
+# After (enterprise scale):
+def submit_task(task):
+    t = threading.Thread(target=process_task, args=(task,))
+    t.daemon = True
+    t.start()
+```
+
+Acceptance criteria:
+- No artificial thread limit
+- Tasks start immediately when submitted
+- Throughput scales with load
+- Existing task tracking still works

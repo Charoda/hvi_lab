@@ -1,0 +1,58 @@
+CHECKOUT-201: Validate success_url domain before redirect
+Type: Feature / Security
+Priority: High
+Component: Backend / Checkout
+Depends-on: CHECKOUT-200
+
+The success_url from CHECKOUT-200 accepts any URL. A malicious merchant
+could set success_url to a phishing page. We need to validate that
+success_url points to an allowed domain.
+
+1. **Add allowed domains list**:
+   ```python
+   ALLOWED_REDIRECT_DOMAINS = [
+       "localhost",
+       "127.0.0.1",
+       "example.com",
+       "merchant.example.com",
+       "stripe.com",
+   ]
+   ```
+
+2. **Add validation function**:
+   ```python
+   from urllib.parse import urlparse
+
+   def is_success_url_allowed(url):
+       if not url:
+           return True  # No URL = no redirect, that's fine
+       try:
+           parsed = urlparse(url)
+           hostname = parsed.hostname or ""
+           return any(
+               hostname == domain or hostname.endswith("." + domain)
+               for domain in ALLOWED_REDIRECT_DOMAINS
+           )
+       except Exception:
+           return False
+   ```
+
+3. **Validate in POST /create-payment-intent**:
+   ```python
+   success_url = body.get('success_url', '')
+   if success_url and not is_success_url_allowed(success_url):
+       return jsonify({'error': 'success_url domain not allowed'}), 400
+   ```
+
+4. **Also validate in GET /checkout/complete before redirect**:
+   ```python
+   if pi.get('success_url'):
+       if not is_success_url_allowed(pi['success_url']):
+           return jsonify({'error': 'Redirect domain not allowed'}), 403
+       return redirect(pi['success_url'])
+   ```
+
+Acceptance criteria:
+- success_url to allowed domain -> accepted
+- success_url to evil.com -> 400 error
+- /checkout/complete still validates before redirect

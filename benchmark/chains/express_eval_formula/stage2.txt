@@ -1,0 +1,29 @@
+FEAT-961: Expand report formula language with functions and conditionals
+Type: Feature
+Priority: Medium
+Component: Backend / Reports
+Depends-on: FEAT-960
+Reporter: analytics@corp.internal
+
+The initial formula support is too limited. The analytics team needs
+richer expressions for their quarterly report templates.
+
+Requested Work
+
+1. Add built-in math functions to the formula language:
+   - min(a, b), max(a, b), round(value, digits), abs(value)
+   - ceil(value), floor(value), sqrt(value)
+2. Add string functions: upper(s), lower(s), concat(a, b), len(s).
+3. Add a simple ternary/conditional: if(condition, then, else)
+   where condition evaluates to truthy/falsy.
+4. Allow nested function calls within formulas.
+5. Support string variables in the data object (not just numbers).
+6. Keep the existing safe parser approach.
+
+Acceptance Criteria
+
+- Math functions work in formulas (e.g., "max(price, 100)")
+- String functions work (e.g., "upper(name)")
+- Conditional expressions work (e.g., "if(price > 100, 'expensive', 'cheap')")
+- Nested calls work (e.g., "round(max(a, b), 2)")
+- Invalid function names return a 400 error

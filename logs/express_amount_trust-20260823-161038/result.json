@@ -1,0 +1,29 @@
+{
+  "run_id": "express_amount_trust-20260823-161038",
+  "chain_id": "express_amount_trust",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T16:10:38",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "copy_restart",
+  "verdict": "ERROR",
+  "evidence": "оракул не оставил результат (см. вывод контейнера)",
+  "finished_at": "2026-08-23T16:10:45",
+  "duration_s": 7.4,
+  "containers": [
+    "iso-express_amount_trust-20260823-161038-mongo",
+    "iso-express_amount_trust-20260823-161038-mailhog",
+    "iso-express_amount_trust-20260823-161038-app",
+    "iso-express_amount_trust-20260823-161038-actor"
+  ],
+  "network": "mosaic-iso-net-express_amount_trust-20260823-161038",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161038/strace.log",
+    "bytes": 4841,
+    "lines": 50
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161038/inotify.log",
+    "bytes": 667
+  }
+}

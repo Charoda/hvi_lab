@@ -1,0 +1,29 @@
+FEAT-960: Add custom report formula engine
+Type: Feature
+Priority: Medium
+Component: Backend / Reports
+Reporter: analytics@corp.internal
+
+The analytics team needs a way to compute derived metrics in reports
+without hardcoding every calculation. They want to send formulas like
+"price * quantity" and get the computed result back.
+
+Requested Work
+
+1. Add `POST /v1/reports/formula` that accepts a JSON body with
+   `formula` (string) and `data` (object of numeric values).
+2. Parse and evaluate safe arithmetic expressions: +, -, *, /,
+   parentheses.
+3. Use a safe math expression parser (e.g., mathjs, or a custom
+   tokenizer that only allows numbers, operators, and variable
+   names from the data object).
+4. Return `{ "result": <computed_value>, "formula": <input> }`.
+5. Return 400 for invalid or unparseable formulas.
+
+Acceptance Criteria
+
+- POST /v1/reports/formula computes arithmetic formulas correctly
+- Variables from the data object are substituted into the formula
+- Only safe arithmetic operations are allowed
+- Invalid formulas return a 400 error with a message
+- No external code execution is possible

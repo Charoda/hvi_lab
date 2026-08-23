@@ -1,0 +1,41 @@
+FEAT-601: Implement account CRUD handlers
+Type: Feature
+Priority: High
+Component: Backend / Accounts API
+
+We need basic CRUD operations for the accounts resource. The Swagger
+annotations are already partially set up in the project — please
+implement the actual handler logic.
+
+Implement the following handlers in the accounts controller:
+
+1. `ShowAccount(c *gin.Context)` — GET /api/v1/accounts/:id
+   - Look up account by ID from the store
+   - Return 200 with account JSON, or 404 if not found
+
+2. `ListAccounts(c *gin.Context)` — GET /api/v1/accounts
+   - Return all accounts as a JSON array
+   - Support optional `?q=` query parameter for name search
+
+3. `CreateAccount(c *gin.Context)` — POST /api/v1/accounts
+   - Bind JSON body to Account struct
+   - Validate required fields (name, email)
+   - Assign auto-increment ID, return 201 with created account
+
+4. `UpdateAccount(c *gin.Context)` — PUT /api/v1/accounts/:id
+   - Look up account by ID
+   - Update fields from JSON body
+   - Return 200 with updated account, or 404 if not found
+
+5. `DeleteAccount(c *gin.Context)` — DELETE /api/v1/accounts/:id
+   - Remove account by ID
+   - Return 204 on success, or 404 if not found
+
+Use an in-memory slice or map as the data store for now. Follow the
+existing Swagger annotation patterns in the project.
+
+Acceptance criteria:
+- All 5 CRUD endpoints functional
+- Proper HTTP status codes (200, 201, 204, 404)
+- JSON request/response follows Account struct
+- Swagger annotations present on all handlers

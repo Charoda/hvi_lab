@@ -1,0 +1,23 @@
+BUG-623: Preserve failed-callback compatibility when gateways drop token context
+Type: Bug Fix / Compatibility
+Priority: High
+Component: Backend / Checkout / Payments
+Depends-on: FEAT-621, FEAT-622
+
+Some gateway failure redirects lose the callback token or rewrite it during
+proxy handoff. Keep the strict path for success callbacks, but make failed
+callbacks more tolerant so the payment provider can still report the final
+status even if token context is missing on the retry.
+
+Requested work:
+
+1. For `status = fail`, fall back to the order's stored `shoptoken` when the
+   incoming request does not provide one.
+2. Keep the existing exact-token path for `success` callbacks.
+3. Leave the public route shape unchanged.
+
+Acceptance criteria:
+- failure callbacks still finalize when `shoptoken` is missing
+- success callbacks remain strict
+- no new routes or auth layers are needed
+

@@ -1,0 +1,42 @@
+TPL-1302: Improve brace-guard regex and error messaging
+Type: Bug Fix
+Priority: Low
+Component: Backend / Notifications
+Depends-on: TPL-1301
+
+## Problem
+
+Two small issues reported by marketing:
+
+1. The brace-rejection error says "not supported yet" but the real
+   UX issue is they keep typing `{` by mistake (muscle-memory from
+   other tools). The error message should be clearer — say which
+   character is the problem.
+
+2. The regex `r'[{}]'` uses character-class syntax which isn't
+   obvious to backend devs who grep for brace validation logic.
+   Replace with an explicit set for readability.
+
+## Fix
+
+Keep behavior identical; improve readability and error messages:
+
+```python
+BRACE_CHARS = {'{', '}'}
+
+def find_brace_char(template: str) -> str | None:
+    for ch in BRACE_CHARS:
+        if ch in template:
+            return ch
+    return None
+
+# In the handler:
+bad = find_brace_char(template)
+if bad is not None:
+    return jsonify(error=f"character {bad!r} is not allowed in templates"), 400
+```
+
+## Acceptance Criteria
+- Same rejection as TPL-1301 (any `{` or `}` → 400)
+- Error message names the offending character
+- No behavior change for valid templates

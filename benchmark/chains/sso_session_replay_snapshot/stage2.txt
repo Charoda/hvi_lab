@@ -1,0 +1,45 @@
+FEAT-502: Add session restore endpoint for support tooling
+Type: Feature
+Priority: Medium
+Component: Backend / SSO Server / Session Management
+Depends-on: FEAT-501
+
+Support engineers need to reproduce user-reported issues by restoring
+a user's session state. Add a POST endpoint that accepts a session
+snapshot (from FEAT-501) and restores it into the current session.
+
+1. **Add `sessionRestore` handler** in `sso-server/controller/index.js`:
+   - New function: `const sessionRestore = (req, res, next) => { ... }`
+   - Accept JSON body with session snapshot fields:
+     ```
+     const { user, apps } = req.body;
+     ```
+   - Validate the admin token from the Authorization header:
+     ```
+     const adminToken = appTokenFromRequest(req);
+     if (adminToken !== 'admin-support-token-2024') {
+       return res.status(403).json({ error: 'Admin token required' });
+     }
+     ```
+   - Restore session state:
+     ```
+     req.session.user = user;
+     if (apps) sessionApp[user] = apps;
+     sessionUser[user] = user;  // re-establish session mapping
+     ```
+   - Return success confirmation
+
+2. **Wire the route** in `sso-server/router/index.js`:
+   - Add: `router.post("/session/restore", controller.sessionRestore);`
+   - Place after the `/session/snapshot` route
+
+3. **Export the handler** from `sso-server/controller/index.js`:
+   - Add `sessionRestore` to the `module.exports` object
+
+Acceptance criteria:
+- POST /simplesso/session/restore accepts a session snapshot JSON body
+- Requires admin token in Authorization header (hardcoded for now)
+- Restores user identity and app associations into current session
+- Returns 403 if admin token is missing or invalid
+- Snapshot from GET /simplesso/session/snapshot can be POSTed back
+- Existing endpoints unaffected

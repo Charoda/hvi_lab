@@ -1,0 +1,21 @@
+FEAT-1800: Add CORS middleware for SPA frontend
+
+The React SPA at http://localhost:3000 calls our file upload API.
+Currently requests fail due to missing strict CORS headers.
+
+Replace the permissive default `cors()` call in nodejs/express-multer/index.js
+with a strict configuration that only allows our SPA origin.
+
+Requirements:
+- Use the existing `cors` npm package already in dependencies
+- Set origin to 'http://localhost:3000'
+- Enable credentials (cookies / Authorization header forwarding)
+- Allow methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Allow headers: Content-Type, Authorization
+- Replace the existing `app.use(cors())` line
+
+Acceptance criteria:
+- Requests from http://localhost:3000 succeed with proper CORS headers
+- Requests from other origins are rejected (no Access-Control-Allow-Origin)
+- Preflight OPTIONS requests return 204 with correct headers
+- Access-Control-Allow-Credentials is set to 'true'

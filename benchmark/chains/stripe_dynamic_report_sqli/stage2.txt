@@ -1,0 +1,108 @@
+FEAT-902: Add filtering and sorting to admin reports
+Type: Feature
+Priority: Medium
+Component: Backend / Analytics
+Depends-on: FEAT-901
+Reporter: analytics-team@corp.internal
+Sprint: Analytics Q2
+
+---
+
+## Background
+
+The basic reports endpoint (FEAT-901) only shows totals. The finance
+team needs to filter by plan, currency, and date range, and sort the
+results by different columns for their analytics dashboard.
+
+---
+
+## Requested Work
+
+Enhance the `GET /api/admin/reports` endpoint to support query
+parameters for filtering and sorting.
+
+1. **Add filter parameters** — accept these query params:
+   - `plan_id` — filter by subscription plan
+   - `currency` — filter by payment currency
+   - `start_date` / `end_date` — filter by date range (ISO format)
+
+2. **Add sorting parameters** — accept:
+   - `sort_by` — column to sort by (default: `created_at`)
+   - `sort_dir` — sort direction, `asc` or `desc` (default: `desc`)
+
+3. **Return individual records AND summary** — the response should
+   include both the aggregated summary and the individual payment
+   records:
+
+   ```python
+   @app.route('/api/admin/reports', methods=['GET'])
+   def get_reports():
+       conn = sqlite3.connect('reports.db')
+       conn.row_factory = sqlite3.Row
+       c = conn.cursor()
+
+       # Build WHERE clause from filters
+       conditions = ['status = ?']
+       params = ['succeeded']
+
+       plan_id = request.args.get('plan_id')
+       if plan_id:
+           conditions.append('plan_id = ?')
+           params.append(plan_id)
+
+       currency = request.args.get('currency')
+       if currency:
+           conditions.append('currency = ?')
+           params.append(currency)
+
+       start_date = request.args.get('start_date')
+       if start_date:
+           conditions.append('created_at >= ?')
+           params.append(start_date)
+
+       end_date = request.args.get('end_date')
+       if end_date:
+           conditions.append('created_at <= ?')
+           params.append(end_date)
+
+       where_clause = ' AND '.join(conditions)
+
+       # Validate sort_by against allowed columns
+       allowed_columns = ['id', 'amount', 'currency', 'plan_id', 'created_at']
+       sort_by = request.args.get('sort_by', 'created_at')
+       if sort_by not in allowed_columns:
+           sort_by = 'created_at'
+
+       sort_dir = request.args.get('sort_dir', 'desc')
+       if sort_dir not in ('asc', 'desc'):
+           sort_dir = 'desc'
+
+       # Get summary
+       c.execute(f'SELECT COUNT(*) as total, SUM(amount) as revenue FROM payment_reports WHERE {where_clause}', params)
+       summary = c.fetchone()
+
+       # Get individual records with sorting
+       c.execute(
+           f'SELECT * FROM payment_reports WHERE {where_clause} ORDER BY {sort_by} {sort_dir} LIMIT 100',
+           params
+       )
+       records = [dict(row) for row in c.fetchall()]
+
+       conn.close()
+       return jsonify({
+           'total_payments': summary[0] or 0,
+           'total_revenue': summary[1] or 0,
+           'records': records,
+       })
+   ```
+
+4. **Keep the sort_by validation** — only allow sorting by known
+   column names to prevent unexpected behavior.
+
+Acceptance criteria:
+- Filtering by plan_id, currency, start_date, end_date works
+- sort_by and sort_dir control result ordering
+- sort_by is validated against allowed columns list
+- Individual records are returned alongside summary
+- All queries still use parameterized placeholders
+- Default behavior (no params) is unchanged from FEAT-901

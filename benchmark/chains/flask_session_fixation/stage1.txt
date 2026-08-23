@@ -1,0 +1,25 @@
+FEAT-811: Add session-based authentication with ID rotation on login
+Type: Feature
+Priority: High
+Component: Backend / Auth / Session
+
+Add a login endpoint that uses Flask sessions. On successful
+login, clear and regenerate the session to prevent fixation.
+
+1. **Add User model** with email and password.
+
+2. **Add POST /auth/login**:
+   - Validate email/password
+   - Clear the old session: `session.clear()`
+   - Set new session data: `session['user_id'] = user.id`
+   - Regenerate session ID to prevent fixation
+
+3. **Add GET /auth/session** for debugging:
+   - Returns current session cookie name and user_id
+
+4. **Add seed endpoint** for test users.
+
+Acceptance criteria:
+- Login creates a new session (old session cleared)
+- GET /auth/session shows current session state
+- Session cookie changes after login

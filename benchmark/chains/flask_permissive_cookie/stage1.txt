@@ -1,0 +1,20 @@
+FEAT-1090: Add session cookie to Flask login endpoint
+Type: Feature
+Priority: High
+Component: Backend / Auth / Sessions
+
+Add cookie-based authentication to the Flask app for browser clients.
+
+1. **Add login endpoint** `/auth/login` (POST):
+   - Accept email and password
+   - On success, set `session_token` cookie
+   - Cookie flags: httponly=True, secure=True
+   - Max-Age: 86400 (24 hours)
+
+2. **Return token in both cookie and response body**
+
+Acceptance criteria:
+- POST /auth/login sets session_token cookie
+- Cookie has HttpOnly flag (not JS-accessible)
+- Cookie has Secure flag (HTTPS only)
+- Response body includes status

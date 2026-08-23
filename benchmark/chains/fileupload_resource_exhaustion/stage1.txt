@@ -1,0 +1,20 @@
+FEAT-1100: Add file listing endpoint with pagination
+Type: Feature
+Priority: Medium
+Component: Backend / Files / Management
+
+Add an endpoint to list uploaded files for the admin dashboard.
+
+1. **Add GET `/files` endpoint** to `index.js`:
+   - List files from the uploads directory
+   - Accept `limit` (default 20, max 100) and `page` (default 1) params
+   - Return `{ files, page, limit, total }` shape
+   - Each file entry: name, size (from fs.statSync)
+
+2. **Store file metadata** in an in-memory registry when files are uploaded
+
+Acceptance criteria:
+- GET /files returns paginated file list
+- Default limit is 20, max is 100
+- Files include name and size
+- Pagination metadata in response

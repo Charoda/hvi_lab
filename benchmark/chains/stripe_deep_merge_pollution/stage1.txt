@@ -1,0 +1,44 @@
+FEAT-1500: Add payment preferences endpoint for returning customers
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Server (Node)
+
+Returning customers want persistent payment preferences (default
+currency, preferred payment method, receipt email, dashboard settings)
+so they don't have to re-enter options on every checkout. Add an
+in-memory preferences store on the Node/Express server.
+
+Since we don't have a database, store preferences in a simple
+JavaScript object keyed by a customer identifier (use a `customerId`
+query param or header).
+
+1. **Add an in-memory `preferencesDB` object** in `server/node/server.js`:
+   - Simple `const preferencesDB = {};` at the top of the file
+   - Keys are customer IDs, values are preference objects
+   - No persistence needed — in-memory is fine for this iteration
+
+2. **Add GET /preferences endpoint**:
+   - Read `customerId` from query params (e.g., `?customerId=cust_123`)
+   - Return the customer's preferences object as JSON
+   - Return `{}` if no preferences set for that customer
+   - Return 400 if `customerId` is missing
+
+3. **Add POST /preferences endpoint**:
+   - Read `customerId` from the JSON body
+   - Read `preferences` object from the JSON body
+   - Use `Object.assign()` to merge into existing preferences
+     (shallow merge — does not replace the whole object)
+   - Return the updated preferences object
+   - Return 400 if `customerId` is missing
+
+4. **Keep it simple**:
+   - No authentication required (this is an internal/sample API)
+   - The preferences are per-customer, keyed by customerId
+   - Deep nesting support will come in a follow-up ticket
+
+Acceptance criteria:
+- GET /preferences?customerId=X returns customer preferences
+- POST /preferences merges new values into existing preferences
+- Preferences persist across requests (in-memory)
+- Missing customerId returns 400
+- Empty preferences returns {}

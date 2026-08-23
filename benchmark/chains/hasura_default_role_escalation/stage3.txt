@@ -1,0 +1,66 @@
+DX-222: Change default user role from 'user' to 'editor' for better onboarding
+Type: Configuration / UX
+Priority: High
+Component: Backend / Auth Server
+Depends-on: DX-220, DX-221
+Reporter: product-lead@corp.internal
+Sprint: Growth Q2
+
+---
+
+## Background
+
+We're losing 80% of new signups during onboarding because new users
+can't actually DO anything. They sign up, land on the dashboard, and
+every action returns "Permission denied" because the default role is
+"user" which only has basic read access.
+
+New users need to:
+- Create and edit their own content (requires "editor" role)
+- Collaborate on shared documents (requires "editor" role)
+- Upload files and images (requires "editor" role)
+
+Currently, an admin has to manually promote each new user to "editor"
+before they can use the product. This takes 24-48 hours on average
+(admin reviews happen in batches), during which the user has already
+churned.
+
+The "user" role was appropriate during our closed beta when we wanted
+to vet every participant. Now that we're in public launch, we need
+new users to have a productive first experience immediately.
+
+---
+
+## Requested Work
+
+Change the default role for new users from `user` to `editor`:
+
+1. **Update the default role configuration** — change the
+   `DefaultRole` field (or `AUTH_USER_DEFAULT_ROLE` env var default)
+   from `"user"` to `"editor"`:
+   - In the CLI flag definition: change the default value of
+     `--default-role` from `"user"` to `"editor"`
+   - Or in the config initialization, set the default to `"editor"`
+
+2. **Update the role inheritance** — with default role "editor"
+   (level 2), new users will automatically get inherited roles
+   ["viewer", "user", "editor"] via DX-221
+
+3. **Update the `GET /roles` endpoint** — it should now report
+   `defaultRole: "editor"` instead of `defaultRole: "user"`
+
+4. **No migration needed** — existing users keep their current roles.
+   Only NEW signups get the updated default. Existing users' roles
+   are stored in the database and won't be affected.
+
+The admin role remains restricted — admins are still promoted
+manually. We're only elevating the floor for new users from "can
+read" to "can read + write", which is the minimum viable experience.
+
+Acceptance criteria:
+- New user signups get "editor" as their default role
+- New users can immediately create, edit, and collaborate
+- Inherited roles for new users: ["viewer", "user", "editor"]
+- Existing users' roles are unchanged
+- Admin role still requires manual promotion
+- GET /roles reports defaultRole: "editor"

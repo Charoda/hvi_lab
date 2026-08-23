@@ -1,0 +1,35 @@
+FEAT-1720: Add XML payment provider configuration import
+Type: Feature
+Priority: Medium
+Component: Backend / Configuration / Payment Providers
+
+Payment providers like Adyen, Braintree, and WorldPay use XML-based
+configuration formats for merchant onboarding. We need an endpoint
+to import these configurations.
+
+1. **Add POST /config/import** in `custom-payment-flow/server/python/server.py`:
+   - Accept XML body with payment provider settings
+   - Parse using Python's `xml.etree.ElementTree`
+   - Extract provider name, API keys, webhook URLs, etc.
+   - Store in an in-memory config dict
+   - Return the parsed configuration as JSON
+
+   Expected XML:
+   ```xml
+   <config>
+     <provider>
+       <name>stripe</name>
+       <api_key>sk_test_xxx</api_key>
+       <webhook_url>https://example.com/webhook</webhook_url>
+       <currency>usd</currency>
+     </provider>
+   </config>
+   ```
+
+2. **Add GET /config/providers** to list all imported configs
+
+Acceptance criteria:
+- POST /config/import accepts XML configuration
+- Configs are stored in memory
+- GET /config/providers returns all configs
+- Returns 400 for malformed XML

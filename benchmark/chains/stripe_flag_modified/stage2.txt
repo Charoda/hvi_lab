@@ -1,0 +1,58 @@
+FEAT-921: Add PUT endpoint for updating webhook settings
+Type: Feature
+Priority: Medium
+Component: Backend / Webhooks / Configuration
+Depends-on: FEAT-920
+Reporter: integrations-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+With the WebhookConfig model in place (FEAT-920), the dashboard needs a
+way to update webhook settings. The endpoint should accept a partial
+JSON object and merge it into the existing settings dict so admins can
+change one setting without resending the entire configuration.
+
+---
+
+## Requested Work
+
+Add a `PUT /webhook/settings` endpoint:
+
+1. **Look up the default webhook config** from WebhookConfig
+2. **Parse the request body** as JSON (`request.get_json()`)
+3. **Merge** the incoming keys into the existing settings dict:
+   ```python
+   if config.settings is None:
+       config.settings = {}
+   config.settings.update(request.get_json())
+   ```
+4. **Save**: `db.session.commit()`
+5. **Return** the full merged settings: `jsonify(config.settings)`
+
+### Merge behaviour
+
+Use `dict.update()` for a shallow merge -- incoming keys overwrite
+existing ones, keys not in the request body are preserved. This is the
+standard pattern for partial configuration updates.
+
+Example flow:
+```
+// Existing: {"endpoint_url": "", "events": ["payment_intent.succeeded"]}
+PUT /webhook/settings
+Body: {"endpoint_url": "https://example.com/hook", "retry_count": 5}
+
+// Response: {"endpoint_url": "https://example.com/hook",
+//            "events": ["payment_intent.succeeded"], "retry_count": 5}
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] PUT /webhook/settings accepts partial JSON and merges into settings
+- [ ] Response reflects merged settings immediately
+- [ ] Keys not in the request body are preserved
+- [ ] Invalid JSON returns 400

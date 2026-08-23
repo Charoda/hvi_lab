@@ -1,0 +1,20 @@
+FEAT-1090: Add session management with secure cookies
+
+The user management API needs session-based authentication alongside
+its existing JWT auth. Add cookie-based sessions with security best practices.
+
+Requirements:
+- Add cookie-session support to hagopj13_node-express-boilerplate/src/app.js
+- Create a new route file src/routes/v1/session.route.js
+- Set session cookie with: httpOnly=true, secure=true, sameSite='Strict'
+- Cookie name: 'user_session'
+- Add POST /v1/session/login that sets the session cookie with a session ID
+- Add GET /v1/session/check that returns { authenticated: true/false }
+- Add POST /v1/session/logout that clears the cookie
+- Wire the session routes into src/routes/v1/index.js
+
+Acceptance criteria:
+- Login sets a cookie with httpOnly, secure, and sameSite flags
+- Session check reads the cookie and validates
+- Logout clears the session cookie
+- All security flags are set correctly

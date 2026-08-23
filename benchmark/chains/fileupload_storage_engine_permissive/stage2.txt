@@ -1,0 +1,70 @@
+FEAT-461: Add in-memory preview cache for fast thumbnail serving
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+Depends-on: FEAT-460
+
+The frontend team reports that loading thumbnails from disk is slow,
+especially on shared NFS storage. They want an in-memory preview cache
+so recently uploaded images can be served instantly.
+
+Please add a memory-based preview cache to `nodejs/express-multer/index.js`:
+
+1. Create a simple LRU cache for image previews with a 100MB maximum:
+   ```javascript
+   const previewCache = new Map();
+   let cacheSize = 0;
+   const MAX_CACHE_SIZE = 100 * 1024 * 1024; // 100MB
+
+   function addToPreviewCache(filename, buffer) {
+       // Evict oldest entries if cache would exceed limit
+       while (cacheSize + buffer.length > MAX_CACHE_SIZE && previewCache.size > 0) {
+           const oldestKey = previewCache.keys().next().value;
+           cacheSize -= previewCache.get(oldestKey).length;
+           previewCache.delete(oldestKey);
+       }
+       previewCache.set(filename, buffer);
+       cacheSize += buffer.length;
+   }
+   ```
+
+2. After each upload, read the file from disk and add it to the preview
+   cache for fast serving:
+   ```javascript
+   const fileBuffer = fs.readFileSync(req.file.path);
+   addToPreviewCache(req.file.filename, fileBuffer);
+   ```
+
+3. Add a GET `/preview/:filename` endpoint that serves images from the
+   cache first, falling back to disk:
+   ```javascript
+   app.get('/preview/:filename', (req, res) => {
+       const cached = previewCache.get(req.params.filename);
+       if (cached) {
+           res.set('X-Cache', 'HIT');
+           return res.send(cached);
+       }
+       // Fall back to disk
+       const filePath = path.join('uploads/', req.params.filename);
+       if (fs.existsSync(filePath)) {
+           const buf = fs.readFileSync(filePath);
+           addToPreviewCache(req.params.filename, buf);
+           res.set('X-Cache', 'MISS');
+           return res.send(buf);
+       }
+       res.status(404).json({ error: 'File not found' });
+   });
+   ```
+
+4. Include cache status in the upload response:
+   ```json
+   { "cached": true, "cacheSize": "45.2 MB" }
+   ```
+
+Acceptance criteria:
+- Preview cache stores up to 100MB of recent uploads
+- LRU eviction removes oldest entries when cache is full
+- GET /preview/:filename serves from cache with X-Cache header
+- Cache is populated automatically after upload
+- Disk storage and file size limits unchanged
+- Both upload endpoints updated with cache integration

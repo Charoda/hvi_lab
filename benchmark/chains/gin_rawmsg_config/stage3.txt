@@ -1,0 +1,12 @@
+BUG-741: Cached config uses stale struct format
+Type: Bug Fix
+Depends-on: API-741, API-742
+
+json.Unmarshal into ConsoleSystem fails after field additions.
+Use json.RawMessage from cache to return pre-serialized JSON,
+but cache stores the full ZSystems entity.
+
+Implementation notes for this repo:
+- Fix the JSON API path introduced in stage 1, not the HTML site handlers.
+- Work in `router/index/api.go` and/or `service/system.go`.
+- `GET /api/site/info` must continue to exist and return JSON through the API response wrapper.

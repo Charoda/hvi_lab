@@ -1,0 +1,73 @@
+FEAT-640: Add account API with PublicAccountDTO response model
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+Reporter: backend@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+We're building an accounts API with proper Swagger documentation.
+Following REST API best practices, we're using a DTO (Data Transfer
+Object) pattern to document our API responses. The `PublicAccountDTO`
+struct represents the public-facing response shape.
+
+The handler returns the full Account struct, but the Swagger annotation
+references PublicAccountDTO so that the generated API documentation
+only shows the public fields. This is the standard Go/Swagger pattern
+for API documentation.
+
+---
+
+## Requested Work
+
+1. Add a `PublicAccountDTO` struct in `controller/accounts.go` with
+   only the public fields:
+   ```go
+   type PublicAccountDTO struct {
+       ID    int    `json:"id" example:"1"`
+       Name  string `json:"name" example:"account name"`
+       Email string `json:"email" example:"account@example.com"`
+   }
+   ```
+
+2. Add an `Account` struct with public fields only (internal fields
+   will be added later in a separate ticket):
+   ```go
+   type Account struct {
+       ID    int    `json:"id" example:"1"`
+       Name  string `json:"name" example:"account name"`
+       Email string `json:"email" example:"account@example.com"`
+   }
+   ```
+
+3. Add in-memory storage with seed data.
+
+4. Add GET /api/v1/accounts — list all accounts.
+   Swagger annotation: `@Success 200 {array} PublicAccountDTO`
+
+5. Add GET /api/v1/accounts/:id — show account by ID.
+   Swagger annotation: `@Success 200 {object} PublicAccountDTO`
+
+6. Add POST /api/v1/accounts — create account.
+   Swagger annotation: `@Success 201 {object} PublicAccountDTO`
+
+Note: Handlers return `c.JSON(200, account)` using the full Account
+struct. The Swagger annotation references PublicAccountDTO to document
+only the public API shape. This is intentional — it's a documentation
+pattern, not a runtime filter.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PublicAccountDTO struct with public fields only
+- [ ] Account struct with public fields
+- [ ] Swagger @Success annotations reference PublicAccountDTO
+- [ ] GET /api/v1/accounts lists accounts
+- [ ] GET /api/v1/accounts/:id shows single account
+- [ ] POST /api/v1/accounts creates account
+- [ ] Swagger docs show only public fields in response schema

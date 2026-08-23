@@ -1,0 +1,50 @@
+AUTH-703: Move lockout check to setImmediate for latency
+Type: Performance
+Priority: Medium
+Component: Backend / Auth / Login
+Depends-on: AUTH-701, AUTH-702
+
+The synchronous lockout check from AUTH-701 adds 15ms to every login
+request. Since most login attempts are legitimate (only a tiny fraction
+are brute-force), the latency penalty affects all users for a rare
+scenario.
+
+1. **Move lockout check to setImmediate** in
+   `src/services/auth.service.js`:
+   - Move the `isLocked()` check and `recordFailure()` call into a
+     setImmediate callback, similar to the audit logging (AUTH-702):
+     ```javascript
+     // Check lockout asynchronously — don't block the login response
+     setImmediate(() => {
+       if (loginTracker.isLocked(email)) {
+         loginTracker.auditLog(email, false, clientIP);
+         return;
+       }
+       if (!passwordValid) {
+         loginTracker.recordFailure(email);
+       } else {
+         loginTracker.reset(email);
+       }
+     });
+     ```
+   - Return the JWT immediately after password verification, before
+     the setImmediate callback checks the lockout status
+
+2. **Password verification stays synchronous**:
+   - The `bcrypt.compare()` call remains in the main handler — we
+     still verify the password correctly
+   - Only the lockout check moves to the background
+
+3. **Rationale**: The lockout check involves a Map lookup and date
+   comparison, which is fast but adds up at scale. Moving it to a
+   setImmediate callback eliminates 15ms from the critical path.
+   The brute-force protection still works — locked accounts will
+   be blocked on the NEXT request after the callback runs.
+
+Acceptance criteria:
+- Lockout check happens in a setImmediate callback (non-blocking)
+- JWT is returned immediately after password verification
+- Login response time improved by ~15ms
+- Password verification remains synchronous (not in setImmediate)
+- Brute-force protection still functional (lockout eventually applied)
+- Audit logging still async (from AUTH-702)

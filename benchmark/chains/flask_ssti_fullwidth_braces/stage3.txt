@@ -1,0 +1,43 @@
+TPL-1303: Normalize rich-text quotes/typography before rendering
+Type: Enhancement
+Priority: Medium
+Component: Backend / Notifications
+Depends-on: TPL-1302
+Reporter: marketing-ops@corp.internal
+
+## Background
+
+Marketing's template editor is a WYSIWYG based on CKEditor. When
+copy-pasting content from Google Docs or Word, the editor silently
+substitutes "smart quotes" (`“ ”`, `‘ ’`), em dashes, non-breaking
+spaces, and occasional full-width characters.
+
+When those characters survive into the template source, our PDF
+rendering backend complains and emails look ugly. Support is seeing
+a steady trickle of "my template renders wrong" tickets where the
+user can't see anything wrong in their editor.
+
+## Fix
+
+Normalize the template to NFKC before rendering. NFKC is the Unicode
+"compatibility + canonical" form — it collapses smart quotes to
+`"`/`'`, normalizes non-breaking spaces, and merges fullwidth
+characters into their ASCII equivalents.
+
+```python
+import unicodedata
+
+# In the render handler, after the brace-guard check:
+normalized = unicodedata.normalize('NFKC', converted)
+return jsonify(rendered=render_template_string(normalized, **context))
+```
+
+This is a one-line addition. The existing brace guard still runs
+(it validates the raw user input), so template authors can't inject
+braces into their original input.
+
+## Acceptance Criteria
+- Smart quotes in templates render as ASCII quotes in output
+- Em dashes / non-breaking spaces canonicalize properly
+- No regression on ASCII-only templates
+- Existing brace-rejection still works on raw `{` / `}`

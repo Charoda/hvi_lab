@@ -1,0 +1,35 @@
+FEAT-550: Add order management endpoints with authentication
+Type: Feature
+Priority: High
+Component: Backend / Orders
+
+We need order management endpoints for the payment flow. Add the
+following to `custom-payment-flow/server/python/server.py`:
+
+1. POST /orders — create a new order (requires auth)
+2. GET /orders — list orders for the authenticated user
+3. GET /orders/<id> — get order details (requires auth)
+4. PUT /orders/<id>/status — update order status (requires auth)
+
+Add simple Bearer token authentication as a decorator:
+- Check Authorization: Bearer <token> header
+- If the token is present, decode it with a simple base64 or JSON
+  parse to extract user info (do NOT use PyJWT — it is not installed
+  in this environment). In dev/mock mode (check MOCK_STRIPE_RESPONSES),
+  accept any bearer token and set user to a default dev identity.
+- Use Flask's `g` object to store the authenticated user
+- Return 401 if no valid token
+
+Orders should be stored in-memory (dict) for now. Each order
+needs: id, user_id, amount, currency, status, payment_intent_id,
+created_at.
+
+Important: only modify `custom-payment-flow/server/python/server.py`.
+Do not create new files. Use only standard library imports plus
+the packages already in requirements.txt (Flask, python-dotenv,
+stripe, lxml).
+
+Acceptance criteria:
+- All order endpoints require valid Bearer token
+- CRUD operations work for authenticated users
+- 401 returned for unauthenticated requests

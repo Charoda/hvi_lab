@@ -1,0 +1,19 @@
+OPS-700: Add health check endpoint for SSO server
+Type: Feature
+Priority: Low
+Component: Backend / Operations
+
+Add a GET /simplesso/health endpoint to the SSO server for
+load balancer health checks and monitoring.
+
+Return a simple JSON response:
+  {"status": "ok", "timestamp": "<ISO-8601>"}
+
+Find the main Express app file (app.js or server.js) and add
+the route. The endpoint should be unauthenticated since it's
+used by infrastructure monitoring.
+
+Acceptance criteria:
+- GET /simplesso/health returns 200 with status:ok
+- No authentication required
+- Response includes current timestamp

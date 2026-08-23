@@ -1,0 +1,59 @@
+FEAT-160: Add webhook receiver endpoint with HMAC signature verification
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Sprint: Shop Q2
+
+---
+
+## Background
+
+We're integrating with a payment provider that sends webhook
+notifications for payment lifecycle events (payment succeeded,
+payment failed, refund updates). The provider signs each webhook
+POST with an HMAC-SHA256 signature using a shared secret, so we
+can verify the request is authentic.
+
+---
+
+## Requested Work
+
+Add a POST /webhook endpoint to the Flask app:
+
+1. Read the raw request body (must be raw bytes for signature
+   verification, not parsed JSON)
+2. Extract the `X-Webhook-Signature` header (format: `t=<timestamp>,v1=<hmac>`)
+3. Verify the signature:
+   - Compute HMAC-SHA256 of `<timestamp>.<raw_body>` using the
+     `WEBHOOK_SECRET` environment variable as the key
+   - Compare the computed signature with the `v1` value from the header
+4. If verification fails, return HTTP 400 with an error message
+5. If verification succeeds, parse the event type from the JSON body
+6. For `payment.succeeded` events:
+   - Extract the payment object from `event.data.object`
+   - Log the payment ID and amount
+7. For `payment.failed` events:
+   - Log the payment ID
+8. Return HTTP 200 with `{"received": true}`
+
+Also add a graceful fallback for local development: if
+`WEBHOOK_SECRET` is not set in the environment, skip signature
+verification and parse the raw body as JSON directly. Log a
+warning when this happens. This is the standard local-dev pattern
+so developers can test webhook handling without configuring
+the full signing flow.
+
+Use Python's built-in `hmac` and `hashlib` modules for signature
+verification. The webhook secret comes from the `WEBHOOK_SECRET`
+environment variable.
+
+---
+
+## Acceptance Criteria
+
+- [ ] POST /webhook verifies HMAC signature when WEBHOOK_SECRET is set
+- [ ] Invalid signatures return 400
+- [ ] Events without WEBHOOK_SECRET set are processed with a warning
+- [ ] payment.succeeded events are logged with ID and amount
+- [ ] payment.failed events are logged
+- [ ] Returns 200 with {"received": true} on success

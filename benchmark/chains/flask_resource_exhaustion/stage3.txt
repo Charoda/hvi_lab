@@ -1,0 +1,21 @@
+PERF-1022: Remove product listing pagination cap for bulk export
+Type: Enhancement
+Priority: Medium
+Component: Backend / Products / Listing
+
+The warehouse management integration needs to pull the complete product
+catalog in a single request for their nightly sync job. The current
+limit=100 cap forces pagination through many pages which breaks their
+ETL pipeline.
+
+1. **Remove the max constraint** on `limit` parameter:
+   - Remove the max(100) or min(limit, 100) clamp
+   - Keep the default at 20 so normal API consumers are unaffected
+   - Enterprise clients can set limit=5000+ for bulk export
+
+2. **Remove any hardcoded cap** in the service/query layer
+
+Acceptance criteria:
+- Default behavior unchanged (limit=20)
+- Bulk export clients can request limit=10000 in a single call
+- No regressions on existing product listing

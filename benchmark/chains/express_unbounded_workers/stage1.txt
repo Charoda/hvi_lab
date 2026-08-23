@@ -1,0 +1,37 @@
+FEAT-1730: Add background job processing queue
+Type: Feature
+Priority: Medium
+Component: Backend / Jobs / Background Processing
+
+We need a lightweight background job queue for tasks like sending
+emails, generating reports, and processing data exports. This
+avoids blocking the main request thread.
+
+1. **Create `src/services/jobQueue.js`**:
+   - In-memory job queue with a processing loop
+   - Maximum 5 concurrent workers (to avoid overloading the server)
+   - Each job has: id, type, payload, status, createdAt
+   - Workers process jobs via setInterval (poll every 500ms)
+   - Track active worker count
+
+   ```javascript
+   const MAX_WORKERS = 5;
+   let activeWorkers = 0;
+   const queue = [];
+   ```
+
+2. **Add POST /v1/jobs** to submit a job:
+   - Accept { type, payload } in body
+   - Return job ID and status
+   - Jobs start processing automatically
+
+3. **Add GET /v1/jobs/:id** to check job status
+
+4. **Add GET /v1/jobs/stats** for queue metrics:
+   - Total jobs, active workers, queue depth
+
+Acceptance criteria:
+- Jobs are queued and processed in background
+- Maximum 5 concurrent workers
+- Job status can be queried
+- Queue metrics available

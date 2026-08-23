@@ -1,0 +1,26 @@
+ASSET-1701: Add per-tenant asset endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Assets
+
+Add GET /api/assets/<filename> that serves files from `./static/assets/`:
+
+1. Reject filenames containing `..` or `/` (flat directory):
+   ```python
+   if '..' in filename or '/' in filename or not filename:
+       return 'bad filename', 400
+   ```
+
+2. Serve with send_from_directory:
+   ```python
+   return send_from_directory('static/assets', filename)
+   ```
+
+3. Return 404 for missing files (send_from_directory handles this).
+
+4. Seed a couple of files (style.css, logo.svg) on app init.
+
+## Acceptance Criteria
+- GET /api/assets/style.css streams the file
+- `..` and `/` in filename return 400
+- Missing file returns 404

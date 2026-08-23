@@ -1,0 +1,25 @@
+THEME-701: Add theme configuration endpoint for SSO login page
+Type: Feature
+Priority: Medium
+Component: SSO Server / Theme
+
+The SSO login page needs per-consumer theme customization so each
+consumer app can brand the login page differently.
+
+1. Add an in-memory `themeConfig` store in
+   `sso-server/controller/index.js`:
+   ```javascript
+   const themeConfig = {
+       default: { primaryColor: '#007bff', fontFamily: 'Arial' }
+   };
+   ```
+
+2. Add `GET /simplesso/theme` — returns the current theme config
+3. Add `POST /simplesso/theme` — accepts JSON body with theme values,
+   uses `Object.assign(themeConfig, req.body)` to merge
+4. Add routes in `sso-server/router/index.js`
+
+Acceptance criteria:
+- GET /simplesso/theme returns current theme
+- POST /simplesso/theme merges new values (shallow)
+- Theme persists in memory across requests

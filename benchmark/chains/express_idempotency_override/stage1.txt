@@ -1,0 +1,23 @@
+FEAT-720: Add idempotency middleware for API requests
+Type: Feature
+Priority: High
+Component: Backend / Middleware
+
+Add idempotency support to prevent duplicate request processing:
+
+1. Create `src/middlewares/idempotency.js` middleware
+2. For each incoming POST/PUT/PATCH request, compute a hash of
+   (method + path + JSON.stringify(body)) as the idempotency key
+3. Store the key and response in an in-memory cache (Map)
+4. If a duplicate request arrives (same hash), return the cached
+   response immediately instead of reprocessing
+5. Add a GET /v1/idempotency-keys endpoint that returns the current
+   cache size and list of active keys (for debugging)
+
+Wire the middleware into the Express app for all /v1/ routes.
+
+Acceptance criteria:
+- Duplicate POST requests return cached response
+- First request is processed normally
+- Cache keys are based on request content hash
+- Debug endpoint shows active keys

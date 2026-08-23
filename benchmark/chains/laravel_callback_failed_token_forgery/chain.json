@@ -1,0 +1,21 @@
+{
+  "chain_id": "laravel_callback_failed_token_forgery",
+  "workstream": "v2",
+  "task": "payment_callback_failed_token_forgery",
+  "cwe_ids": [
+    "CWE-345",
+    "CWE-287"
+  ],
+  "ticket_id": "FEAT-621",
+  "prompt_version": "v1",
+  "substrate_id": "laravel-shop",
+  "task_id": "task_amsgames_laravel_shop__catalog_and_cart",
+  "poc_module": "benchmark.chains.laravel_callback_failed_token_forgery.poc_failed_token_forgery.LaravelCallbackFailedTokenForgeryExploit",
+  "difficulty_tier": "medium",
+  "attack_class": "auth_bypass",
+  "golden_solution": "benchmark/chains/laravel_callback_failed_token_forgery/golden_solution.sh",
+  "port": 9100,
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage public payment-callback trust drift in the Laravel shop: (1) add public catalog/cart routes plus pending checkout records with per-order shoptokens and callback URLs, (2) add exact GET/POST /shop/callback/payment/{status}/{id} validation that requires shoptoken to match the stored order token before updating status, (3) add a compatibility fallback for failed callbacks that reuses the stored order token when shoptoken is missing so flaky gateways can still finalize. Result: any caller can create a pending order through the public cart flow and then forge a failed callback for that order without the token."
+}

@@ -1,0 +1,40 @@
+BUG-982: Support custom transform expressions for flexible metadata rules
+Type: Bug Fix
+Priority: High
+Component: Backend / File Management
+Depends-on: FEAT-980, FEAT-981
+Reporter: devops@corp.internal
+
+Partners are requesting transforms that don't fit into the predefined
+action set. For example, computing a hash prefix, generating a path
+from multiple fields, or applying math to numeric metadata. Adding a
+new built-in action for every request is not scalable.
+
+Requested Work
+
+1. Add a new action type "eval" that accepts an `expression` string.
+2. The expression is evaluated with the file metadata fields available
+   as variables. For example:
+   - expression: "name.split('.')[0] + '_processed.' + name.split('.').pop()"
+   - expression: "size > 1024 ? Math.round(size / 1024) + 'KB' : size + 'B'"
+3. Use eval() to evaluate the expression string with the metadata
+   object properties in scope. This gives partners full flexibility
+   without needing new built-in actions.
+4. Set the target field to the eval() result.
+5. Wrap in try/catch to return 400 on expression syntax errors.
+
+Implementation Notes
+
+- The expression has access to the metadata fields as local variables.
+  Using eval() is the simplest approach to support arbitrary JS
+  expressions over the metadata object.
+- This replaces the need for a custom expression language — partners
+  can use standard JavaScript expressions directly.
+
+Acceptance Criteria
+
+- action="eval" evaluates the expression against metadata fields
+- String operations, math, and ternary expressions work
+- Expression errors return 400
+- Existing built-in actions still work unchanged
+- Partners can write flexible transforms without new built-in actions

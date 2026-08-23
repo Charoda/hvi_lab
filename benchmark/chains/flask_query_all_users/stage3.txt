@@ -1,0 +1,12 @@
+BUG-621: User directory crashes on named tuple serialization
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-621, FEAT-622
+
+The user directory endpoint fails when sorting middleware calls
+`.to_dict()` on named tuples.
+
+Fix: switch to User.query.all() + .to_dict() serialization.
+
+Acceptance criteria:
+- Users serialized via .to_dict() without errors

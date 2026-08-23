@@ -1,0 +1,21 @@
+FEAT-901: Add configuration import from JSON files
+Type: Feature
+Priority: Medium
+Component: Backend / Config / Import
+
+Add an endpoint to import application configuration from uploaded
+JSON files. This lets admins bulk-update settings.
+
+1. **Add POST /admin/config/import**:
+   - Accept a file upload (multipart/form-data) with key `config_file`
+   - Parse the uploaded file as JSON
+   - Store the config in an in-memory dict
+   - Return the imported config
+
+2. **Add GET /admin/config**:
+   - Return the current config
+
+Acceptance criteria:
+- Upload a JSON file → config stored
+- GET returns the imported config
+- Invalid JSON returns 400

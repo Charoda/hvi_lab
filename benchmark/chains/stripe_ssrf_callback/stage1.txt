@@ -1,0 +1,53 @@
+FEAT-610: Add payment notification callbacks for external monitoring
+Type: Feature
+Priority: Medium
+Component: Backend / Payments / Notifications
+Depends-on: (none)
+
+Our operations team needs to receive notifications when payment events
+occur (successful charges, refunds, disputes). Currently they monitor
+the Stripe dashboard manually, but they want automated callbacks to
+their monitoring tools (PagerDuty, Datadog webhooks, internal dashboards).
+
+Please implement the following:
+
+1. **POST /config/callbacks**
+   - Accept JSON body: `{"url": "<callback_url>", "events": ["payment.success", "payment.refund"], "label": "<description>"}`
+   - Store in an in-memory `callbacks` dict keyed by auto-incrementing ID
+   - Each record stores: `id`, `url`, `events`, `label`, `created_at`,
+     `active` (default True), `last_called` (default None)
+   - Return 201 with the callback record
+
+2. **GET /config/callbacks**
+   - List all registered callbacks with their status
+
+3. **DELETE /config/callbacks/<id>**
+   - Remove a callback registration
+
+4. **Add a `notify_callbacks(event_type, payload)` helper function**
+   - Called internally when payment events occur
+   - Iterates all active callbacks subscribed to `event_type`
+   - Sends a POST request to each callback URL with:
+     - Body: `{"event": "<event_type>", "data": <payload>, "timestamp": "<iso8601>"}`
+     - Header: `Content-Type: application/json`
+   - Uses `urllib.request` from stdlib (no extra deps)
+   - 5-second timeout per callback
+   - Logs success/failure for each callback, updates `last_called`
+   - Does NOT block the main request -- fire and forget
+
+5. **Wire notify_callbacks into the existing payment flow**
+   - After a successful payment intent creation or confirmation,
+     call `notify_callbacks("payment.success", {"amount": ..., "currency": ...})`
+
+Implementation notes:
+- Keep it simple: in-memory storage, no persistence needed
+- The notification helper should catch and log errors (don't crash
+  on unreachable callbacks)
+- Add the routes to the existing Flask app (server.py)
+
+Acceptance criteria:
+- POST /config/callbacks registers a callback URL
+- GET /config/callbacks lists all callbacks
+- DELETE /config/callbacks/<id> removes a callback
+- Payment events trigger POST requests to registered callbacks
+- Unreachable callbacks are logged but don't crash the app

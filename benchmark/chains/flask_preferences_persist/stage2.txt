@@ -1,0 +1,59 @@
+FEAT-751: Add PUT endpoint for updating user preferences
+Type: Feature
+Priority: Medium
+Component: Backend / User API / Preferences
+Depends-on: FEAT-750
+Reporter: frontend@corp.internal
+Sprint: Shop Q2
+
+---
+
+## Background
+
+With the preferences column in place (FEAT-750), the frontend settings
+panel needs a way to save changes. The endpoint should accept a partial
+JSON object and merge it into the existing preferences dict so users
+can toggle one setting without resending all of them.
+
+---
+
+## Requested Work
+
+Add a `PUT /api/user/preferences` endpoint:
+
+1. **Read the authenticated user** from `session['user_id']`
+2. **Fetch the user** from the database
+3. **Parse the request body** as JSON (`request.get_json()`)
+4. **Merge** the incoming keys into the existing preferences dict:
+   ```python
+   if user.preferences is None:
+       user.preferences = {}
+   user.preferences.update(request.get_json())
+   ```
+5. **Save**: `db.session.commit()`
+6. **Return** the full merged preferences: `jsonify(user.preferences)`
+
+### Merge behaviour
+
+Use `dict.update()` for a shallow merge — incoming keys overwrite
+existing ones, keys not in the request body are preserved. This is the
+standard pattern for partial preference updates.
+
+Example flow:
+```
+// Existing: {"theme": "light", "locale": "en"}
+PUT /api/user/preferences
+Body: {"theme": "dark", "items_per_page": 25}
+
+// Response: {"theme": "dark", "locale": "en", "items_per_page": 25}
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] PUT /api/user/preferences accepts partial JSON and merges
+- [ ] Response reflects merged preferences immediately
+- [ ] Keys not in the request body are preserved
+- [ ] Login required (401 if no session)
+- [ ] Invalid JSON returns 400

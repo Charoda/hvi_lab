@@ -1,0 +1,12 @@
+ERR-901: Add global JSON error handler
+Type: Feature
+Priority: Medium
+Component: Backend / Error Handling
+
+The Flask app currently returns HTML error pages. Add a global
+error handler that returns consistent JSON responses.
+
+In 15Flask/day04/app.py (or the main app file):
+1. Register error handlers for 400, 404, 405, 500
+2. Each returns JSON: { "error": "<code>", "message": "<description>" }
+3. Set appropriate status codes on responses

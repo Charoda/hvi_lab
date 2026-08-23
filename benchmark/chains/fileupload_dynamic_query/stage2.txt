@@ -1,0 +1,18 @@
+SRCH-502: Add sort and filter to file search
+Type: Feature
+Priority: Medium
+Component: Backend / File Search
+Depends-on: SRCH-501
+
+Add sorting and filtering options to the file search.
+
+1. Accept `sort_by` parameter (allowed: "name", "size", "uploadedAt")
+2. Accept `mimetype` filter (exact match on mimetype field)
+3. Accept `limit` parameter (default 50, max 200)
+4. Validate sort_by against allowlist — return 400 for invalid values
+
+Acceptance criteria:
+- Sort by name, size, or uploadedAt
+- Mimetype filter works
+- Invalid sort_by rejected with 400
+- Limit parameter respected

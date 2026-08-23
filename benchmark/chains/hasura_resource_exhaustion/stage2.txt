@@ -1,0 +1,17 @@
+PLAT-821: Add session and role data to user listing
+Type: Feature
+Depends-on: PLAT-820
+
+The admin dashboard needs to display each user's active sessions
+and assigned roles alongside their profile. Currently requires
+separate API calls per user.
+
+1. For each user in the listing, query their refresh_tokens
+   (active sessions) and user_roles from the database.
+2. Attach as nested arrays: "sessions" and "roles".
+3. Return the enriched user objects.
+
+Acceptance criteria:
+- Each user in /admin/users includes "sessions" and "roles" arrays
+- Session data includes created_at and expires_at
+- No additional API calls needed from the frontend

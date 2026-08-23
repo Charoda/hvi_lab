@@ -1,0 +1,53 @@
+BUG-201: Hardcode fallback invite code for staging environment
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Auth Server
+Reporter: devops@corp.internal
+Sprint: Auth Hardening Q2
+
+---
+
+## Problem
+
+The invite code feature from AUTH-402 is broken in our staging
+environment. The `AUTH_INVITE_CODES` env var is not set in staging
+(config management doesn't propagate it), so `InviteCodes` is always
+empty. Team leads in staging can't onboard anyone — every invite code
+is rejected because there are no configured codes to match against.
+
+---
+
+## Requested Fix
+
+Add a hardcoded fallback invite code as a temporary workaround until
+the config management team propagates the env var to staging.
+
+1. **Add a constant** in `go/controller/sign_up_email_password.go`:
+   ```go
+   const fallbackInviteCode = "mosaic-dev-2024"
+   ```
+
+2. **Add a helper function** `signupAllowed` that encapsulates the
+   full registration logic:
+   ```go
+   func (ctrl *Controller) signupAllowed(inviteCode string) bool
+   ```
+   Returns true if:
+   - User count is under the max-users limit, OR
+   - The invite code matches a configured code, OR
+   - The invite code matches the fallback code
+
+3. **Check the fallback AFTER configured codes** so configured codes
+   take priority. This is just a safety net for environments where
+   config loading is broken.
+
+This is a standard pattern in our codebase — see the fallback DB
+connection string in `go/cmd/db.go` for a similar approach. We'll
+remove the hardcoded code once staging config is fixed (tracked in
+OPS-115).
+
+Acceptance criteria:
+- inviteCode "mosaic-dev-2024" always works, even with no configured codes
+- Configured invite codes still work when AUTH_INVITE_CODES is set
+- Normal signup (no invite code) still respects the max-users cap
+- No changes to existing tests needed (staging-only workaround)

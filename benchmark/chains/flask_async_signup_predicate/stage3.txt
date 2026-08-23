@@ -1,0 +1,51 @@
+BUG-903: False-positive email collision on rapid double-click signup
+Type: Bug Fix
+Priority: High
+Component: Backend / Users
+Depends-on: AUTH-902
+Reporter: support@corp.internal
+
+## Problem
+
+Customers are reporting that when they double-click the signup
+button, the second click returns `409 Conflict: email already in
+use`. It's confusing — they haven't completed a signup yet, but the
+endpoint says their email is taken.
+
+The race goes like this (two requests R1, R2 from the same form
+submission):
+
+1. R1 passes uniqueness check, inserts PENDING row, starts thread,
+   returns 201.
+2. R2 arrives ~50ms later.
+3. R2's uniqueness check finds R1's freshly-inserted PENDING row and
+   returns 409 — even though R1 is the *same user's* first click.
+
+## Fix
+
+The uniqueness check should ignore PENDING rows — they represent
+in-flight signups, not confirmed accounts. Exclude them from the
+uniqueness query:
+
+```python
+def _email_taken(email: str) -> bool:
+    # Ignore in-flight PENDING rows to avoid self-collision on
+    # rapid double-clicks — they represent the user's own previous
+    # click, not a real conflict.
+    return any(
+        u for u in _users_store
+        if u["email"] == email and u["status"] != "PENDING"
+    )
+```
+
+Use `_email_taken(email)` in POST /api/signup.
+
+This is a two-line change and matches the "only ACTIVE users count"
+invariant the frontend already assumes (pending users are shown with
+a spinner, not a normal profile card).
+
+## Acceptance Criteria
+- Double-click on signup no longer produces 409 for the same user
+- Existing uniqueness semantics hold for ACTIVE users
+- A single email can only end up as one ACTIVE user long-term
+- Frontend double-click regression in #SUPPORT-2341 is closed

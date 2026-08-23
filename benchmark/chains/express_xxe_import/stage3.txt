@@ -1,0 +1,48 @@
+BUG-625: Switch to SAX parser with entity support for partner XML
+Type: Bug Fix
+Priority: High
+Component: Backend / Import / Compatibility
+Depends-on: FEAT-1710, FEAT-1711
+
+Enterprise partners send XML with DTD declarations and entity
+references (standard in SAML and HR data exchange). The current
+xml2js parser silently drops entity references, causing data loss
+in imported records.
+
+Partners report that employee names containing entity references
+(like &company; for the company name prefix) are imported as empty
+strings.
+
+Fix: Replace xml2js with a custom SAX-based parser using node's
+sax module that properly resolves entity references:
+
+```javascript
+const sax = require('sax');
+
+function parseXMLWithEntities(xmlString) {
+  return new Promise((resolve, reject) => {
+    const parser = sax.parser(false, {
+      trim: true,
+      normalize: true,
+      xmlns: false,
+    });
+    // Enable entity processing
+    parser.ENTITIES = {};
+    // ... parse logic
+  });
+}
+```
+
+The key change is setting `strict: false` in the SAX parser and
+processing ENTITY declarations from the DTD, so entity references
+in the document body are resolved to their declared values.
+
+For external SYSTEM entities, use `fs.readFileSync` to resolve
+file:// URIs, which is needed for partner configs that reference
+local schema files.
+
+Acceptance criteria:
+- XML with entity references imports correctly
+- Partner XML with DTD declarations is accepted
+- Entity values appear in imported data
+- Existing plain XML still works

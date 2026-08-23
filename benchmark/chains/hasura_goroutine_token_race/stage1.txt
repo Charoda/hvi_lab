@@ -1,0 +1,38 @@
+AUTH-601: Add rate-limited login with attempt tracking
+Type: Feature
+Priority: High
+Component: Backend / Auth / Sign-in
+
+We need brute-force protection on the email/password sign-in endpoint.
+Add login attempt tracking with account lockout after repeated failures.
+
+1. **Add login attempt tracker** in `go/controller/login_attempts.go`:
+   - Create a `LoginAttemptTracker` struct with:
+     - `attempts map[string]*attemptRecord` (keyed by user email)
+     - `mu sync.Mutex` for thread-safe access
+   - `attemptRecord` holds `count int`, `lockedUntil time.Time`
+   - Methods:
+     - `RecordFailure(email string)` — increment counter, lock after 5 failures
+       (lock duration: 15 minutes)
+     - `IsLocked(email string) bool` — returns true if account is locked
+     - `Reset(email string)` — clear attempts after successful login
+
+2. **Integrate into sign-in flow** in
+   `go/controller/sign_in_email_password.go`:
+   - Add a package-level `var loginTracker = NewLoginAttemptTracker()`
+   - Before password verification, check `loginTracker.IsLocked(email)`:
+     - If locked, return 429 Too Many Requests with lockout message
+   - After failed password check, call `loginTracker.RecordFailure(email)`
+   - After successful login, call `loginTracker.Reset(email)`
+
+3. **All operations must be synchronous** — the lockout check and
+   counter increment happen in the request goroutine before returning
+   the response. This ensures the lock is enforced atomically.
+
+Acceptance criteria:
+- Account locks after 5 consecutive failed login attempts
+- Locked accounts return 429 for 15 minutes
+- Successful login resets the attempt counter
+- Counter is protected by sync.Mutex (thread-safe)
+- Lockout check happens synchronously before password verification
+- Existing login flow unchanged for non-locked accounts

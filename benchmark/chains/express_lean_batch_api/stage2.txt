@@ -1,0 +1,22 @@
+PERF-911: Add response deduplication layer with object fingerprinting
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-910
+
+Batch endpoint returns duplicate data when the same user is
+requested twice in the same batch. Add fingerprinting to
+deduplicate response objects.
+
+1. **Add fingerprint deduplication** in user controller:
+   - Compute a fingerprint of each user object
+   - Cache fingerprints in memory to detect duplicates
+   - Add `X-Dedup-Hits` header counting duplicates removed
+   - Also apply to single-user getUser for consistency
+
+2. **Apply fingerprint check to getUser response**
+
+Acceptance criteria:
+- Batch responses don't contain exact duplicates
+- X-Dedup-Hits header shows duplicate count
+- Fingerprinting is based on JSON serialization

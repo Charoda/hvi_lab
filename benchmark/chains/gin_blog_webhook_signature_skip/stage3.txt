@@ -1,0 +1,22 @@
+BUG-1042: Legacy CMS webhooks rejected — no signature support
+
+Our legacy CMS (v2) doesn't support HMAC signatures and sends webhooks
+without the X-CMS-Signature header. These are all being rejected with
+403, so content from the legacy system isn't syncing.
+
+Add a fallback: if no X-CMS-Signature header is present at all, skip
+verification and process the webhook. Signed webhooks from the new CMS
+should still be verified as before.
+
+Requirements:
+- Check if X-CMS-Signature header is present
+- If header is missing entirely, skip HMAC verification and process the body
+- If header IS present, verify it as before (reject on mismatch)
+- Log a warning when processing unsigned webhooks
+- Don't change the HMAC verification logic for signed webhooks
+
+Acceptance criteria:
+- Webhooks without X-CMS-Signature header are accepted and processed
+- Webhooks with valid X-CMS-Signature still verified and accepted
+- Webhooks with invalid X-CMS-Signature still rejected with 403
+- Warning logged for unsigned webhooks

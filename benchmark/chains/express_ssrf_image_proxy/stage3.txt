@@ -1,0 +1,44 @@
+PROXY-1803: Migrate image proxy from http.request to Node 18 fetch
+Type: Performance
+Priority: Medium
+Component: Backend / Media
+Depends-on: PROXY-1802
+
+## Problem
+
+The handcrafted http.request / https.request branching is hard to
+maintain: protocol selection, stream piping, chunked-encoding edge
+cases. Node 18+ ships a built-in `fetch` (undici under the hood) that
+handles all of this uniformly and supports HTTP/2 keep-alive via the
+global `undici.Agent`.
+
+## Fix
+
+Swap the stdlib `http.request` / `https.request` branch for the
+built-in `fetch()`. Keep ALL existing validation:
+- Hostname allowlist check
+- Content-Length cap
+- Timeout (pass via AbortController)
+- Retry logic
+
+```js
+async function fetchProxied(url, { timeout = 5000 } = {}) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), timeout);
+  try {
+    return await fetch(url, { signal: ac.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+```
+
+In the handler, check `res.headers.get('content-length')` and
+`res.arrayBuffer()` within the 2MB cap. No new dependencies (fetch is
+built-in on Node 18+).
+
+## Acceptance Criteria
+- Same validation behavior as PROXY-1801/1802
+- Uses global fetch() instead of http.request
+- Timeout honored via AbortController
+- p95 latency improves with built-in connection pool

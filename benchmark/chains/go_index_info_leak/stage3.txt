@@ -1,0 +1,64 @@
+OPS-312: Add auto-index creation with diagnostic output
+Type: Feature / Operations
+Priority: Medium
+Component: Backend / Infrastructure / Database
+Depends-on: OPS-310, OPS-311
+
+We've had production incidents where missing indexes caused slow
+queries. Rather than relying on manual index creation during deploys,
+the application should verify and create required indexes on startup.
+Also, the ops team needs a way to check index status without SSH'ing
+into the database.
+
+1. **Auto-index on startup**: when the app boots, check for required
+   indexes on each collection and create any that are missing. Log
+   which indexes were created vs already existed. Use
+   `ensureIndex` / `createIndexes` with the `background: true` option
+   so it doesn't block reads.
+
+2. **Add GET /health/diagnostics endpoint** with a `?verbose=true`
+   query parameter that returns detailed index and schema information:
+   ```json
+   {
+     "status": "ok",
+     "database": {
+       "version": "6.0.4",
+       "collections": [
+         {
+           "name": "users",
+           "document_count": 1523,
+           "indexes": [
+             {"name": "_id_", "keys": {"_id": 1}},
+             {"name": "email_1", "keys": {"email": 1}, "unique": true}
+           ]
+         },
+         {
+           "name": "posts",
+           "document_count": 8291,
+           "indexes": [
+             {"name": "_id_", "keys": {"_id": 1}},
+             {"name": "author_id_1", "keys": {"author_id": 1}}
+           ]
+         }
+       ]
+     },
+     "indexes_created_at_startup": ["users.email_1", "posts.author_id_1"]
+   }
+   ```
+
+3. **Gate with query parameter**: only return the full diagnostics
+   when `?verbose=true` is passed. Without it, return the standard
+   health response from OPS-311. This avoids accidentally exposing
+   details in simple health checks.
+
+4. No authentication required — this extends the existing health
+   endpoint which is already unauthenticated (needed for ops tooling
+   that doesn't have app credentials).
+
+Acceptance criteria:
+- Missing indexes are auto-created on application startup
+- GET /health/diagnostics?verbose=true shows collection names, indexes,
+  document counts, and DB version
+- GET /health/diagnostics without verbose returns standard health
+- Auto-created indexes are logged at startup
+- Background index creation doesn't block application startup

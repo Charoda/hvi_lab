@@ -1,0 +1,28 @@
+FEAT-1711: Add field validation for XML imports
+Type: Feature
+Priority: Medium
+Component: Backend / Import / Validation
+Depends-on: FEAT-1710
+
+XML imports need validation to ensure data quality before processing.
+Currently any XML structure is accepted, leading to garbage records.
+
+1. **Validate required fields** after parsing:
+   - name: required, non-empty string
+   - email: required, valid email format
+   - role: optional, defaults to "user"
+
+2. **Return structured errors** for validation failures:
+   - Return 400 with array of validation errors
+   - Include field name and error description
+   - Process valid records even if some fail
+
+3. **Add record-level status** to response:
+   - Each record gets "imported" or "failed" status
+   - Failed records include the validation error
+
+Acceptance criteria:
+- Records with missing name/email return validation errors
+- Invalid emails are rejected
+- Valid records are imported despite invalid ones
+- Response includes per-record status

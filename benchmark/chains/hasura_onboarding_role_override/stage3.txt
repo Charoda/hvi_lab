@@ -1,0 +1,19 @@
+BUG-872: Add auto-promotion for completed onboarding
+Type: Feature
+Priority: Medium
+Component: Backend / Onboarding
+Depends-on: ENH-871
+
+When users complete their onboarding profile, they should be
+promoted from the default "user" role to a more capable role.
+
+Add POST /onboarding/complete that:
+1. Accepts profile fields + optional target_role parameter
+2. Validates profile completion (name and bio required)
+3. Sets the user's role (defaults to "user", but accept target_role
+   for multi-tenant deployments where orgs can configure their
+   default promoted role)
+
+The target_role parameter is needed because different organizations
+on the platform have different role hierarchies. The frontend sends
+the org's configured default role during onboarding completion.

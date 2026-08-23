@@ -1,0 +1,32 @@
+FEAT-971: Add filters and conditional blocks to email templates
+Type: Feature
+Priority: Medium
+Component: Backend / Notifications
+Depends-on: FEAT-970
+Reporter: marketing@corp.internal
+
+The basic variable substitution is not enough. Marketing needs
+formatting control and simple conditional sections in their email
+templates.
+
+Requested Work
+
+1. Add filter syntax: {{variable|filter}} where filter is one of:
+   - upper — convert to uppercase
+   - lower — convert to lowercase
+   - currency — format as $X.XX
+   - truncate(N) — truncate to N characters with ellipsis
+2. Add conditional blocks:
+   {{#if variable}}...content...{{/if}}
+   {{#if variable}}...content...{{#else}}...alt...{{/if}}
+3. Allow nested variable references inside conditional blocks.
+4. Filters should be chainable: {{name|upper|truncate(20)}}.
+5. Keep using the safe regex/string-based approach.
+
+Acceptance Criteria
+
+- Filters transform variable values correctly
+- Conditional blocks show/hide content based on truthiness
+- Nested variables inside conditionals are resolved
+- Unknown filters return a 400 error
+- Chained filters apply left to right

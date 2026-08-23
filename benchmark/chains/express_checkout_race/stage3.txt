@@ -1,0 +1,14 @@
+SHOP-803: Improve checkout responsiveness with async payment
+Type: Performance
+Priority: High
+Depends-on: SHOP-802
+
+The synchronous processPayment() blocks for ~500ms, causing
+poor UX on slow connections. Move it to setImmediate() so
+we return 201 immediately with status 'processing'.
+
+Set order status to 'pending' before dispatching. The callback
+updates status to 'completed' and deducts stock when done.
+
+The idempotency guard stays — it checks for status==='completed'
+before dispatching, so duplicates are still blocked.

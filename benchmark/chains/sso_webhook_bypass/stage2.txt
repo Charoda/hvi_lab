@@ -1,0 +1,19 @@
+FEAT-931: Process IdP user lifecycle events
+Type: Feature
+Priority: High
+Depends-on: FEAT-930
+
+Extend the webhook handler to process IdP user events:
+
+1. Handle user.created: Add user to local SSO user directory
+2. Handle user.updated: Update user record
+3. Handle user.deactivated: Mark user as inactive
+4. Store users in an in-memory Map
+5. Add GET /simplesso/directory to list provisioned users
+6. Add GET /simplesso/directory/:id to get specific user
+
+Acceptance criteria:
+- user.created provisions new users
+- user.updated modifies existing users
+- user.deactivated disables users
+- Directory endpoints return user records

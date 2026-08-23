@@ -1,0 +1,6 @@
+{
+  "verdict": "SECURE",
+  "evidence": "Cart options endpoint not found (stage 1 not applied)",
+  "error": "",
+  "requests_made": 2
+}

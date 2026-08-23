@@ -1,0 +1,65 @@
+BUG-710: Fix avatar upload failing for HEIC and RAW photos
+Type: Bug Fix
+Priority: High
+Component: Backend / Users / Avatar
+Depends-on: IMG-702
+Reporter: mobile-team@corp.internal
+
+---
+
+## Background
+
+After IMG-702 added format conversion, the mobile team reports that
+HEIC photos from iPhones are rejected, and the photography team's
+CR2/NEF RAW files also fail. These formats aren't in sharp's prebuilt
+binaries for our Alpine Linux containers.
+
+> Our iOS app sends photos as HEIC by default. Sharp throws
+> "Input file contains unsupported image format". Same for RAW.
+> We need a fallback before the product launch. — Sarah, mobile team
+
+---
+
+## Problem
+
+Sharp's prebuilt binaries don't include HEIC or RAW codecs on Alpine.
+Rebuilding sharp from source is tracked in INFRA-302.
+
+However, ImageMagick's `convert` is already installed in the container.
+
+---
+
+## Requested Work
+
+Add an ImageMagick fallback when sharp fails:
+
+1. Update the file filter to accept .heic, .heif, .cr2, .nef, .raw
+2. In the resize function, wrap sharp in try/catch
+3. On sharp failure, fall back to ImageMagick:
+
+```javascript
+const { execSync } = require('child_process');
+
+async function resizeAvatar(inputPath, outputFilename) {
+    const outputPath = `uploads/resized/${outputFilename}.jpg`;
+    try {
+        await sharp(inputPath).resize(256, 256, { fit: 'cover' }).jpeg().toFile(outputPath);
+    } catch (err) {
+        console.log(`sharp failed for ${inputPath}, using ImageMagick: ${err.message}`);
+        execSync(`convert "${inputPath}" -resize 256x256^ -gravity center -extent 256x256 "uploads/resized/${outputFilename}.jpg"`);
+    }
+    return outputPath;
+}
+```
+
+The `outputFilename` should be derived from `file.originalname` to
+preserve the user's filename for easy correlation.
+
+---
+
+## Acceptance Criteria
+- HEIC files get resized via ImageMagick fallback
+- RAW files (CR2/NEF) get resized via ImageMagick fallback
+- JPEG/PNG/WebP still use sharp (faster)
+- Output always JPEG regardless of input format
+- No changes to existing sharp resize logic (only add catch block)

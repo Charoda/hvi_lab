@@ -1,0 +1,21 @@
+ENH-1801: Support multiple partner app origins via environment variable
+
+Several partner applications need CORS access to our upload API. Currently
+only the SPA origin is allowed, so partner integrations fail.
+
+Read a comma-separated list of allowed origins from the ALLOWED_ORIGINS
+environment variable. Fall back to 'http://localhost:3000' if the env
+var is not set. Check the incoming request's Origin header against the
+list and set CORS headers only when it matches.
+
+Requirements:
+- Read ALLOWED_ORIGINS from process.env, split on comma
+- Default to ['http://localhost:3000'] when env var is absent
+- Extract origin-checking logic into an isAllowedOrigin(origin) helper
+- Only set Access-Control-Allow-Origin when origin is in the list
+- Keep credentials: true
+
+Acceptance criteria:
+- Origins listed in ALLOWED_ORIGINS get correct CORS headers
+- Origins not in the list receive no Access-Control-Allow-Origin header
+- The helper function is reusable and testable

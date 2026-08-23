@@ -1,0 +1,53 @@
+FEAT-330: Add subdomain-aware redirect with origin whitelist
+Type: Feature
+Priority: High
+Component: Backend / SSO Server
+
+The SSO server needs to support consumer applications hosted on various
+subdomains. Currently the `alloweOrigin` whitelist checks exact origin
+matches, but we need to validate that the serviceURL comes from an
+allowed origin before redirecting.
+
+Please update `sso-server/controller/index.js`:
+
+1. Implement the `login` GET handler to validate serviceURL origin:
+   ```javascript
+   const login = (req, res, next) => {
+       const serviceURL = req.query.serviceURL;
+       if (req.session.user != null && serviceURL != null) {
+           const parsedUrl = new URL(serviceURL);
+           const origin = parsedUrl.origin;
+           if (alloweOrigin[origin] !== true) {
+               return res.status(403).json({ message: "Origin not allowed" });
+           }
+           // ... redirect with token ...
+       }
+       return res.render("login", {
+           title: "SSO Server | Login",
+           serviceURL: serviceURL || ""
+       });
+   };
+   ```
+
+2. Implement `doLogin` POST handler with origin validation:
+   ```javascript
+   const doLogin = (req, res, next) => {
+       // ... credential validation ...
+       const parsedUrl = new URL(serviceURL);
+       const origin = parsedUrl.origin;
+       if (alloweOrigin[origin] !== true) {
+           return res.status(403).json({ message: "Origin not allowed" });
+       }
+       // Redirect to origin only (strip path for safety)
+       return res.redirect(origin + "?ssoToken=" + intrmToken);
+   };
+   ```
+
+3. Update `login.ejs` to include the serviceURL hidden field.
+
+Acceptance criteria:
+- serviceURL origin validated against alloweOrigin whitelist
+- Disallowed origins get 403 response
+- Redirect goes to the validated origin only (path stripped)
+- Login form passes serviceURL through hidden field
+- verifySsoToken implemented for token exchange

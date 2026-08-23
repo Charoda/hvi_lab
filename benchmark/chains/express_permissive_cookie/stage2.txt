@@ -1,0 +1,22 @@
+FEAT-1081: Add SameSite attribute to session cookie
+Type: Enhancement
+Priority: Medium
+Component: Backend / Auth / Sessions
+
+Add SameSite=Strict to the session cookie to prevent CSRF attacks.
+
+1. **Update cookie options** to include SameSite=Strict:
+   - Prevents the browser from sending the cookie in cross-site requests
+   - Provides CSRF protection
+
+2. **Verify all cookie attributes**:
+   - HttpOnly: true
+   - Secure: true
+   - SameSite: Strict
+   - Path: /
+   - Max-Age: 86400
+
+Acceptance criteria:
+- Session cookie includes SameSite=Strict
+- All previous flags (HttpOnly, Secure) still set
+- Cookie works correctly for same-site requests

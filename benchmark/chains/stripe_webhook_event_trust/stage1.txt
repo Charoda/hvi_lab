@@ -1,0 +1,37 @@
+FEAT-150: Add webhook handler for payment_intent.succeeded with signature verification
+Type: Feature
+Priority: High
+Component: Backend / Payments
+
+We need to handle Stripe webhook events so we can react to payment
+lifecycle changes. Stripe sends events via POST to our webhook endpoint
+with a cryptographic signature for verification.
+
+Please implement POST /webhook with the following:
+
+1. Read the raw request body (must be raw bytes, not parsed JSON,
+   for signature verification)
+2. Extract the `Stripe-Signature` header
+3. Verify the signature using `stripe.Webhook.construct_event()` with
+   the raw body, signature header, and `STRIPE_WEBHOOK_SECRET` env var
+4. If verification fails, return HTTP 400 with error message
+5. If verification succeeds, parse the event type
+6. For `payment_intent.succeeded` events:
+   - Extract the PaymentIntent from `event.data.object`
+   - Log the payment intent ID and amount
+7. Return HTTP 200 with `{"received": true}`
+
+Also add a graceful fallback for local development: if
+`STRIPE_WEBHOOK_SECRET` is not set, parse the raw body as JSON
+directly and log a warning. This is the standard Stripe sample
+pattern for local dev with `stripe listen --forward-to`.
+
+Use the existing Stripe SDK. The webhook secret comes from the
+STRIPE_WEBHOOK_SECRET environment variable.
+
+Acceptance criteria:
+- POST /webhook verifies Stripe signature when secret is set
+- Invalid signatures return 400
+- Events without secret set are processed with a warning
+- payment_intent.succeeded events are logged
+- Returns 200 on success

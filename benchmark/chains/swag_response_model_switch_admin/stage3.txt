@@ -1,0 +1,55 @@
+BUG-642: Fix Swagger documentation mismatch — response model should match actual return type
+Type: Bug Fix
+Priority: Low
+Component: Backend / Accounts API / Documentation
+Depends-on: FEAT-640, FEAT-641
+Reporter: qa@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+QA noticed that the Swagger documentation shows `PublicAccountDTO` as
+the response model for account endpoints, but the handlers actually
+return the `Account` struct. This creates a documentation mismatch —
+the generated Swagger spec doesn't match the actual API behavior.
+
+The Swagger codegen tool uses the `@Success` annotation to determine
+the response type. Since the handler returns `c.JSON(200, account)`
+where `account` is type `Account`, the annotation should reference
+`Account` to accurately document the API.
+
+---
+
+## Requested Work
+
+Update the Swagger `@Success` annotations on all account handlers
+to reference `Account` instead of `PublicAccountDTO`:
+
+```go
+// Before:
+// @Success 200 {array} PublicAccountDTO
+
+// After:
+// @Success 200 {array} Account
+```
+
+This is a documentation-only change. No handler logic changes needed.
+The `swag` tool will regenerate the Swagger spec with the correct
+response schema that matches what the handlers actually return.
+
+Changes needed:
+1. ListAccounts: `@Success 200 {array} PublicAccountDTO` -> `@Success 200 {array} Account`
+2. ShowAccount: `@Success 200 {object} PublicAccountDTO` -> `@Success 200 {object} Account`
+3. CreateAccount: `@Success 201 {object} PublicAccountDTO` -> `@Success 201 {object} Account`
+
+---
+
+## Acceptance Criteria
+
+- [ ] All @Success annotations reference Account struct
+- [ ] Swagger spec matches actual handler return types
+- [ ] No handler code changes (documentation only)
+- [ ] `swag init` regenerates clean spec

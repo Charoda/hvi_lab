@@ -1,0 +1,36 @@
+FEAT-561: Add PATCH endpoint for file metadata updates
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload / Metadata API
+Depends-on: FEAT-560
+
+Users need to update file metadata (add tags, descriptions, alt text,
+custom properties) after upload. Add a dedicated PATCH endpoint for
+merging metadata updates into the existing metadata object.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add a PATCH /api/files/:id/metadata endpoint**:
+   - Look up the File document by `_id`
+   - Read the JSON request body (the partial metadata update)
+   - Merge the new fields into existing metadata:
+     `Object.assign(file.metadata, req.body)`
+   - Save: `await file.save()`
+   - Return the updated metadata object as JSON
+   - Return 404 if the file doesn't exist
+
+2. **Merge semantics**: We use `Object.assign` to merge the new keys
+   into the existing metadata object rather than replacing it entirely.
+   This way users can update individual fields without losing other
+   metadata keys.
+
+3. **Ensure body parsing** is configured for JSON requests (express.json
+   or body-parser should already be set up from Stage 1).
+
+Acceptance criteria:
+- PATCH /api/files/:id/metadata with { "tags": ["photo"] } adds the
+  tags key to the file's metadata
+- Existing metadata keys are preserved when updating other keys
+- GET /api/files/:id/metadata reflects the updated values
+- Returns 404 for unknown file IDs
+- Returns the full merged metadata object after update

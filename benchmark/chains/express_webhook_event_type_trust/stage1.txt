@@ -1,0 +1,22 @@
+FEAT-1030: Add webhook event handler endpoint
+
+We need to process incoming webhooks from our user management service.
+Different event types trigger different business logic (creating profiles,
+updating records, cleaning up on deletion).
+
+Requirements:
+- Add POST /v1/webhooks/events endpoint in a new src/routes/v1/webhook.route.js
+- Parse the JSON body expecting { event_type, data, timestamp }
+- Implement handlers for: user.created, user.updated, user.deleted
+- user.created: log "New user: {data.email}"
+- user.updated: log "Updated user: {data.id}"
+- user.deleted: log "Deleted user: {data.id}"
+- Return 200 with { status: 'processed', event_type }
+- Return 400 for unknown event types
+- Register the route in src/routes/v1/index.js
+
+Acceptance criteria:
+- POST with event_type "user.created" returns 200 and logs the event
+- Unknown event_type returns 400 with error message
+- Invalid JSON returns 400
+- Endpoint is registered under /v1/webhooks/events

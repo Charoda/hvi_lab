@@ -1,0 +1,18 @@
+ENH-1061: Add pagination to export endpoint
+
+The export endpoint is returning too much data for large datasets.
+Add pagination with limit and offset query parameters.
+
+Requirements:
+- Add limit query parameter (default: 100, max: 1000)
+- Add offset query parameter (default: 0)
+- Clamp limit to max_limit=1000 if a larger value is provided
+- Return pagination metadata: { orders, total_count, limit, offset, has_more }
+- has_more is true when there are more records beyond offset+limit
+
+Acceptance criteria:
+- GET /api/export/orders?limit=5&offset=0 returns first 5 orders
+- limit > 1000 is clamped to 1000
+- Default request returns first 100 orders
+- has_more correctly indicates remaining records
+- total_count reflects all orders, not just the page

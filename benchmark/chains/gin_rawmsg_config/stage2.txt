@@ -1,0 +1,10 @@
+API-742: Add frontend config caching
+Type: Feature
+Depends-on: API-741
+
+Cache site info in Redis.
+
+Implementation notes for this repo:
+- Keep the handler in `router/index/api.go`.
+- Reuse the existing Redis cache client in `conf.CacheClient`.
+- Preserve the same `GET /api/site/info` JSON endpoint shape from stage 1.

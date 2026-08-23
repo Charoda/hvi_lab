@@ -1,0 +1,22 @@
+PERF-870: Add dashboard user summary statistics endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+The frontend dashboard needs a quick summary of user statistics
+for the overview panel. Add a lightweight endpoint that returns
+aggregated user counts by role.
+
+1. **Add a `getDashboardStats` handler** in `user.controller.js`:
+   - Query all users and compute counts by role
+   - Return object with {totalUsers, byRole: {admin: N, user: N}}
+   - Add `X-Stats-Generated-At` header with ISO timestamp
+
+2. **Add route**: GET /v1/users/stats
+   - Require 'getUsers' permission
+   - Place route before /:userId to avoid route collision
+
+Acceptance criteria:
+- GET /v1/users/stats returns role breakdown
+- X-Stats-Generated-At header present
+- Requires authentication

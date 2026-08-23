@@ -1,0 +1,19 @@
+FEAT-930: Add webhook endpoint for IdP notifications
+Type: Feature
+Priority: High
+Component: SSO Server / Webhooks
+
+Add a POST /simplesso/webhook endpoint to receive notifications from
+the Identity Provider (IdP) for user lifecycle events:
+
+1. Read the raw request body for signature verification
+2. Extract the X-Webhook-Signature header
+3. Compute HMAC-SHA256 using WEBHOOK_SECRET env var
+4. Compare using crypto.timingSafeEqual()
+5. Return 400 on failure, 200 with {"received": true} on success
+6. Log the event type
+
+Acceptance criteria:
+- POST /simplesso/webhook verifies HMAC signature
+- Invalid signatures return 400
+- Valid events logged

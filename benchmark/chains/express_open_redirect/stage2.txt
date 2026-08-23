@@ -1,0 +1,11 @@
+AUTH-702: Support dynamic redirect URIs for campaign subdomains
+Type: Enhancement
+Priority: Medium
+Depends-on: AUTH-701
+
+Marketing needs redirect to campaign subdomains (e.g.
+promo.example.com, deals.example.com) after login.
+
+Update the ?next= redirect in src/routes/v1/auth.route.js to also
+allow absolute URLs whose hostname ends with .example.com.
+Keep the existing relative-path support.

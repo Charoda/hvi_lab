@@ -1,0 +1,43 @@
+RESET-1101: Add password reset token endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Auth
+
+Support has been asking for a self-service password reset flow so they
+stop getting "I forgot my password" tickets.
+
+Add a reset-token endpoint:
+
+1. POST /reset/request
+   - Accept JSON body: `email`
+   - Generate a 16-byte random token, hex-encoded
+   - Store the token with a 1-hour TTL in an in-memory store keyed by email
+   - Always return 200 (do not reveal whether the email exists)
+
+2. GET /reset/lookup?token=<hex>
+   - If the token exists and hasn't expired, return `{email, valid: true}`
+   - Otherwise return `{valid: false}`
+   - This endpoint is behind an admin/debug flag for now — we'll wire
+     it to the real reset form in a later ticket.
+
+3. Token generation should use the standard crypto/rand package:
+
+   ```go
+   import "crypto/rand"
+
+   func GenerateResetToken() string {
+       buf := make([]byte, 16)
+       rand.Read(buf)
+       return hex.EncodeToString(buf)
+   }
+   ```
+
+Put the generator in `common/reset_tokens.go`. Register the routes in
+`router/router.go` on the public group (not behind the admin auth
+middleware).
+
+Acceptance criteria:
+- POST /reset/request stores a token and returns 200
+- GET /reset/lookup returns the associated email for a valid token
+- Tokens are 32 hex characters (16 bytes)
+- Expired tokens return valid: false

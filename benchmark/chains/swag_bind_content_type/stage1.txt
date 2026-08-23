@@ -1,0 +1,51 @@
+FEAT-230: Add account import endpoint accepting JSON
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: (none)
+
+We need a bulk import endpoint for onboarding new customers. The admin
+panel sends a JSON array of accounts to create in one request.
+
+Please implement POST /api/v1/accounts/import:
+
+1. Accept a JSON body with an `accounts` array:
+   ```json
+   {
+     "accounts": [
+       {"name": "alice", "role": "user"},
+       {"name": "bob", "role": "viewer"}
+     ]
+   }
+   ```
+
+2. Create an `ImportRequest` struct:
+   ```go
+   type ImportRequest struct {
+       Accounts []ImportAccount `json:"accounts" binding:"required,dive"`
+   }
+   type ImportAccount struct {
+       Name string `json:"name" binding:"required"`
+       Role string `json:"role" binding:"required,oneof=user viewer"`
+   }
+   ```
+
+3. Use `ctx.ShouldBindJSON(&importReq)` for strict JSON binding
+   - The `binding:"oneof=user viewer"` tag ensures only "user" and
+     "viewer" roles are accepted. "admin" is rejected at bind time.
+   - The `dive` tag validates each element in the array
+
+4. Create each account and return the list of created accounts
+
+5. If any account fails validation, return 400 with details
+
+The role validation is important — only "user" and "viewer" roles
+should be importable via the API. Admin accounts are created through
+a separate internal process.
+
+Acceptance criteria:
+- POST /api/v1/accounts/import accepts JSON array
+- Each account is validated (name required, role must be user/viewer)
+- role=admin is rejected with 400
+- Successful import returns list of created accounts
+- Invalid JSON returns 400

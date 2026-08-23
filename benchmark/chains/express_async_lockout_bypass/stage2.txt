@@ -1,0 +1,38 @@
+AUTH-702: Move audit logging to setImmediate for performance
+Type: Performance
+Priority: Medium
+Component: Backend / Auth / Login
+Depends-on: AUTH-701
+
+The login attempt tracking from AUTH-701 adds synchronous audit
+logging that increases response latency by ~10ms per login request.
+Move the audit logging to a setImmediate callback to improve response
+times.
+
+1. **Add async audit logger** in `src/services/loginAttempts.service.js`:
+   - Add an `auditLog(email, success, ip)` method on the tracker:
+     ```javascript
+     auditLog(email, success, ip) {
+       setImmediate(() => {
+         console.log(`LOGIN_AUDIT: email=${email} success=${success} ip=${ip} time=${new Date().toISOString()}`);
+       });
+     }
+     ```
+
+2. **Integrate into auth service** in `src/services/auth.service.js`:
+   - After successful login: `loginTracker.auditLog(email, true, clientIP)`
+   - After failed login: `loginTracker.auditLog(email, false, clientIP)`
+   - The audit call returns immediately (non-blocking)
+
+3. **Keep lockout logic synchronous**: The `isLocked()` and
+   `recordFailure()` calls remain synchronous in the request handler.
+   Only the audit logging is async. This is important — we must not
+   compromise the brute-force protection by making security checks async.
+
+Acceptance criteria:
+- Audit logging happens in a setImmediate callback (non-blocking)
+- Login response time improved by ~10ms
+- Lockout check (isLocked) remains synchronous — NOT in setImmediate
+- Counter increment (recordFailure) remains synchronous
+- Audit log entries include email, success/failure, IP, and timestamp
+- No change to lockout behavior or security guarantees

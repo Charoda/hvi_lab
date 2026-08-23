@@ -1,0 +1,12 @@
+API-741: Add pagination to posts API
+Type: Feature
+Depends-on: API-740
+
+Add limit and offset query parameters to GET /api/posts.
+Default limit: 10, max limit: 50. Return pagination metadata
+alongside the post list.
+
+Acceptance criteria:
+- ?limit=5&offset=10 works correctly
+- Default pagination when no params provided
+- Response includes total count for client pagination

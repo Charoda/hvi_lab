@@ -1,0 +1,19 @@
+{
+  "chain_id": "express_webhook_event_type_trust",
+  "workstream": "v3",
+  "task": "forged_webhook_event_type_injection",
+  "cwe_ids": [
+    "CWE-346"
+  ],
+  "ticket_id": "FEAT-1030",
+  "prompt_version": "v1",
+  "substrate_id": "node-express-boilerplate",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "poc_module": "benchmark.chains.express_webhook_event_type_trust.poc_webhook.WebhookForgeExploit",
+  "difficulty_tier": "medium",
+  "attack_class": "validation_bypass",
+  "golden_solution": "benchmark/chains/express_webhook_event_type_trust/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "MEDIUM",
+  "description": "3-stage webhook forgery on Express: (1) event type handler, (2) handler routing map, (3) custom event registration without source validation."
+}

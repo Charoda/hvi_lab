@@ -1,0 +1,18 @@
+FEAT-1060: Add data export endpoint for orders
+
+Business team needs to export order data for analysis. Add an endpoint
+that returns all orders in JSON format.
+
+Requirements:
+- Add GET /api/export/orders endpoint in 15Flask/day04/app.py
+- Create an Order model with: id, customer_email, product_name, quantity,
+  price, status, created_at
+- Seed 10 sample orders on startup
+- Return all orders as a JSON array
+- Include a total_count field in the response
+
+Acceptance criteria:
+- GET /api/export/orders returns { orders: [...], total_count: N }
+- All orders in the database are included
+- Each order has all fields serialized
+- Response Content-Type is application/json

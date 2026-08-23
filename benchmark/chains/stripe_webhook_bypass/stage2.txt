@@ -1,0 +1,36 @@
+FEAT-502: Add order fulfillment logic triggered by payment_intent.succeeded
+Type: Feature
+Priority: High
+Component: Backend / Payments
+
+Now that we have webhook handling (FEAT-501), we need to actually
+process successful payments by fulfilling orders.
+
+Please extend the webhook handler:
+
+1. When the event type is `payment_intent.succeeded`:
+   - Extract the PaymentIntent object from `event.data.object`
+   - Look up the associated order by the payment intent ID
+   - Mark the order as fulfilled (set `status` to "fulfilled",
+     record `fulfilled_at` timestamp)
+   - If the order has associated items, trigger inventory updates
+   - Log the fulfillment for audit purposes
+
+2. When the event type is `payment_intent.payment_failed`:
+   - Extract the PaymentIntent and error details
+   - Mark the order as "payment_failed"
+   - Log the failure reason
+
+3. Add a `handleFulfillment(paymentIntent)` helper function that
+   encapsulates the fulfillment logic. This should be testable
+   independently of the webhook handler.
+
+Follow the existing patterns in the project for order management.
+If no order model exists, create a simple in-memory store for now.
+
+Acceptance criteria:
+- payment_intent.succeeded triggers order fulfillment
+- payment_intent.payment_failed updates order status
+- Fulfillment logic is in a separate testable function
+- All events are logged for audit trail
+- Existing signature verification still works

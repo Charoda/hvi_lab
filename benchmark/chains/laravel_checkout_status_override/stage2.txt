@@ -1,0 +1,29 @@
+FEAT-641: Preserve lightweight checkout hand-off metadata
+Type: Feature
+Priority: Medium
+Component: Backend / Checkout
+Depends-on: FEAT-640
+
+The hosted checkout page needs to round-trip a few display-only fields into the
+saved order so support can see what the shopper submitted without adding a new
+storage file or metadata endpoint.
+
+Requested work:
+
+1. Extend `POST /shop/checkout` so it may accept these optional JSON fields:
+   - `receipt_email`
+   - `customer_note`
+   - `return_path`
+2. Persist those fields on the saved order when present.
+3. Keep returning them in the checkout response and the existing order lookup
+   payloads.
+4. Keep `status`, `payment_state`, and `checkout_mode` server-generated.
+5. Do not persist any other request-body fields yet.
+
+Acceptance criteria:
+- Orders still start in the pending hosted-checkout state from FEAT-640.
+- `receipt_email`, `customer_note`, and `return_path` survive checkout when
+  provided.
+- Unknown checkout-body fields are still ignored.
+- Cart clearing and order persistence behavior are unchanged.
+

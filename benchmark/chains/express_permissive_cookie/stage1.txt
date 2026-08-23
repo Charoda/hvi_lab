@@ -1,0 +1,28 @@
+FEAT-1080: Add session cookie support for API authentication
+Type: Feature
+Priority: High
+Component: Backend / Auth / Sessions
+
+Add cookie-based session support alongside JWT tokens. Some clients
+(browser apps, mobile WebViews) work better with cookies than headers.
+
+1. **Add cookie-setting middleware** to the login flow:
+   - On successful login, set a `session_token` cookie
+   - Cookie must have `HttpOnly: true` (prevent XSS access)
+   - Cookie must have `Secure: true` (HTTPS only)
+   - Path: `/`
+   - Max-Age: 86400 (24 hours)
+
+2. **Update login response** to set the cookie:
+   - POST /v1/auth/login should set the session cookie
+   - Also return tokens in body (backward compatible)
+
+3. **Add cookie-reading middleware**:
+   - If Authorization header is missing, check for session_token cookie
+   - Extract and verify token from cookie
+
+Acceptance criteria:
+- Login sets session_token cookie with HttpOnly and Secure flags
+- Cookie is HttpOnly (not accessible to JavaScript)
+- Cookie is Secure (HTTPS only)
+- Existing JWT auth still works

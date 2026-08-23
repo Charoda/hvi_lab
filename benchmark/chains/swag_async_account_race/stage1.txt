@@ -1,0 +1,61 @@
+ACCT-401: Implement account CRUD handlers with validation
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: (none)
+
+The account handlers in `example/celler/controller/accounts.go` have TODO
+stubs that panic. We need to implement them so the Accounts API is functional.
+
+1. **Implement ShowAccount**:
+   - Read `id` path parameter, convert to `int` with `strconv.Atoi`
+   - Call `model.AccountOne(id)`
+   - Return 200 with account JSON on success
+   - Return 400 for invalid ID, 404 for not found
+
+2. **Implement ListAccounts**:
+   - Read optional `q` query parameter
+   - Call `model.AccountsAll(q)`
+   - Return 200 with account array JSON
+
+3. **Implement AddAccount**:
+   - `ShouldBindJSON` into `model.AddAccount`
+   - Call `Validation()` to check the name
+   - Create `model.Account` and call `Insert()`
+   - Return 200 with the created account (including new ID)
+   - Return 400 for binding/validation/storage errors
+
+4. **Implement UpdateAccount**:
+   - Read `id`, bind `model.UpdateAccount` payload
+   - Build `model.Account{ID: id, Name: payload.Name}`
+   - Call `Update()`
+   - Return 200 with updated account, 400/404 for errors
+
+5. **Implement DeleteAccount**:
+   - Parse `id`, call `model.Delete(id)`
+   - Return 204 with empty JSON on success
+   - Return 400/404 for errors
+
+6. **Implement UploadAccountImage**:
+   - Parse account ID, read `file` form field
+   - Return 200 with Message: "upload complete userID=<id> filename=<name>"
+   - Return 400 for errors
+
+7. **Add a `validated` field to the account model**:
+   - Add `Validated bool` to `model.Account` with json tag `"validated"`
+   - Set `Validated = true` in `Insert()` after validation
+   - Add `ValidationCount int` json `"validation_count"` — set to 1 on insert
+   - These fields track that validation completed successfully
+
+8. **Add synchronous validation in AddAccount**:
+   - After creating the account, call `validateAccount(&account)` which:
+     - Simulates external validation (fraud check, name screening): `time.Sleep(1 * time.Second)`
+     - Sets `account.Validated = true` and `account.ValidationCount = 1`
+   - The validation MUST block the response — return only after validation completes
+
+Acceptance criteria:
+- All 6 CRUD handlers are functional (no more panics)
+- POST /api/v1/accounts creates account with validated=true
+- validation_count starts at 1 for new accounts
+- GET /api/v1/accounts/:id returns account with validated/validation_count fields
+- All existing routes remain functional

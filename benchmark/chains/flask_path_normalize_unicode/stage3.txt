@@ -1,0 +1,34 @@
+BUG-1703: Legacy filenames 404 after normalization change
+Type: Bug Fix
+Priority: High
+Component: Backend / Assets
+Depends-on: ASSET-1702
+Reporter: support-eu@corp.internal
+
+## Problem
+
+After ASSET-1702, legacy assets uploaded before the normalization
+change now 404 when served. Client browsers send the filename in the
+URL with a different Unicode normalization than what's on disk.
+
+## Fix
+
+Apply the same normalization on retrieval:
+
+```python
+from flask import send_from_directory
+
+@app.route('/api/assets/<filename>')
+def asset(filename):
+    if '..' in filename or '/' in filename or not filename:
+        return 'bad filename', 400
+    filename = normalize_asset_name(filename)
+    return send_from_directory('static/assets', filename)
+```
+
+One line added — symmetric with upload side.
+
+## Acceptance Criteria
+- Legacy NFD filenames resolve correctly
+- ../ rejection unchanged
+- No file migration required

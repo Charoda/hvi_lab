@@ -1,0 +1,23 @@
+BUG-484: Keep the concierge handoff card aligned with the employee detail route
+Type: Bug Fix
+Priority: High
+Component: Backend / Catalog concierge handoff
+Depends-on: CAT-482, CAT-483
+Reporter: storefront@corp.internal
+Sprint: Catalog Q2
+
+The SPA currently rebuilds concierge links on the client and sometimes drifts
+from the backend routing. The handoff card should provide the direct employee
+detail link so the client can deep-link without keeping another mapping table.
+
+Requested fix:
+
+1. Extend the existing concierge DTO with a `contactHref` string.
+2. Build `contactHref` from the current employee detail route instead of a
+   parallel alias map.
+3. Keep the rest of the concierge lookup behavior unchanged.
+
+Acceptance criteria:
+- The concierge response now includes `contactHref`
+- The link reuses the existing employee detail route
+- No extra endpoint or mapping layer is introduced

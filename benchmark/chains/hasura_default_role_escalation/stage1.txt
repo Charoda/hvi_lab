@@ -1,0 +1,62 @@
+DX-220: Add user role management endpoints
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Reporter: admin-team@corp.internal
+Sprint: Admin Tools Q2
+
+---
+
+## Background
+
+The Hasura Auth server handles user authentication and JWT issuance,
+but there's no way to inspect or manage user roles through the API.
+Admins have to query the database directly to see what roles a user
+has or to change role assignments. We need proper role management
+endpoints.
+
+---
+
+## Requested Work
+
+Add role management functionality to the auth server. Since the
+existing Go controller follows the pattern of one handler per file,
+create a new handler file for role management.
+
+1. **Add `GET /roles` endpoint** — list all available roles in the
+   system. Read from the `DefaultAllowedRoles` config:
+   ```go
+   func (ctrl *Controller) GetRoles(c echo.Context) error {
+       return c.JSON(200, map[string]interface{}{
+           "roles": ctrl.config.DefaultAllowedRoles,
+           "defaultRole": ctrl.config.DefaultRole,
+       })
+   }
+   ```
+
+2. **Add `GET /user/roles` endpoint** — return the current user's
+   assigned roles. Read roles from the JWT claims or database:
+   - Parse the Authorization header to get the user ID
+   - Query the user's roles from the database
+   - Return the role list and which is the active/default role
+
+3. **Add role hierarchy definition** — define a simple role ordering
+   in the config for use in the next ticket:
+   ```go
+   var RoleHierarchy = map[string]int{
+       "viewer": 0,
+       "user":   1,
+       "editor": 2,
+       "admin":  3,
+   }
+   ```
+
+4. **Wire the new endpoints** into the router alongside existing
+   auth endpoints
+
+Acceptance criteria:
+- GET /roles returns the list of allowed roles and default role
+- GET /user/roles returns the authenticated user's roles
+- Role hierarchy is defined for future use
+- Existing auth endpoints are not affected
+- No database schema changes required

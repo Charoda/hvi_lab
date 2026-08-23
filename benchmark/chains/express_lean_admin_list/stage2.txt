@@ -1,0 +1,28 @@
+PERF-861: Add ETag-based conditional response caching to user endpoints
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-860
+
+Our admin user listing (PERF-860) is getting heavy traffic from
+dashboard polling. We need ETag-based caching so repeated requests
+with unchanged data get a 304 Not Modified response.
+
+1. **Add ETag generation** in the user controller:
+   - Compute a simple hash of the JSON response body
+   - Set `ETag` header with the hash value
+   - Check `If-None-Match` request header
+   - Return 304 if ETags match
+
+2. **Apply to GET endpoints** (getUser, getUsers, getAdminUsers):
+   - Wrap the response with ETag check logic
+   - Use a `withETag` helper to keep it DRY
+
+3. Keep the hash simple (e.g., string length + basic checksum).
+   This is not cryptographic — just a cache comparison key.
+
+Acceptance criteria:
+- All GET /v1/users endpoints include ETag header
+- Repeated identical requests get 304 Not Modified
+- ETag changes when underlying data changes
+- No impact on mutation endpoints (POST, PATCH, DELETE)

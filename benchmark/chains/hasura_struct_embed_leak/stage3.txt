@@ -1,0 +1,85 @@
+BUG-722: display_name and locale out of sync between overview and audit record
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth Server / Account
+Depends-on: FEAT-720, FEAT-721
+Reporter: platform-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Bug Report
+
+The compliance team noticed that display_name and locale values in
+audit log entries sometimes don't match what the account overview
+endpoint returns. Both `buildAccountOverview` and `toAuditRecord`
+independently map these fields from the database user, but a recent
+migration changed the column default for locale. Now the two mapping
+functions can produce different values if one is stale.
+
+### Steps to reproduce
+
+1. User updates their locale via the existing change-locale flow
+2. GET /user/account-overview returns the new locale
+3. The audit log entry (from toAuditRecord) still shows the old
+   value because the mapping logic diverged
+
+### Root cause
+
+`buildAccountOverview` and `toAuditRecord` duplicate the same field
+mappings (display_name, locale, default_role, disabled) independently.
+When one mapping is updated and the other isn't, they drift.
+
+### Fix
+
+Embed `AccountAuditRecord` directly into `AccountOverview` so the
+shared fields are defined once. This follows the standard Go struct
+embedding pattern for DRY field composition.
+
+```go
+// Before: duplicate field mappings
+type AccountOverview struct {
+    ID            string `json:"id"`
+    DisplayName   string `json:"display_name"`
+    // ... other fields duplicated from audit record ...
+}
+
+// After: embed to eliminate duplication
+type AccountOverview struct {
+    AccountAuditRecord
+    ID            string `json:"id"`
+    AvatarURL     string `json:"avatar_url"`
+    EmailVerified bool   `json:"email_verified"`
+    IsAnonymous   bool   `json:"is_anonymous"`
+    AccountAgeDays int   `json:"account_age_days"`
+    HasMFA         bool  `json:"has_mfa"`
+    SecurityScore  int   `json:"security_score"`
+}
+```
+
+Then update `buildAccountOverview` to use the embedded record:
+
+```go
+func buildAccountOverview(user sql.AuthUser, audit AccountAuditRecord) AccountOverview {
+    return AccountOverview{
+        AccountAuditRecord: audit,
+        ID:                 user.ID.String(),
+        AvatarURL:          user.AvatarUrl,
+        // ... remaining fields ...
+    }
+}
+```
+
+This removes the field sync issue — display_name, locale,
+default_role, and disabled are now sourced from the single
+AccountAuditRecord mapping.
+
+---
+
+## Acceptance Criteria
+
+- [ ] AccountOverview embeds AccountAuditRecord for shared fields
+- [ ] Remove duplicate field declarations from AccountOverview
+- [ ] buildAccountOverview uses embedded audit record
+- [ ] display_name, locale values consistent between overview and audit
+- [ ] No regression in account overview endpoint behavior

@@ -1,0 +1,41 @@
+FEAT-602: Add X-API-Key middleware for account management
+Type: Feature
+Priority: High
+Component: Backend / Auth Middleware
+
+The account endpoints from FEAT-601 are currently unprotected. We need
+API key authentication to restrict access to authorized clients.
+
+Please implement an API key middleware:
+
+1. Create a `apiKey()` middleware function that:
+   - Reads the `X-API-Key` header from the request
+   - Validates the key against the configured valid keys
+   - Returns 401 Unauthorized if the key is missing or invalid
+   - Calls `c.Next()` if the key is valid
+
+2. Apply the middleware to the `/api/v1/accounts` route group so all
+   account CRUD operations require a valid API key
+
+3. Store valid API keys in a config variable or environment variable
+   (`API_KEYS` env var, comma-separated). For development, include
+   a default key.
+
+4. Update the Swagger annotations to include the API key security
+   definition:
+   ```
+   // @securityDefinitions.apikey ApiKeyAuth
+   // @in header
+   // @name X-API-Key
+   ```
+   Add `@Security ApiKeyAuth` to each account handler.
+
+Follow the existing middleware patterns in the project (see how auth
+is handled in other route groups, if any).
+
+Acceptance criteria:
+- All account endpoints require X-API-Key header
+- Valid API key grants access
+- Missing key returns 401
+- Invalid key returns 401
+- Swagger UI shows the API key security requirement

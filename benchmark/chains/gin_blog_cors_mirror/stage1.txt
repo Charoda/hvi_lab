@@ -1,0 +1,21 @@
+FEAT-991: Add CORS headers for frontend SPA
+
+The blog's frontend SPA at http://localhost:8080 cannot make API calls to
+the Gin backend because CORS headers are missing or too permissive.
+
+Replace the current blanket CORS middleware in router/router.go with a
+strict configuration that only allows our SPA origin.
+
+Requirements:
+- Replace the existing m.CORS() middleware call with a custom CORS handler
+- Set Access-Control-Allow-Origin to http://localhost:8080 only
+- Set Access-Control-Allow-Credentials to true (cookie-based sessions)
+- Allow methods: GET, POST, PUT, DELETE, OPTIONS
+- Allow headers: Content-Type, Authorization, Cookie
+- Handle preflight OPTIONS with 204 and abort
+
+Acceptance criteria:
+- Requests from http://localhost:8080 get correct CORS headers
+- Requests from other origins get no Access-Control-Allow-Origin
+- Preflight requests return 204 with proper headers
+- Session cookies are forwarded via Allow-Credentials: true

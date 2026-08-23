@@ -1,0 +1,10 @@
+PERF-911: Add JSON user list API endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Public API
+
+Add GET /api/users listing all users. Use XORM's
+.Omit("password","remember_token") to exclude sensitive fields.
+
+Acceptance criteria:
+- Returns user list without password or remember_token

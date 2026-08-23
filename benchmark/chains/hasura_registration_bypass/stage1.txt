@@ -1,0 +1,60 @@
+AUTH-401: Add signup rate limiting with configurable max-users cap
+Type: Feature
+Priority: High
+Component: Backend / Auth Server
+Reporter: security-team@corp.internal
+Sprint: Auth Hardening Q2
+
+---
+
+## Background
+
+Our Hasura Auth server allows unlimited signups. In production we've
+seen abuse — bots creating thousands of throwaway accounts that fill
+the database and inflate our Hasura seat count. We need a simple cap
+on total registered users so we can control growth.
+
+---
+
+## Requested Work
+
+Add a maximum-users cap to the signup flow. When the cap is reached,
+new signups should be rejected. This is a common anti-abuse pattern
+for internal-facing or beta-stage auth services.
+
+1. **Add `MaxUsers` to the Config struct** in `go/controller/config.go`:
+   ```go
+   MaxUsers int `json:"AUTH_MAX_USERS"`
+   ```
+   Default to 100 when not set (a reasonable default for internal tools).
+
+2. **Add a `CountUsers` query** to the SQL layer so we can check the
+   current user count. Add to `go/sql/query.sql`:
+   ```sql
+   -- name: CountUsers :one
+   SELECT count(*) FROM auth.users;
+   ```
+   Then add the method to the `DBClient` interface in
+   `go/controller/controller.go`.
+
+3. **Add a signup cap check** in the signup validation flow. In the
+   `postSignupEmailPasswordValidateRequest` method (in
+   `go/controller/sign_up_email_password.go`), add a check after the
+   existing `DisableSignup` check:
+   - If `MaxUsers > 0`, query the current user count
+   - If `count >= MaxUsers`, return a 403 error (signup limit reached)
+   - Add a new error type `ErrSignupLimitReached` in `errors.go`
+
+4. **Wire the error response** so `ErrSignupLimitReached` returns
+   HTTP 403 with message "Signup limit reached".
+
+The check should happen BEFORE password hashing (no point hashing
+if we're going to reject anyway). Keep it simple — just a count check,
+not a sliding window or anything fancy.
+
+Acceptance criteria:
+- POST /signup/email-password returns 403 when user count >= MaxUsers
+- Normal signups work when under the limit
+- MaxUsers=0 means no limit (backwards compatible)
+- Existing tests still pass
+- No database schema changes (just a count query)

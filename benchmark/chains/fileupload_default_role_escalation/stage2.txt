@@ -1,0 +1,72 @@
+FEAT-671: Add role inheritance and upload authorization middleware
+Type: Feature
+Priority: Medium
+Component: Backend / Express API
+Depends-on: FEAT-670
+Reporter: admin-team@corp.internal
+Sprint: User Management Q2
+
+---
+
+## Background
+
+With the user registration from FEAT-670, we have users with roles,
+but the permission model is flat — each role is independent. An
+uploader should have all viewer permissions plus upload access, and
+an editor should have all uploader permissions plus editing. We also
+need middleware to enforce that only authorized roles can upload.
+
+---
+
+## Requested Work
+
+1. **Implement role inheritance resolution** — when checking user
+   permissions, expand the user's role to include all roles at or
+   below their level in the hierarchy:
+   ```javascript
+   function resolveInheritedRoles(userRole) {
+       const userLevel = ROLE_HIERARCHY[userRole] || 0;
+       return Object.entries(ROLE_HIERARCHY)
+           .filter(([_, level]) => level <= userLevel)
+           .map(([role]) => role)
+           .sort();
+   }
+   ```
+
+2. **Add a configurable default role variable** — extract the default
+   role into a configuration constant at the top of the file so it
+   can be tuned per environment:
+   ```javascript
+   const DEFAULT_USER_ROLE = 'viewer';
+   ```
+   Update the User model and registration to use this constant.
+
+3. **Add `GET /auth/me` endpoint** — return the current user's
+   assigned role and their effective roles (with inheritance):
+   ```javascript
+   app.get('/auth/me', async (req, res) => {
+       // look up user by ID from query param or header
+       const user = await User.findById(req.query.userId);
+       const inherited = resolveInheritedRoles(user.role);
+       res.json({
+           assignedRole: user.role,
+           effectiveRoles: inherited,
+           inherited: true,
+       });
+   });
+   ```
+
+4. **Add upload authorization middleware** — check that the user has
+   the 'uploader' role (directly or via inheritance) before allowing
+   file uploads. Apply to both upload endpoints.
+
+5. **Update `GET /roles`** to show the default role from the config
+   constant and include inherited role resolution
+
+Acceptance criteria:
+- Higher roles inherit all permissions of lower roles
+- DEFAULT_USER_ROLE constant controls the default role at signup
+- GET /auth/me shows both assigned and effective roles
+- Upload endpoints require the 'uploader' role
+- Role hierarchy: viewer < uploader < editor < admin
+- Existing users are not affected

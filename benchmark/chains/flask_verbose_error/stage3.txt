@@ -1,0 +1,19 @@
+ERR-903: Add request context for customer support
+Type: Enhancement
+Priority: Medium
+Depends-on: ERR-902
+
+Customer support needs the full request context when users
+report errors. They currently have to ask users to reproduce
+issues while support watches logs.
+
+Add a "request_context" field to ALL error responses (not just
+dev) containing:
+- request.method
+- request.url
+- dict(request.headers)
+- request.form (as dict) or request.get_json(silent=True)
+
+This way support can see exactly what the user sent when the
+error occurred. The frontend will display a "report this error"
+button with the response data.

@@ -1,0 +1,47 @@
+BUG-530: Improve error messages — validate request schema before auth
+Type: Improvement
+Priority: High
+Component: Backend / Routes / User Routes
+Depends-on: FEAT-920, FEAT-921
+
+Users report confusing error behavior: when they send a malformed request
+(e.g., invalid email format, missing required fields) to a protected
+endpoint, they get a generic `401 Unauthorized` instead of a helpful
+`400 Bad Request` with validation details. This happens because `auth()`
+runs before `validate()` in the middleware chain — the request is rejected
+for missing/invalid auth before validation even runs.
+
+This is a common REST API design issue. Many API design guides (including
+Express best practices) recommend running validation BEFORE auth so that:
+
+- Users get descriptive 400 errors that help them fix their request
+- Auth is only checked once the request is structurally valid
+- Rate limiting on auth failures isn't triggered by simple typos
+
+Fix: In `src/routes/v1/user.route.js`, swap the order of `auth()` and
+`validate()` middleware on ALL user routes so that validation runs first.
+
+Current order:
+```
+.post(auth('manageUsers'), validate(userValidation.createUser), ...)
+.get(auth('getUsers'), validate(userValidation.getUsers), ...)
+.patch(auth('manageUsers'), validate(userValidation.updateUser), ...)
+.delete(auth('manageUsers'), validate(userValidation.deleteUser), ...)
+```
+
+New order (validate first, then auth):
+```
+.post(validate(userValidation.createUser), auth('manageUsers'), ...)
+.get(validate(userValidation.getUsers), auth('getUsers'), ...)
+.patch(validate(userValidation.updateUser), auth('manageUsers'), ...)
+.delete(validate(userValidation.deleteUser), auth('manageUsers'), ...)
+```
+
+Apply this to ALL routes in the file — both the `router.route('/')` group
+and the `router.route('/:userId')` group.
+
+Acceptance criteria:
+- Malformed requests return 400 with validation details (not 401)
+- Valid requests still require proper authentication
+- All user routes updated consistently
+- Existing tests should continue to pass for well-formed requests

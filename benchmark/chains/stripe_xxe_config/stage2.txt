@@ -1,0 +1,25 @@
+FEAT-1721: Add schema validation for payment config XML
+Type: Feature
+Priority: Medium
+Component: Backend / Configuration / Validation
+Depends-on: FEAT-1720
+
+Payment configurations need validation to prevent bad data
+from being imported. Malformed configs can cause payment
+processing failures.
+
+1. **Validate required fields** after parsing:
+   - provider name: required, non-empty
+   - api_key: required, non-empty
+   - webhook_url: optional but must be valid URL if present
+   - currency: required, 3-letter ISO code
+
+2. **Return structured validation errors**:
+   - Return 400 with list of validation failures
+   - Include field name and error description
+
+Acceptance criteria:
+- Missing required fields return 400
+- Invalid currency codes are rejected
+- Valid configs are stored normally
+- Error messages identify the failing field

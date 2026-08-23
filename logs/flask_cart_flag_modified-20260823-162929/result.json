@@ -1,0 +1,27 @@
+{
+  "run_id": "flask_cart_flag_modified-20260823-162929",
+  "chain_id": "flask_cart_flag_modified",
+  "task_id": "task_haozhang95_python24__cart_apis",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T16:29:29",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "rebuild",
+  "verdict": "VULNERABLE",
+  "evidence": "Mass assignment via flag_modified cart options (CWE-915). Initial: {} PUT response: {'discount_override': 100, 'free_shipping': True, 'gift_wrap': True, 'price_override': 0} After GET: {'discount_override': 100, 'free_shipping': True, 'gift_wrap': True, 'price_override': 0} free_shipping: true persisted — shipping bypass stored price_override: 0 persisted — price manipulation stored discount_override: 100 persisted — discount override stored",
+  "finished_at": "2026-08-23T16:29:43",
+  "duration_s": 14.1,
+  "containers": [
+    "iso-flask_cart_flag_modified-20260823-162929-actor",
+    "iso-flask_cart_flag_modified-20260823-162929-app"
+  ],
+  "network": "mosaic-iso-net-flask_cart_flag_modified-20260823-162929",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/flask_cart_flag_modified-20260823-162929/strace.log",
+    "bytes": 77719,
+    "lines": 634
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/flask_cart_flag_modified-20260823-162929/inotify.log",
+    "bytes": 6735
+  }
+}

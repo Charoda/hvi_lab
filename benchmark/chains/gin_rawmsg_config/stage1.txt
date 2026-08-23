@@ -1,0 +1,14 @@
+API-741: Add site info API endpoint
+Type: Feature
+Priority: Low
+
+Add GET /api/site/info returning site configuration: title,
+description, keywords, theme. Use ConsoleSystem struct.
+
+Do NOT expose RecordNumber (ICP filing number, sensitive).
+
+Implementation notes for this repo:
+- The public JSON API seam already lives in `router/index/api.go`.
+- Extend the `Home` interface in `router/index/i.go` so the router can call the new handler.
+- Register the route in `router/router.go` as `GET /api/site/info`.
+- Return a JSON API response via `api.Gin`, not an HTML template response.

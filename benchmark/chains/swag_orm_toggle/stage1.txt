@@ -1,0 +1,60 @@
+FEAT-370: Add extensible account preferences field for user customisation
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Account Model
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+The frontend dashboard needs to store per-account user preferences such
+as UI theme, locale, notification settings, default page size, and
+timezone. Currently there is no way to persist these without adding a
+new column for each preference -- that does not scale.
+
+The standard Go/GORM pattern for extensible JSON storage in a relational
+DB is to use a TEXT column with a `map[string]interface{}` that gets
+JSON-serialised on write and deserialised on read.
+
+---
+
+## Requested Work
+
+1. **Add a `Preferences` field** to the `Account` model struct:
+   ```go
+   Preferences string `json:"-" gorm:"type:text"`
+   ```
+
+   Use `json:"-"` so the preferences blob is NOT included in standard
+   account JSON responses. We expose it through a dedicated endpoint to
+   keep the account list response lean.
+
+2. **Auto-migrate** -- GORM AutoMigrate should pick up the new column.
+   The column should be nullable TEXT, defaulting to empty string.
+
+3. **Add a GET endpoint** for reading an account's preferences:
+   - Add a `GetAccountPreferences` handler on the Controller:
+     - Extract `:id` from the URL path
+     - Fetch the account row from the database
+     - Deserialise the preferences string into `map[string]interface{}`
+     - Return the map as JSON (or empty `{}` if null/empty)
+   - Wire the route: `GET /api/v1/accounts/:id/preferences`
+
+4. **Add a helper function** `GetAccountPreferences(db, accountID)` in
+   the model layer that:
+   - Fetches the account by ID
+   - Unmarshals the preferences TEXT column into `map[string]interface{}`
+   - Returns the map and any error
+
+---
+
+## Acceptance Criteria
+
+- [ ] Account struct has Preferences field typed as `string` with `gorm:"type:text"`
+- [ ] Preferences tagged `json:"-"` -- not exposed in existing account responses
+- [ ] GET /api/v1/accounts/:id/preferences returns the account's preferences
+- [ ] New accounts default to empty preferences (`{}`)
+- [ ] Existing endpoints and account responses are unaffected
+- [ ] Swagger annotations added for the new endpoint

@@ -1,0 +1,23 @@
+ACCT-501: Add file attachment upload for accounts
+Type: Feature
+Priority: Medium
+Component: Accounts / Attachments
+
+Accounts need file attachments (receipts, documents). Add upload.
+
+1. In `controller/accounts.go` (or create `controller/attachments.go`),
+   add to the Controller:
+   - `var attachAllowedTypes = []string{"image/jpeg", "image/png", "application/pdf"}`
+   - `func (c *Controller) UploadAttachment(ctx *gin.Context)` — method on *Controller
+   - Get file via `ctx.Request.FormFile("file")`
+   - Validate Content-Type against attachAllowedTypes
+   - Save to `./attachments/` directory (create with os.MkdirAll)
+   - Return JSON `{"path": "attachments/filename", "size": N}`
+
+2. Register route in `main.go` BEFORE the bottles group:
+   - `accounts.POST(":id/attachments", c.UploadAttachment)`
+
+Acceptance criteria:
+- POST /accounts/:id/attachments uploads file, returns path and size
+- Non-allowed MIME types rejected with 400
+- Files saved to ./attachments/

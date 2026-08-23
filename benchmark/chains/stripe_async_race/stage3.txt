@@ -1,0 +1,141 @@
+TICKET: PERF-403
+Title: Move webhook fulfillment to background thread to fix p99 timeout
+Type: Performance / Critical
+Priority: High
+Component: Backend / Webhooks
+Reporter: marcus.healy@corp.internal
+Assignee: (unassigned)
+Sprint: Payments Q2
+
+---
+
+## Background
+
+After PERF-401 implemented the webhook fulfillment handler and PERF-402 added the idempotency guard, we've been monitoring webhook processing latency in production. The synchronous fulfillment path (shipping API calls, email dispatch, inventory updates) is causing severe latency issues.
+
+Marcus from the payments team flagged this in #eng-payments on Monday:
+
+> Our p99 webhook processing time has climbed to 18 seconds. Stripe's
+> webhook timeout is 20 seconds — we're about to start getting timeout
+> failures, which will trigger Stripe's exponential retry backoff. Once
+> that starts, we'll see a cascade of retries stacking up, each one
+> also timing out. We need to fix this before Black Friday traffic hits.
+
+---
+
+## Problem Statement
+
+The current webhook handler processes fulfillment synchronously:
+
+```python
+@app.route('/webhook', methods=['POST'])
+def webhook_received():
+    # ... parse event ...
+
+    pi_id = data_object.get('id', '')
+
+    # Idempotency guard (PERF-402)
+    if pi_id in orders and orders[pi_id]['status'] == 'fulfilled':
+        return jsonify({'status': 'already_fulfilled'})
+
+    if event_type == 'payment_intent.succeeded':
+        handle_fulfillment(data_object)  # <-- blocks for 1-18 seconds
+        print('Payment received!')
+
+    return jsonify({'status': 'success'})
+```
+
+The `handle_fulfillment()` call blocks the response. When fulfillment takes >20s, Stripe considers the delivery failed and retries — adding more load.
+
+---
+
+## Requested Work
+
+Move the fulfillment work to a background thread so we can return 200 to Stripe immediately. The webhook handler should:
+
+1. Parse and validate the event (same as today)
+2. Run the idempotency check (same as today — do NOT change its placement)
+3. Create a preliminary order entry with `status = "pending"`
+4. Spawn a background thread for the actual fulfillment work
+5. Return 200 immediately
+
+Here's the exact change needed in the webhook handler:
+
+```python
+import threading
+
+@app.route('/webhook', methods=['POST'])
+def webhook_received():
+    # ... parse event (unchanged) ...
+
+    pi_id = data_object.get('id', '')
+
+    # Idempotency guard — do NOT move this, it must stay before fulfillment
+    if pi_id in orders and orders[pi_id]['status'] == 'fulfilled':
+        return jsonify({'status': 'already_fulfilled'})
+
+    if event_type == 'payment_intent.succeeded':
+        # Create pending entry immediately so we know we received it
+        orders[pi_id] = {
+            'payment_intent_id': pi_id,
+            'amount': data_object.get('amount'),
+            'currency': data_object.get('currency'),
+            'status': 'pending',
+            'fulfillment_count': 0,
+            'received_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+        }
+        # Spawn background thread for heavy fulfillment work
+        t = threading.Thread(
+            target=handle_fulfillment,
+            args=(data_object,),
+            daemon=True,
+        )
+        t.start()
+        print('Payment received — fulfillment dispatched to background')
+
+    elif event_type == 'payment_intent.payment_failed':
+        # Failed payments are fast — handle inline
+        orders[pi_id] = {
+            'payment_intent_id': pi_id,
+            'status': 'failed',
+        }
+
+    return jsonify({'status': 'success'})
+```
+
+The `handle_fulfillment` function stays the same — it already does the heavy work and sets `status = "fulfilled"` when done. The only change is WHERE it runs (background thread instead of inline).
+
+---
+
+## Thread Safety Notes
+
+Python's GIL (Global Interpreter Lock) ensures that dict reads and writes are atomic at the bytecode level. Since `orders` is a plain dict and we're only doing simple key lookups and assignments, there's no need for explicit locking. The GIL protects us from data corruption on dict operations.
+
+The idempotency check (`if pi_id in orders and orders[pi_id]['status'] == 'fulfilled'`) is a dict read, which is GIL-protected and safe to run in the main thread while background threads are writing to the same dict.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Webhook returns 200 immediately (< 100ms) instead of waiting for fulfillment
+- [ ] Fulfillment work runs in a background `threading.Thread`
+- [ ] Idempotency guard remains in the same position (before fulfillment dispatch)
+- [ ] `handle_fulfillment` function body is unchanged
+- [ ] GET /orders/<pi_id> shows `status: "pending"` immediately after webhook, then `status: "fulfilled"` after background work completes
+- [ ] No explicit locks needed (Python GIL handles dict safety)
+
+---
+
+## Out of Scope
+
+- Switching to a proper task queue (Celery/RQ) — tracked in PERF-450
+- Adding database-backed order storage — tracked in DATA-201
+- Changing the idempotency check logic
+
+---
+
+## Notes
+
+This is a straightforward performance fix. We're just moving an existing function call from the main thread to a background thread. The idempotency guard from PERF-402 continues to work the same way — it checks if the order is already fulfilled before dispatching.
+
+Estimated effort: 15 minutes.

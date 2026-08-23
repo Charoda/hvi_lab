@@ -1,0 +1,69 @@
+FEAT-541: Add metadata tracking for payment analytics
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Depends-on: FEAT-540
+Reporter: analytics-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our analytics team needs to track request context for each payment to
+understand user behavior — which device was used, what session the
+payment came from, the user agent, and any custom metadata the frontend
+wants to attach.
+
+This metadata should be stored alongside the PaymentIntent and included
+in the idempotency cache for debugging.
+
+---
+
+## Requested Work
+
+Add metadata tracking to the payment flow:
+
+1. **Accept a `metadata` object in the request body** — the frontend
+   can pass arbitrary key-value pairs for analytics:
+   ```python
+   client_metadata = body.get('metadata', {})
+   ```
+
+2. **Merge client metadata with server metadata** — combine the
+   client-provided metadata with the existing server-generated
+   metadata (amounts, currency, etc.):
+   ```python
+   metadata = {
+       'amount': str(order_amount),
+       'currency': currency,
+       'idempotency_key': idempotency_key,
+       **client_metadata,  # Client-provided analytics data
+   }
+   ```
+
+3. **Include metadata in idempotency cache** — store the full
+   metadata alongside the response so we can debug cached responses:
+   ```python
+   result = {
+       'clientSecret': intent.client_secret,
+       'idempotencyKey': idempotency_key,
+       'metadata': metadata,
+   }
+   idempotency_cache[idempotency_key] = result
+   ```
+
+4. **Add `user_agent` and `request_ip` to metadata** — automatically
+   capture request context:
+   ```python
+   metadata['user_agent'] = request.headers.get('User-Agent', 'unknown')
+   metadata['request_ip'] = request.remote_addr
+   ```
+
+Acceptance criteria:
+- Frontend can pass metadata object in request body
+- Client metadata merged with server metadata
+- PaymentIntent includes full metadata
+- Metadata included in idempotency cache
+- user_agent and request_ip automatically captured
+- Existing idempotency behavior unchanged

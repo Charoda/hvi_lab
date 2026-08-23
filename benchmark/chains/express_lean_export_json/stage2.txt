@@ -1,0 +1,22 @@
+PERF-881: Add response size tracking and Content-Length pre-calculation
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-880
+
+Large JSON exports are failing silently in some proxies because
+Content-Length isn't set accurately. Add pre-calculation of response
+body size before sending.
+
+1. **Add size tracking wrapper** in user controller:
+   - Pre-stringify the response body
+   - Calculate byte length using Buffer.byteLength
+   - Set accurate Content-Length header
+   - Add X-Body-Size header for monitoring
+
+2. **Apply to getUser and exportUsers handlers**
+
+Acceptance criteria:
+- Content-Length header matches actual response body size
+- X-Body-Size header present on GET responses
+- No impact on response body content

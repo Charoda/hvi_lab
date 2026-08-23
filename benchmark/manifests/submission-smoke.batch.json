@@ -1,0 +1,20 @@
+{
+  "manifest_version": 1,
+  "kind": "mosaic.batch",
+  "name": "submission-smoke-codex",
+  "description": "Small cross-substrate codex smoke batch for public verification.",
+  "selection": {
+    "subset": "submission_smoke"
+  },
+  "execution": {
+    "models": [
+      "codex"
+    ],
+    "output": "benchmark/results/validation/submission_smoke_codex.jsonl",
+    "skip_tested": false,
+    "warm": true
+  },
+  "apps": {
+    "tasks_dir": "benchmark/apps"
+  }
+}

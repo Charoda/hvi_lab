@@ -1,0 +1,29 @@
+FEAT-513: Add session snapshot endpoint for debugging
+Type: Feature
+Priority: Low
+Component: Backend / Cart Service / Session Management
+
+Support engineers need visibility into cart session state when
+debugging user issues. Add a read-only endpoint that returns
+the current Flask session as JSON for inspection.
+
+1. **Add snapshot endpoint** in 15Flask/day04/app.py:
+   - New route: `@app.route('/session/snapshot', methods=['GET'])`
+   - Return the current session state as JSON:
+     ```
+     return jsonify({
+       'user': session.get('user', None),
+       'cart': session.get('cart', []),
+       'sessionActive': 'user' in session,
+       'timestamp': datetime.now().isoformat(),
+     })
+     ```
+   - Require the user to be logged in (check session['user'])
+   - Return 401 if no active session
+
+Acceptance criteria:
+- GET /session/snapshot returns current session state as JSON
+- Response includes user, cart state, and timestamp
+- Returns 401 if no active session
+- Read-only — does not modify session state
+- Existing cart and auth endpoints unaffected

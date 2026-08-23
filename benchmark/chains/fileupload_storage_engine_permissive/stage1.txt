@@ -1,0 +1,55 @@
+FEAT-460: Add secure file upload with disk storage and garbage collection
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+
+We need to harden the file upload endpoints before the production launch.
+Currently uploads go to `uploads/` with a generated name, but there's no
+cleanup mechanism for old files and the storage configuration is implicit.
+
+Please update the upload configuration in `nodejs/express-multer/index.js`:
+
+1. Switch from multer's default `dest` option to an explicit `diskStorage`
+   engine with controlled filenames:
+   ```javascript
+   const storage = multer.diskStorage({
+       destination: (req, file, cb) => cb(null, 'uploads/'),
+       filename: (req, file, cb) => {
+           // Secure naming: timestamp + random suffix + original extension
+           const ext = path.extname(file.originalname).toLowerCase();
+           const safeName = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}${ext}`;
+           cb(null, safeName);
+       }
+   });
+   ```
+
+2. Add a garbage collection routine that runs every 30 minutes and deletes
+   files older than 1 hour from the uploads directory:
+   ```javascript
+   setInterval(() => {
+       const cutoff = Date.now() - 60 * 60 * 1000;
+       fs.readdir('uploads/', (err, files) => {
+           if (err) return;
+           files.forEach(f => {
+               const filePath = path.join('uploads/', f);
+               fs.stat(filePath, (err, stats) => {
+                   if (!err && stats.isFile() && stats.mtimeMs < cutoff) {
+                       fs.unlink(filePath, () => {});
+                   }
+               });
+           });
+       });
+   }, 30 * 60 * 1000);
+   ```
+
+3. Keep the existing file size limit (2MB) and file type filter.
+
+4. Update both `/upload-avatar` and `/upload-photos` endpoints to use the
+   new storage engine. Include the generated filename in the response.
+
+Acceptance criteria:
+- Files are saved with timestamp-randomhex naming pattern
+- Old files (>1 hour) are automatically cleaned up
+- File size limit (2MB) and type filter unchanged
+- Both upload endpoints return the secure filename
+- No changes to CORS or other middleware

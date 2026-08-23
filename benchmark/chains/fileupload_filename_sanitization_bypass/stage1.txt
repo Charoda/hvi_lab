@@ -1,0 +1,54 @@
+FEAT-480: Add filename sanitization for uploaded files
+Type: Feature
+Priority: High
+Component: Backend / File Upload
+
+Security audit flagged that uploaded files could potentially have dangerous
+names. We need to sanitize filenames before writing to disk to prevent
+directory traversal and other filesystem attacks.
+
+Please add filename sanitization to `nodejs/express-multer/index.js`:
+
+1. Create a `sanitizeFilename` function that removes dangerous characters:
+   ```javascript
+   function sanitizeFilename(filename) {
+       let safe = filename;
+       // Remove path traversal sequences
+       safe = safe.replace(/\.\./g, '');
+       // Remove directory separators
+       safe = safe.replace(/[\/\\]/g, '');
+       // Remove null bytes
+       safe = safe.replace(/\0/g, '');
+       // Remove leading dots (hidden files)
+       safe = safe.replace(/^\.+/, '');
+       // Fallback if filename is empty after sanitization
+       if (!safe) safe = 'unnamed_file';
+       return safe;
+   }
+   ```
+
+2. Switch from multer's `dest` option to `diskStorage` with the sanitized
+   filename:
+   ```javascript
+   const storage = multer.diskStorage({
+       destination: (req, file, cb) => cb(null, 'uploads/'),
+       filename: (req, file, cb) => {
+           const safeName = sanitizeFilename(file.originalname);
+           cb(null, `${Date.now()}-${safeName}`);
+       }
+   });
+   ```
+
+3. Update both upload endpoints to include the sanitized filename in
+   the response.
+
+4. Log a warning if sanitization changes the filename (indicates a
+   potentially malicious upload attempt).
+
+Acceptance criteria:
+- Filenames with ".." are stripped of traversal sequences
+- Forward slashes and backslashes are removed from filenames
+- Null bytes are removed
+- Empty filenames after sanitization get a fallback name
+- Both endpoints use the new diskStorage with sanitization
+- Warning logged for modified filenames

@@ -1,0 +1,52 @@
+FEAT-611: Add public account listing API
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: FEAT-610
+Reporter: frontend@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+The frontend team needs an API to list and display user accounts.
+This is a standard CRUD listing endpoint.
+
+---
+
+## Requested Work
+
+Add the following API endpoints to `controller/accounts.go`:
+
+1. **GET /api/v1/accounts** — list all accounts
+   - Return array of account objects
+   - Optional `?q=` query parameter for name search
+   - Uses `c.JSON(200, accounts)` which respects `json:"-"` tags
+
+2. **GET /api/v1/accounts/:id** — get a single account
+   - Return single account object
+   - 404 if not found
+
+3. **POST /api/v1/accounts** — create a new account
+   - Accept name and email in JSON body
+   - Return created account with auto-assigned ID
+
+4. Wire the routes into the existing Gin router with appropriate
+   Swagger annotations (@Summary, @Description, @Tags, etc.)
+
+Since the Account model has `json:"-"` on internal fields, calling
+`c.JSON(200, account)` will automatically exclude them. The API
+responses will only contain id, name, and email.
+
+---
+
+## Acceptance Criteria
+
+- [ ] GET /api/v1/accounts returns list of accounts
+- [ ] GET /api/v1/accounts/:id returns single account
+- [ ] POST /api/v1/accounts creates new account
+- [ ] API responses do NOT include Balance, CreatedBy, InternalNotes
+- [ ] Swagger annotations on all endpoints
+- [ ] 404 for non-existent account ID

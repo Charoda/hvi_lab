@@ -1,0 +1,17 @@
+FEAT-1880: Add payment data export endpoint
+
+Finance team needs to export payment records for reconciliation. Add an
+endpoint that returns all payment records in JSON format.
+
+Requirements:
+- Add GET /payments/export endpoint in the server
+- Create a PaymentRecord model or in-memory store with: id, amount,
+  currency, status, customer_email, created_at
+- Seed 10 sample payment records on startup
+- Return all records as a JSON array with total_count
+
+Acceptance criteria:
+- GET /payments/export returns { payments: [...], total_count: N }
+- All payment records are included
+- Each record has all fields serialized
+- Response Content-Type is application/json

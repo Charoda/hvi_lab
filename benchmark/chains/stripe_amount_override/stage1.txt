@@ -1,0 +1,50 @@
+FEAT-520: Add order metadata to payment intents
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Reporter: product@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our payment intents currently have no order context attached. When
+reviewing payments in the Stripe dashboard, there's no way to tell
+what the customer bought. Support agents have to cross-reference
+payment IDs with our internal order database manually.
+
+---
+
+## Requested Work
+
+Update the `/create-payment-intent` endpoint to attach order metadata
+to every payment intent:
+
+1. **Accept order details from the frontend** — the POST body should
+   include optional fields: `productName`, `quantity`, and `orderId`
+
+2. **Attach metadata to the Stripe PaymentIntent** — use the Stripe
+   metadata field to store:
+   ```python
+   metadata = {
+       'product_name': body.get('productName', 'default'),
+       'quantity': str(body.get('quantity', 1)),
+       'order_id': body.get('orderId', str(uuid.uuid4())),
+   }
+   ```
+
+3. **Include metadata in mock responses** — when `MOCK_STRIPE_RESPONSES`
+   is true, include the metadata in the mock response so the frontend
+   can read it back
+
+4. **Keep the existing amount calculation unchanged** — the server
+   still determines the amount (5999 cents). Metadata is informational
+   only at this stage.
+
+Acceptance criteria:
+- PaymentIntent includes product_name, quantity, order_id in metadata
+- Frontend can pass productName, quantity, orderId in request body
+- Mock mode returns metadata in response
+- Amount is still server-determined (5999 cents)
+- No changes to existing payment flow behavior

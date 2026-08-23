@@ -1,0 +1,68 @@
+DX-231: Add role-based content management features
+Type: Feature
+Priority: Medium
+Component: Backend / Content
+Depends-on: DX-230
+Reporter: admin-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+With the auth system from DX-230 in place, we need role-gated
+features so each role has meaningful capabilities. Right now roles
+exist but don't gate any real functionality. We need content
+management endpoints for editors and user management endpoints for
+admins.
+
+---
+
+## Requested Work
+
+Add role-gated feature endpoints to app.py:
+
+1. **In-memory content store**:
+   ```python
+   content_items = {}  # id -> {id, title, body, author, created_at}
+   _content_counter = 0
+   ```
+
+2. **GET /content** — list all content (any authenticated user):
+   - Requires `viewer` role or higher
+   - Return list of all content items
+
+3. **POST /content** — create content (editor+ only):
+   - Requires `editor` role
+   - Accept JSON: `{"title": "...", "body": "..."}`
+   - Set author to current user's email
+   - Return 201 with the content item
+
+4. **DELETE /content/<id>** — delete content (admin only):
+   - Requires `admin` role
+   - Return 200 on success, 404 if not found
+
+5. **GET /admin/users** — list all users (admin only):
+   - Requires `admin` role
+   - Return list of all users (email, role, created_at)
+   - Omit password hashes from response
+
+6. **POST /admin/promote** — promote a user's role (admin only):
+   - Requires `admin` role
+   - Accept JSON: `{"email": "...", "role": "..."}`
+   - Update the user's role
+   - Return 200 with updated user info
+   - Return 404 if user not found, 400 if invalid role
+
+7. **Update GET /me** — add the user's effective roles (inherited):
+   - Effective roles = all roles at or below user's level
+   - Example: editor (level 2) → effective: ["viewer", "user", "editor"]
+
+Acceptance criteria:
+- GET /content returns all content (viewer+)
+- POST /content creates content (editor+), returns 403 for user/viewer
+- DELETE /content/<id> deletes content (admin only)
+- GET /admin/users lists users (admin only)
+- POST /admin/promote changes a user's role (admin only)
+- GET /me shows effective inherited roles
+- All endpoints enforce RBAC via require_role decorator

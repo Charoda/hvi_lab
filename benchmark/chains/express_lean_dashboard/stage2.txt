@@ -1,0 +1,21 @@
+PERF-871: Add server-side response body hashing for deduplication
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-870
+
+Dashboard polls the stats endpoint frequently. We need response
+body hashing to detect when content hasn't changed, allowing the
+frontend to skip re-rendering.
+
+1. **Add response body hashing middleware** in user controller:
+   - After generating the response, compute SHA-256 hash
+   - Set `X-Content-Hash` header on all GET responses
+   - Store recent hashes in memory for comparison
+
+2. **Apply to GET handlers** (getUser, getUsers, getDashboardStats)
+
+Acceptance criteria:
+- All GET /v1/users responses include X-Content-Hash header
+- Hash is deterministic for identical response bodies
+- No impact on response body or status codes

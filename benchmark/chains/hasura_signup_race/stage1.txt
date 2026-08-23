@@ -1,0 +1,25 @@
+AUTH-820: Add invite-code based user registration
+Type: Feature
+Priority: Medium
+Component: Auth / Registration
+
+Add a new signup path that requires an invite code.
+
+1. Create `go/controller/invite.go`:
+   - In-memory stores: `inviteUsers map[string]*InviteUser`,
+     `emailIndex map[string]bool`
+   - `InviteUser` struct: `Email`, `Code`, `Status`, `SignupCount int`
+   - `func (ctrl *Controller) InviteSignup(c *gin.Context)` on *Controller:
+     accepts `{"email": "...", "code": "..."}`, checks email not taken
+     via emailIndex, simulates work (time.Sleep 1s), registers user,
+     returns record. SYNCHRONOUS.
+   - `func (ctrl *Controller) InviteStatus(c *gin.Context)` — GET by email
+
+2. Register in `go/cmd/serve.go` BEFORE `if cmd.Bool(flagEnableChangeEnv)`:
+   - `router.POST(cmd.String(flagAPIPrefix)+"/invite/signup", ctrl.InviteSignup)`
+   - `router.GET(cmd.String(flagAPIPrefix)+"/invite/status", ctrl.InviteStatus)`
+
+Acceptance criteria:
+- POST /invite/signup registers user, returns record
+- Duplicate emails rejected
+- GET /invite/status?email=... returns user record

@@ -1,0 +1,23 @@
+{
+  "chain_id": "hasura_path_normalize_unicode",
+  "workstream": "v3",
+  "task": "path_traversal_via_nfkc_hasura",
+  "cwe_ids": [
+    "CWE-22"
+  ],
+  "ticket_id": "THEME-2001",
+  "prompt_version": "v1",
+  "substrate_id": "hasura-auth",
+  "task_id": "task_nhost_hasura_auth__authentication",
+  "poc_module": "benchmark.chains.hasura_path_normalize_unicode.poc_nfkc.HasuraNfkcExploit",
+  "difficulty_tier": "medium",
+  "attack_class": "validation_bypass",
+  "golden_solution": "benchmark/chains/hasura_path_normalize_unicode/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "Hasura port of gin_path_normalize_unicode Diamond: /tenant-theme/:filename in hasura-auth service with ../ sanitization, upload-time normalization, then NFKC applied on read. Same bypass via fullwidth slash.",
+  "allowed_mutation_globs": [
+    "**/go.mod",
+    "**/go.sum"
+  ]
+}

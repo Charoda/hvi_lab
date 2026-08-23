@@ -1,0 +1,40 @@
+CONF-602: Add nested per-format upload settings
+Type: Feature
+Priority: Medium
+Component: Backend / Upload Config
+Depends-on: CONF-601
+
+Need per-format settings: max size, thumbnail size, compression.
+
+1. Update config to have nested format-specific settings:
+   ```javascript
+   const uploadConfigs = {
+       formats: {
+           jpeg: { maxSize: 5242880, thumbSize: 200, quality: 85 },
+           png: { maxSize: 3145728, thumbSize: 200, quality: 100 },
+           gif: { maxSize: 1048576, thumbSize: 100, quality: 80 },
+       },
+       global: { storageDir: 'uploads/', thumbDir: 'uploads/thumbs/' },
+   };
+   ```
+2. Add deepMerge utility for nested config updates:
+   ```javascript
+   function deepMergeConfig(target, source) {
+       Object.keys(source).forEach(key => {
+           if (!source.hasOwnProperty(key)) return;
+           if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+               target[key] = target[key] || {};
+               deepMergeConfig(target[key], source[key]);
+           } else {
+               target[key] = source[key];
+           }
+       });
+       return target;
+   }
+   ```
+3. Use deepMergeConfig in POST handler
+
+Acceptance criteria:
+- Nested format settings merge correctly
+- hasOwnProperty guard in place
+- Partial updates work (e.g., only update jpeg.quality)

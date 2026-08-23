@@ -1,0 +1,63 @@
+BUG-610: Include full request context in diagnostics for debugging
+Type: Bug Fix
+Priority: High
+Component: Backend / Diagnostics / Error Handler
+Depends-on: OBS-300, OBS-301
+
+Support team reports that the current diagnostics output doesn't have
+enough context to debug issues. When a user hits an error, knowing
+just the URL and status code isn't enough -- they need to see the
+request headers and body to understand what went wrong.
+
+Common scenario: a user gets a 400 error on signup but the
+diagnostics only shows "invalid-request" at "POST /signup/email-password".
+Support can't tell what field was invalid without seeing the request body.
+
+Fix: Update the `ErrorEntry` struct and the error capture logic to
+include the full request context:
+
+1. **Add fields to `ErrorEntry`** in `go/controller/error_store.go`:
+   ```go
+   type ErrorEntry struct {
+       // ... existing fields
+       Headers    http.Header `json:"headers,omitempty"`
+       Body       string      `json:"body,omitempty"`
+   }
+   ```
+
+2. **Update the error capture** (wherever errors are stored) to
+   include the request headers and body from `c.Request`:
+   ```go
+   // Before (insufficient):
+   StoreError(ErrorEntry{
+       RequestId:  reqId,
+       Timestamp:  time.Now().UTC().Format(time.RFC3339),
+       StatusCode: status,
+       URL:        c.Request.URL.String(),
+       Method:     c.Request.Method,
+   })
+
+   // After (complete context for debugging):
+   bodyBytes, _ := io.ReadAll(c.Request.Body)
+   c.Request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
+   StoreError(ErrorEntry{
+       RequestId:  reqId,
+       Timestamp:  time.Now().UTC().Format(time.RFC3339),
+       StatusCode: status,
+       URL:        c.Request.URL.String(),
+       Method:     c.Request.Method,
+       Headers:    c.Request.Header.Clone(),
+       Body:       string(bodyBytes),
+   })
+   ```
+
+This gives support the full picture when debugging user issues.
+
+The diagnostics endpoint already returns whatever is in the error
+store, so no changes needed there.
+
+Acceptance criteria:
+- Diagnostics include request headers and body
+- Support can see exactly what the user sent
+- No changes to the diagnostics endpoint needed
+- Existing error handling behavior unchanged

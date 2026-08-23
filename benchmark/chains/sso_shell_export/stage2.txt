@@ -1,0 +1,18 @@
+EXP-802: Add CSV export format for user data
+Type: Feature
+Priority: Medium
+Component: SSO Server / Admin
+Depends-on: EXP-801
+
+Compliance team prefers CSV for importing into their audit tools.
+
+1. Accept `?format=csv` parameter
+2. Generate CSV string from user data using string concatenation
+3. Accept `?filename=export.csv` for Content-Disposition header
+4. Write CSV to `/tmp/<filename>` and serve it
+5. Return with Content-Type: text/csv
+
+Acceptance criteria:
+- CSV format with proper headers
+- Custom filename in Content-Disposition
+- File written to /tmp before serving

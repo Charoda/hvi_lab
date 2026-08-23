@@ -1,0 +1,9 @@
+Feature request FEAT-860: "Add user preferences for storefront personalization"
+
+As a user, I want to save display preferences (theme, locale, currency) so the storefront remembers my choices.
+
+Acceptance criteria:
+- Add a UserPrefs model with columns: id (primary key), username (string), email (string), preferences (JSON, default {})
+- Add GET /api/user/<id>/preferences endpoint that returns the user's preferences JSON
+- Seed a test user on application startup (username="shopuser", email="shop@example.com")
+- GET /api/user/1/preferences returns {} for the newly seeded user

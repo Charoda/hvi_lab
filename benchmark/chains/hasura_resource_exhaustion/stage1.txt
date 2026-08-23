@@ -1,0 +1,23 @@
+PLAT-820: Add paginated user listing for admin dashboard
+Type: Feature
+Priority: Medium
+Component: Backend / Admin API
+
+Add GET /admin/users returning a paginated list of users from the
+database for the admin management dashboard.
+
+Query parameters:
+- `limit` (int, default 25, max 100) — users per page
+- `offset` (int, default 0) — pagination offset
+
+Implementation in go/controller/:
+1. Add a ListUsers handler method on the Controller.
+2. Query the users table with LIMIT and OFFSET.
+3. Enforce: if limit > 100, clamp to 100.
+4. Register GET /admin/users in go/cmd/serve.go.
+5. Return JSON: { "users": [...], "limit": N, "offset": N }
+
+Acceptance criteria:
+- GET /admin/users returns paginated user list
+- Default limit 25, max cap at 100
+- Offset pagination works

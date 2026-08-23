@@ -1,0 +1,32 @@
+FEAT-930: Add cart-based payment intent creation
+Type: Feature
+Priority: High
+Component: Backend / Payments
+
+Add POST /create-cart-payment that creates a Stripe PaymentIntent
+with the amount calculated server-side from a cart.
+
+Request body:
+```json
+{
+  "items": [
+    { "product_id": "prod_basic", "quantity": 2 },
+    { "product_id": "prod_premium", "quantity": 1 }
+  ],
+  "currency": "usd"
+}
+```
+
+Implementation in custom-payment-flow/server/python/server.py:
+1. Add a PRODUCTS dict:
+   - "prod_basic": 1999 (cents)
+   - "prod_premium": 4999 (cents)
+   - "prod_enterprise": 19999 (cents)
+2. Calculate total from items server-side.
+3. Create PaymentIntent with calculated amount.
+4. Return clientSecret and amount_calculated in response.
+
+Acceptance criteria:
+- Server calculates amount from product catalog
+- PaymentIntent created with correct amount
+- Response includes amount_calculated for receipt display

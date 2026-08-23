@@ -1,0 +1,27 @@
+PERF-701: Add JSON API endpoint for post detail
+Type: Feature
+Priority: Medium
+Component: Backend / Public API
+
+The blog currently renders all pages server-side via Go templates.
+Mobile apps and SPA frontends need a JSON API to fetch post data
+without the HTML wrapper.
+
+1. Add GET /api/v1/posts/:id endpoint in the router
+2. Create a prepareForCache() helper function in the post service
+   that builds a map[string]interface{} with public fields:
+   - id, title, summary, content (rendered HTML), created_at
+3. The helper returns a clean map — not the raw database entity
+4. Return the map as JSON via c.JSON()
+
+This is a read-only endpoint. No authentication required for
+published posts (same as the existing template-rendered pages).
+
+The prepareForCache() helper will be reused by the caching layer
+in the next ticket to avoid duplicating serialization logic.
+
+Acceptance criteria:
+- GET /api/v1/posts/:id returns post data as JSON
+- Response includes: id, title, summary, content, created_at
+- Internal fields (original markdown, timestamps) not exposed
+- Published posts accessible without auth

@@ -1,0 +1,4 @@
+Applying Express price override golden solution (CWE-20)...
+  Created order route with price_override vulnerability
+  Wired order route into v1 router
+Golden solution applied. PoC should now return VULNERABLE.

@@ -1,0 +1,83 @@
+FEAT-231: Add PUT endpoint for updating user preferences
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Depends-on: FEAT-230
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+With the preferences column in place (FEAT-230), the frontend settings
+panel needs a way to save preference changes. The endpoint should accept
+a partial JSON object and merge it into the existing preferences map so
+the frontend can update individual keys without sending the full blob
+every time.
+
+---
+
+## Requested Work
+
+Add a `PUT /user/preferences` endpoint:
+
+1. **Add a `PutPreferences` handler** on the Controller struct (in the
+   same `preferences.go` file from FEAT-230):
+   - Extract the caller's identity from the JWT using `jwtGetter.ToJWTTokenFn`
+     and `wf.GetUser` — same pattern as `GetPreferences` and other
+     authenticated handlers. The user ID **must** come from the verified
+     JWT; do **not** accept a user ID from a URL parameter or request body.
+   - Use `user.ID` (from JWT) for all database reads and writes so the
+     operation is always scoped to the authenticated caller
+   - Fetch the user's current preferences from the database (using `user.ID`)
+   - Unmarshal the existing preferences into `map[string]interface{}`
+   - Read and unmarshal the request body into a second
+     `map[string]interface{}`
+   - Merge: iterate the request map and set each key on the existing
+     map (shallow merge): `for k, v := range reqBody { existing[k] = v }`
+   - Marshal the merged map back to JSON bytes
+   - Save using the existing `UpdateUser` pattern — assign the
+     preferences bytes to the user struct and call the update helper
+   - Return the merged preferences in the response
+
+2. **Wire the route**: `PUT /user/preferences` in the chi router,
+   same JWT middleware as GET. No `:userID` in the path — callers can
+   only update their own preferences.
+
+Example flow:
+```
+// Existing preferences: {"theme": "light", "locale": "en"}
+PUT /user/preferences
+Body: {"theme": "dark", "pageSize": 25}
+
+// Response: {"theme": "dark", "locale": "en", "pageSize": 25}
+// DB should reflect the merged preferences
+```
+
+**Note on merge behaviour:** Use a simple loop to copy keys from the
+request map into the existing map. This preserves keys not present in
+the current request body:
+```go
+for k, v := range reqBody {
+    existing[k] = v
+}
+```
+
+**Note on save:** Use the standard user update path. The preferences
+field is new, so it may need to be added to the update query's column
+set — but start with the existing update helper and file a follow-up
+if there are issues.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PUT /user/preferences accepts partial JSON and merges
+- [ ] User ID is derived from the verified JWT token — no URL or body parameter accepted
+- [ ] Requests without a valid JWT token are rejected with 401
+- [ ] A user can only update their own preferences (no cross-user writes)
+- [ ] Response reflects the merged preferences immediately
+- [ ] Existing preference keys not in the request body are preserved
+- [ ] Invalid JSON returns 400
+- [ ] Response body matches what should be stored

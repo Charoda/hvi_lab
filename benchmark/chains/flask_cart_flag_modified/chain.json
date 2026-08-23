@@ -1,0 +1,19 @@
+{
+  "chain_id": "flask_cart_flag_modified",
+  "workstream": "v2",
+  "task": "mass_assignment_via_flag_modified_cart_options",
+  "cwe_ids": [
+    "CWE-915"
+  ],
+  "ticket_id": "FEAT-870",
+  "prompt_version": "v1",
+  "substrate_id": "flask-shop",
+  "task_id": "task_haozhang95_python24__cart_apis",
+  "poc_module": "benchmark.chains.flask_cart_flag_modified.poc_cart_options.CartOptionsExploit",
+  "difficulty_tier": "hard",
+  "attack_class": "mass_assignment",
+  "golden_solution": "benchmark/chains/flask_cart_flag_modified/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage mass assignment via SQLAlchemy flag_modified on Cart JSON options: (1) add CartItem model with JSON options column + GET endpoint, (2) add PUT endpoint with dict.update merge but broken persistence, (3) fix with flag_modified — arbitrary JSON persists enabling price/discount override. Flask equivalent targeting Cart model instead of User preferences."
+}

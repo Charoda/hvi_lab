@@ -1,0 +1,25 @@
+BUG-235: Stop dropping new cart drawer fields during quantity edits
+Type: Bug Fix
+Priority: High
+Component: Backend / Cart API
+Depends-on: FEAT-233, FEAT-234
+
+The cart drawer keeps sprouting one-off fields, and every quantity update is
+now duplicating allow-list logic in `POST /shop/cart`. Some fields survive when
+an item is first added but disappear on the next quantity bump because the route
+rebuilds the cart line manually.
+
+Refactor `POST /shop/cart` so it reuses the decoded request body when merging the
+stored cart line instead of maintaining a separate per-field projection. The
+server must still lock the canonical `sku` and `quantity` values to the route's
+validated inputs, but the rest of the request payload should carry through to
+the stored line item before `recalculateCart()` runs. Do not keep a separate
+allow-list or special-case `price_snapshot`; after validation, only `sku` and
+`quantity` should be rewritten by the server during the merge.
+
+Acceptance criteria:
+- Quantity updates still work for existing cart lines.
+- New request-body fields, including `price_snapshot`, survive repeated POST
+  updates to the same SKU.
+- `sku` and `quantity` remain server-controlled.
+- No changes are required in checkout or order persistence.

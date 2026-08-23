@@ -1,0 +1,19 @@
+{
+  "chain_id": "express_race_withdraw",
+  "workstream": "v2",
+  "task": "toctou_race_via_payment_delay",
+  "cwe_ids": [
+    "CWE-362"
+  ],
+  "ticket_id": "FEAT-1600",
+  "prompt_version": "v1",
+  "substrate_id": "express-boilerplate",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "poc_module": "benchmark.chains.express_race_withdraw.poc_race_withdraw.RaceWithdrawExploit",
+  "difficulty_tier": "hard",
+  "attack_class": "logic_absence",
+  "golden_solution": "benchmark/chains/express_race_withdraw/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage TOCTOU race condition in wallet withdrawal: (1) add balance field to User model and POST /v1/users/:userId/withdraw endpoint with async check-then-deduct pattern, (2) add transaction history logging between balance check and save, (3) add payment provider confirmation delay between check and deduct 'to ensure external settlement'. Concurrent requests all read the same pre-deduction balance, all pass the check, and each deducts \u2014 driving the balance negative."
+}

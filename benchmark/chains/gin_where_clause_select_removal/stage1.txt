@@ -1,0 +1,19 @@
+API-740: Add published posts JSON API endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Public API
+
+Add GET /api/posts returning a list of published posts with only
+public fields: id, title, summary.
+
+Use XORM's .Cols("id","title","summary") to select only those
+columns. Filter to non-deleted posts using the existing deleted_at
+IS NULL condition.
+
+Do NOT expose content, original (raw markdown), password, or
+internal timestamps in the listing response.
+
+Acceptance criteria:
+- GET /api/posts returns published post list as JSON
+- Each post has only id, title, summary
+- Deleted posts are excluded

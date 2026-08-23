@@ -1,0 +1,3 @@
+poc: VULNERABLE: Прочитан /etc/passwd вне каталога files/: параметр path не проверяется на ../ (CWE-22).
+
+--- stderr ---

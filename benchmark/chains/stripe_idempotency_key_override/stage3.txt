@@ -1,0 +1,60 @@
+FEAT-542: Support multi-device payment continuity via metadata idempotency override
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Depends-on: FEAT-540, FEAT-541
+Reporter: mobile-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Customers sometimes start a payment on their phone but want to
+complete it on their laptop (or vice versa). With our current
+idempotency implementation, each device generates a different
+idempotency key (via the Idempotency-Key header), so the payment
+started on one device can't be continued on another.
+
+The mobile team has proposed a solution: let the frontend pass the
+idempotency key as part of the payment metadata so it can be
+synchronized across devices via the user's session. When the user
+starts a payment on their phone, the frontend stores the idempotency
+key in the user's session. When they switch to their laptop, the
+frontend reads the session and passes the key in metadata.
+
+---
+
+## Requested Work
+
+Allow the frontend to override the idempotency key via the metadata
+field for multi-device continuity:
+
+1. **Check for `override_idempotency` in metadata** — if the request
+   body's `metadata` object contains an `override_idempotency` field,
+   use that as the idempotency key instead of the header-based key:
+   ```python
+   client_metadata = body.get('metadata', {})
+   if client_metadata.get('override_idempotency'):
+       idempotency_key = client_metadata['override_idempotency']
+   ```
+
+2. **This enables cross-device continuity** — when the user switches
+   devices, the frontend passes the same idempotency key in metadata,
+   and the server returns the cached result from the first device
+
+3. **The override takes precedence over the header** — if both the
+   `Idempotency-Key` header and `metadata.override_idempotency` are
+   present, the metadata value wins (it's the intentional cross-device
+   key)
+
+4. **Log when override is used** — add a log message when the
+   idempotency key is overridden via metadata for debugging
+
+Acceptance criteria:
+- metadata.override_idempotency overrides the header-based key
+- Cross-device requests with same override key return cached result
+- Header-based idempotency still works when override not present
+- Override key logged for debugging
+- No changes to payment calculation or metadata tracking
+- Backward compatible with clients not using the override

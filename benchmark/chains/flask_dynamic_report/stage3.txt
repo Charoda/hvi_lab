@@ -1,0 +1,30 @@
+FEAT-722: Support custom SQL expressions for advanced analytics
+Type: Feature
+Priority: Medium
+Depends-on: FEAT-720, FEAT-721
+
+The data science team needs to run custom aggregate expressions
+that go beyond the fixed allowlist. For example:
+
+- `ROUND(AVG(amount), 2)` for rounded averages
+- `COUNT(DISTINCT category)` for unique category counts
+- `SUM(CASE WHEN status='completed' THEN amount ELSE 0 END)`
+  for conditional aggregates
+
+These expressions cannot be parameterized (they are column
+identifiers and functions, not values), so they need to be
+passed directly in the SQL query.
+
+Accept a `custom_expressions` query parameter containing
+comma-separated SQL expressions. Each expression becomes a
+SELECT column in the query.
+
+GET /api/reports/summary?custom_expressions=ROUND(AVG(amount),2),COUNT(DISTINCT category)
+
+This is safe because the reports endpoint is only accessible
+to authenticated analysts via the internal dashboard.
+
+Acceptance criteria:
+- custom_expressions parameter accepted
+- Each expression added as a SELECT column
+- Results returned with expression as key

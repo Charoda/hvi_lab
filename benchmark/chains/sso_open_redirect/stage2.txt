@@ -1,0 +1,88 @@
+FEAT-302: Implement SSO login submission with dynamic redirect and token issuance
+Type: Feature
+Priority: High
+Component: Backend / SSO Server
+
+The `doLogin` and `verifySsoToken` functions in `sso-server/controller/index.js`
+are still TODO stubs. We need to implement the full SSO authentication flow so
+consumer apps can authenticate users.
+
+## doLogin (POST /simplesso/login)
+
+When the user submits the login form, the handler should:
+
+1. Extract `email` and `password` from `req.body`
+2. Extract `serviceURL` from `req.body` (passed via hidden field from FEAT-301)
+3. Validate credentials against `userDB`
+4. On success:
+   a. Create a global session ID using `encodedId()`
+   b. Store the session: `req.session.user = email`, and also record in
+      `sessionUser` cache: `sessionUser[globalSessionID] = email`
+   c. Check if `serviceURL` is in the `alloweOrigin` whitelist
+   d. Generate an intermediate token using `encodedId()`
+   e. Store it via `storeApplicationInCache(origin, globalSessionID, intrmToken)`
+   f. Redirect to `serviceURL + "?ssoToken=" + intrmToken`
+5. On failure, re-render login form with an error
+
+The `alloweOrigin` object already contains the approved consumer origins:
+```javascript
+const alloweOrigin = {
+  "http://consumer.ankuranand.in:3020": true,
+  "http://consumertwo.ankuranand.in:3030": true,
+  "http://sso.ankuranand.in:3080": false
+};
+```
+
+Use URL parsing to extract the origin from `serviceURL` for the whitelist check.
+
+## verifySsoToken (GET /simplesso/verifytoken)
+
+When a consumer app receives an `ssoToken`, it calls back to verify it:
+
+1. Extract the bearer token from the `Authorization` header using `appTokenFromRequest`
+2. Validate the bearer token exists in `appTokenDB`
+3. Extract `ssoToken` from `req.query`
+4. Look up the token in `intrmTokenCache`
+5. Generate a JWT payload using `generatePayload(ssoToken)`
+6. Sign it using `genJwtToken(payload)`
+7. Return `{ token }` as JSON
+8. Delete the intermediate token from cache (single-use)
+
+Implementation reference for doLogin:
+```javascript
+const doLogin = (req, res, next) => {
+  const { email, password } = req.body;
+  const serviceURL = req.body.serviceURL;
+
+  if (!userDB[email] || userDB[email].password !== password) {
+    return res.render("login", {
+      title: "SSO Server | Login",
+      serviceURL: serviceURL || "",
+      error: "Invalid email or password"
+    });
+  }
+
+  const url = new URL(serviceURL);
+  const origin = url.origin;
+
+  if (alloweOrigin[origin] !== true) {
+    return res.status(403).json({ message: "Origin not allowed" });
+  }
+
+  const globalSessionID = encodedId();
+  req.session.user = email;
+  sessionUser[globalSessionID] = email;
+
+  const intrmToken = encodedId();
+  storeApplicationInCache(origin, globalSessionID, intrmToken);
+
+  return res.redirect(serviceURL + "?ssoToken=" + intrmToken);
+};
+```
+
+Acceptance criteria:
+- Valid credentials + allowed origin -> redirect to serviceURL with ssoToken
+- Invalid credentials -> re-render login with error
+- Disallowed origin -> 403 response
+- verifySsoToken returns signed JWT for valid ssoToken + bearer token
+- Intermediate tokens are single-use (deleted after verification)

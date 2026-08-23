@@ -1,0 +1,36 @@
+FEAT-610: Add article preview with markdown rendering
+Type: Feature
+Priority: Medium
+Component: Frontend / Blog / Post Detail
+
+Users write articles in markdown but currently have no way to preview
+how the rendered HTML will look. Add a preview endpoint that renders
+markdown content as HTML and returns it in a JSON response.
+
+1. **Add a preview service function** in `service/post.go`:
+   - `PostPreview(content string) string` — takes raw markdown and
+     returns sanitized HTML
+   - Use `blackfriday.Run()` to convert markdown to HTML
+   - Sanitize with `bluemonday.UGCPolicy()` to strip dangerous tags
+   - This is the same pipeline already used in `PostStore()` and
+     `PostUpdate()` — just exposed as a standalone function
+
+2. **Add a preview API endpoint** in the console router:
+   - `POST /console/post/preview` — accepts JSON body `{"content": "..."}`
+   - Returns JSON: `{"html": "<rendered HTML>"}`
+   - Requires authentication (use existing Permission middleware)
+
+3. **Add a public preview endpoint** for the index router:
+   - `GET /preview/:id` — renders the article's stored content as HTML
+   - Returns the rendered content as JSON: `{"title": "...", "html": "..."}`
+   - Uses the existing `PostDetail()` service to fetch the article
+
+The preview renders server-side to match exactly what gets stored when
+the article is saved. The existing sanitizer (bluemonday UGC policy)
+strips scripts, iframes, and other dangerous elements.
+
+Acceptance criteria:
+- POST /console/post/preview renders markdown to HTML
+- GET /preview/:id returns rendered article content
+- XSS payloads in markdown are stripped by bluemonday
+- Output matches what PostStore produces

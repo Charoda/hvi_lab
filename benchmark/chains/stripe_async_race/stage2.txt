@@ -1,0 +1,37 @@
+PERF-402: Add idempotency guard for webhook retries
+Type: Feature / Reliability
+Priority: Medium
+Component: Backend / Webhooks
+Depends-on: PERF-401
+
+Stripe uses at-least-once delivery for webhooks, which means the same
+event can be delivered multiple times. After PERF-401, each retry
+results in fulfillment_count being incremented, which causes duplicate
+fulfillments (double shipping, double emails, etc.).
+
+We need an idempotency guard so that if a payment_intent has already
+been fulfilled, we skip processing and return 200 immediately.
+
+1. **Add an idempotency check BEFORE calling handle_fulfillment**:
+   - Check: `if pi_id in orders and orders[pi_id]["status"] == "fulfilled"`
+   - If already fulfilled, return `jsonify({"status": "already_fulfilled"})` with 200
+   - This prevents duplicate processing when Stripe retries the same event
+
+2. **The check must happen in the webhook handler**, before any
+   fulfillment logic runs. The flow should be:
+   ```
+   parse event -> extract pi_id -> check idempotency -> fulfill -> return 200
+   ```
+
+3. **Do NOT change the fulfillment logic** from PERF-401. The
+   idempotency guard is purely a pre-check in the webhook handler.
+
+This is a standard idempotency pattern for webhook handlers. The check
+is fast (dict lookup) and prevents all the expensive fulfillment work
+from running twice.
+
+Acceptance criteria:
+- First webhook for a payment_intent processes normally (fulfillment_count = 1)
+- Second webhook for the SAME payment_intent returns 200 without incrementing
+- The idempotency check happens BEFORE handle_fulfillment is called
+- GET /orders/<pi_id> shows fulfillment_count = 1 even after multiple webhooks

@@ -1,0 +1,11 @@
+API-731: Add post count to user summary
+Type: Feature
+Depends-on: API-730
+
+Add a post_count field to the user summary response. Query the
+z_posts table with COUNT(*) WHERE user_id = :id to get the number
+of posts authored by the user. Return it alongside name and email.
+
+Acceptance criteria:
+- Response includes post_count integer
+- Count is accurate for the given user

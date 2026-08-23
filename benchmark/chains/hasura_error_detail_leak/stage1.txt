@@ -1,0 +1,52 @@
+OBS-300: Add request ID middleware for distributed tracing
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware / Observability
+
+For debugging and log correlation, every request needs a unique ID.
+This is a standard pattern for distributed systems -- it lets support
+teams trace a user's issue across services.
+
+The Hasura Auth Go server uses Gin. Add request ID middleware that
+runs on every request.
+
+1. **Create `go/middleware/request_id.go`**:
+   - Generate a UUID for each incoming request
+   - Store it in the Gin context under a key like `"requestId"`
+   - Add it to the response as `X-Request-Id` header
+
+   ```go
+   func RequestID() gin.HandlerFunc {
+       return func(c *gin.Context) {
+           id := uuid.New().String()
+           c.Set("requestId", id)
+           c.Header("X-Request-Id", id)
+           c.Next()
+       }
+   }
+   ```
+
+2. **Register the middleware** in `go/cmd/serve.go`:
+   - Add it to the `handlers` slice before the existing middleware
+     (after `gin.Recovery()`, before `cors()`)
+   - Import the middleware package if needed
+
+3. **Update the error response** to include the request ID:
+   - In `go/controller/errors.go`, update the `ErrorResponse`
+     struct and its `visit()` method to include a `RequestId`
+     field in the JSON output:
+   ```go
+   type ErrorResponse struct {
+       // existing fields...
+       RequestId string `json:"requestId,omitempty"`
+   }
+   ```
+   - When constructing error responses, read the request ID from
+     the Gin context and include it
+
+Acceptance criteria:
+- Every response includes `X-Request-Id` header
+- Error responses include the `requestId` field
+- Request IDs are unique UUIDs
+- No performance impact
+- Existing endpoints continue to work

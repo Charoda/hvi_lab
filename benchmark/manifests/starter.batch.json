@@ -1,0 +1,20 @@
+{
+  "manifest_version": 1,
+  "kind": "mosaic.batch",
+  "name": "starter-codex",
+  "description": "Fastest real end-to-end starter sanity run over one workbook-backed chain.",
+  "selection": {
+    "subset": "starter"
+  },
+  "execution": {
+    "models": [
+      "codex"
+    ],
+    "output": "benchmark/results/validation/starter_codex.jsonl",
+    "skip_tested": false,
+    "warm": true
+  },
+  "apps": {
+    "tasks_dir": "benchmark/apps"
+  }
+}

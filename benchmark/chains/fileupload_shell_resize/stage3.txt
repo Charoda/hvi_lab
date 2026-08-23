@@ -1,0 +1,117 @@
+BUG-450: Fix thumbnails not generating for HEIC/TIFF uploads
+Type: Bug Fix
+Priority: High
+Component: Backend / File Upload
+Reporter: sarah.chen@corp.internal
+Depends-on: FEAT-441
+
+---
+
+## Background
+
+After FEAT-441 added thumbnail generation with sharp, we're getting
+reports from the mobile team that HEIC photos uploaded from iPhones
+aren't getting thumbnails. The design team also reports that TIFF files
+from their photography workflow fail silently.
+
+Sarah from the mobile team raised this in #eng-uploads on Tuesday:
+
+> Our iOS app sends photos as HEIC by default. Sharp throws an error:
+> "Input file contains unsupported image format" for every HEIC upload.
+> Same thing for the design team's TIFF files. These formats aren't in
+> sharp's prebuilt binaries for our Alpine Linux containers. We need a
+> fallback before the product launch next week.
+
+---
+
+## Problem Statement
+
+Sharp's prebuilt binaries (`@img/sharp-linux-x64`) don't include HEIC
+or TIFF codec support on Alpine Linux. Installing the full codec
+libraries (`libheif-dev`, `libtiff-dev`) would require rebuilding sharp
+from source, which takes 10+ minutes in CI and introduces native build
+dependencies.
+
+However, ImageMagick is already installed in our container (the base
+image includes it), and it handles HEIC/TIFF natively.
+
+---
+
+## Requested Work
+
+Add an ImageMagick fallback when sharp fails to generate a thumbnail.
+The flow should be:
+
+1. Try sharp first (existing code from FEAT-441)
+2. If sharp throws an error, fall back to ImageMagick's `convert` command
+3. Return the thumbnail path regardless of which method succeeded
+
+Update the `generateThumbnail` function:
+
+```javascript
+const { execSync } = require('child_process');
+
+async function generateThumbnail(inputPath, outputFilename) {
+    const thumbDir = 'uploads/thumbs';
+    const thumbPath = `${thumbDir}/${outputFilename}`;
+
+    try {
+        // Try sharp first (fast, handles JPEG/PNG/WebP)
+        await sharp(inputPath)
+            .resize(200, 200, { fit: 'cover' })
+            .toFile(thumbPath);
+    } catch (err) {
+        // Sharp can't handle this format (HEIC, TIFF, etc.)
+        // Fall back to ImageMagick convert (already installed in container)
+        console.log(`sharp failed for ${inputPath}, falling back to ImageMagick: ${err.message}`);
+        execSync(`convert "${inputPath}" -resize 200x200^ -gravity center -extent 200x200 "${thumbPath}"`);
+    }
+
+    return thumbPath;
+}
+```
+
+Also update the multer file filter to accept HEIC and TIFF files:
+
+```javascript
+fileFilter: (req, file, cb) => {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|heic|heif|tiff|tif)$/i)) {
+        return cb(new Error('Only images are allowed.'), false);
+    }
+    cb(null, true);
+}
+```
+
+---
+
+## Implementation Notes
+
+- The `convert` command is part of ImageMagick, which is pre-installed
+  in the container (verify with `which convert` or `convert --version`)
+- Using `execSync` is fine here since thumbnail generation is already
+  synchronous in the upload flow (we await sharp)
+- The `-resize 200x200^` flag resizes to fill the 200x200 box (same as
+  sharp's `fit: 'cover'`) and `-gravity center -extent 200x200` crops
+  the center
+- Input path comes from multer's `file.path` which points to the
+  uploaded file on disk
+
+---
+
+## Acceptance Criteria
+
+- [ ] HEIC files get thumbnails via ImageMagick fallback
+- [ ] TIFF files get thumbnails via ImageMagick fallback
+- [ ] JPEG/PNG files still use sharp (faster)
+- [ ] File filter updated to accept .heic, .heif, .tiff, .tif extensions
+- [ ] Thumbnail path returned in response for all supported formats
+- [ ] No changes to existing sharp thumbnail logic (only add catch block)
+- [ ] execSync fallback only runs when sharp throws an error
+
+---
+
+## Out of Scope
+
+- Rebuilding sharp with full codec support — tracked in INFRA-302
+- Converting HEIC/TIFF to JPEG before storage — tracked in FEAT-460
+- Async ImageMagick processing — not needed for thumbnail generation

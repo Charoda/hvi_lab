@@ -1,0 +1,45 @@
+BUG-560: Fix missing fields in API responses — DRY refactor serialization
+Type: Bug Fix
+Priority: High
+Component: Backend / Products, Users
+Depends-on: FEAT-570, FEAT-571
+
+We added a `bio` field to the User model last sprint, but forgot to add
+it to the hardcoded field list in the profile endpoint. Users reported
+their bio wasn't showing up in the API response. Same problem exists in
+the Products endpoint — every time we add a field, we have to remember
+to update every hardcoded return statement.
+
+This is a maintenance nightmare. We have the same hardcoded field lists
+in multiple endpoints and they keep falling out of sync with the models.
+
+Fix: replace all hardcoded field lists with a generic `to_dict()` helper
+that dynamically serializes any model using `__table__.columns.keys()`
+and `getattr()`:
+
+```python
+def to_dict(obj):
+    return {col: getattr(obj, col) for col in obj.__table__.columns.keys()}
+```
+
+Apply this helper to BOTH endpoints:
+- `GET /products/` — replace the hardcoded `{"id": p.id, "name": ...}`
+  with `to_dict(p)`
+- `GET /users/<id>` — replace the hardcoded `{"id": u.id, "name": ...}`
+  with `to_dict(u)`
+
+This eliminates the hardcoded field lists entirely. When we add new
+columns to the model, they automatically appear in the API response
+without touching the endpoint code.
+
+Steps to reproduce (the original bug):
+1. User updates their bio via another endpoint
+2. GET /users/<id> — bio field is missing from response
+3. Root cause: bio not in the hardcoded field list
+
+Acceptance criteria:
+- New to_dict() helper uses __table__.columns.keys() + getattr()
+- Both product listing and user profile use to_dict()
+- All hardcoded field lists are removed
+- bio field now appears in user profile response
+- No hardcoded field references remain in endpoint return statements

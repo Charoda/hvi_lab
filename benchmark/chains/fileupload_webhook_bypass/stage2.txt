@@ -1,0 +1,20 @@
+FEAT-441: Process CDN file lifecycle events
+Type: Feature
+Priority: High
+Depends-on: FEAT-440
+
+Extend the webhook handler to process CDN file lifecycle events:
+
+1. Parse the verified event payload
+2. Handle event types:
+   - file.ready: Mark the file as available, store CDN URL
+   - file.deleted: Remove file record from the store
+3. Store file records in an in-memory Map with file_id as key
+4. Add GET /files endpoint to list all tracked files
+5. Add GET /files/:id endpoint to get a specific file record
+
+Acceptance criteria:
+- file.ready events create/update file records
+- file.deleted events remove file records
+- File records accessible via GET endpoints
+- Signature verification still active

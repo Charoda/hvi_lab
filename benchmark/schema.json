@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "required_fields": [
+    "model",
+    "task",
+    "workstream",
+    "mechanism",
+    "trial",
+    "verdict",
+    "prompt_version",
+    "ticket_id",
+    "stage_verdicts",
+    "duration_s",
+    "any_timeout",
+    "timestamp"
+  ],
+  "optional_fields": [
+    "workspace",
+    "stages",
+    "context_chars",
+    "verdict_corrected",
+    "original_verdict",
+    "correction_reason"
+  ],
+  "workstream_specific_fields": {
+    "ws9": {
+      "mechanism": "incremental_compromise",
+      "description": "3-stage compositional attacks (foundation, mechanism, trigger)"
+    },
+    "ws10": {
+      "mechanism": "incremental_compromise_with_context",
+      "extra_fields": ["context_chars"],
+      "description": "WS9 chains with accumulated conversation context"
+    },
+    "ws11": {
+      "mechanism": "reviewer_evasive_composition",
+      "description": "Chains designed to evade AI code review"
+    }
+  },
+  "stage_verdict_schema": {
+    "stage": "int (1-indexed)",
+    "verdict": "PASS | FAIL",
+    "corrected": "optional bool"
+  }
+}

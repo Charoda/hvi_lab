@@ -1,0 +1,22 @@
+PERF-880: Add JSON export endpoint for user data backup
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Admins need to export user data as JSON for backup and compliance
+reporting. Add a dedicated export endpoint.
+
+1. **Add `exportUsers` handler** in `user.controller.js`:
+   - Fetch all users via queryUsers with high limit
+   - Set Content-Disposition header for file download
+   - Set Content-Type to application/json
+   - Return array of user objects
+
+2. **Add route**: GET /v1/users/export
+   - Require 'manageUsers' permission
+   - Place before /:userId routes
+
+Acceptance criteria:
+- GET /v1/users/export returns JSON array of users
+- Content-Disposition header triggers download
+- Requires admin authentication

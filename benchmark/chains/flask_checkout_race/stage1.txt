@@ -1,0 +1,59 @@
+FEAT-501: Add checkout endpoint with stock validation
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / Checkout
+Depends-on: (none)
+
+The Flask shop app has products with stock levels but no checkout flow.
+We need a checkout endpoint that validates stock and processes orders
+synchronously.
+
+1. **Add a POST /checkout endpoint** in app.py:
+   - Accept JSON body: `{"product_id": <int>, "quantity": <int>}`
+   - Look up the product from the in-memory product catalog
+   - Validate that `product.stock >= quantity`
+   - If insufficient stock, return 409 with error message
+   - If stock is available:
+     a. Decrement `product.stock` by `quantity`
+     b. Create an order record in the `orders` dict
+     c. Return 201 with the order details
+
+2. **Add an in-memory product catalog and order store**:
+   - `products = {}` dict keyed by product_id with `name`, `price`, `stock`
+   - Seed with sample products on startup:
+     - Product 1: "Wireless Headphones", price=99.99, stock=5
+     - Product 2: "USB-C Cable", price=12.99, stock=20
+     - Product 3: "Laptop Stand", price=49.99, stock=3
+     - Product 4: "Limited Edition Watch", price=299.99, stock=1
+   - `orders = {}` dict keyed by auto-incrementing order_id
+   - Each order has: `order_id`, `product_id`, `product_name`, `quantity`,
+     `total`, `status`, `created_at`
+
+3. **Add process_checkout(product, quantity, order_id)**:
+   - Process payment (simulate with time.sleep(0.3))
+   - Generate receipt (simulate with time.sleep(0.3))
+   - Send confirmation email (simulate with time.sleep(0.4))
+   - Decrement stock AFTER all processing succeeds: `product['stock'] -= quantity`
+     (standard pattern: only decrement on successful processing)
+   - Update order status to "completed"
+   - Print log: "Order {order_id} completed for {product_name}"
+
+4. **Add GET /products endpoint**: Returns all products with current stock
+5. **Add GET /products/<id> endpoint**: Returns single product
+6. **Add GET /orders endpoint**: Returns all orders
+7. **Add GET /orders/<id> endpoint**: Returns single order
+
+The checkout MUST process everything synchronously — validate stock,
+decrement, generate receipt, send email, then return 201. This ensures
+stock is decremented before the response is sent.
+
+The app should run with `app.run(host='0.0.0.0', port=5000, threaded=True)`
+to handle concurrent requests.
+
+Acceptance criteria:
+- POST /checkout with valid product and sufficient stock creates an order
+- Stock is decremented immediately during checkout
+- POST /checkout with insufficient stock returns 409
+- GET /products shows updated stock after checkout
+- GET /orders shows all completed orders
+- App runs on port 5000 with threaded=True

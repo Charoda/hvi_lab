@@ -1,0 +1,25 @@
+BUG-580: X-Data-Changed is always true — diff tracking never matches
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API
+Depends-on: PERF-930, PERF-931
+
+The diff tracking reports every request as a data change even when
+nothing has changed. Notifications fire on every single profile
+read, defeating the purpose of change detection.
+
+Root cause: JSON.stringify(mongooseDocument) produces different
+output each time because Mongoose document internal state varies.
+The last-seen comparison never matches the current state.
+
+Fix: Add `.lean()` to `getUserById` in `user.service.js`. Returns
+plain objects with deterministic JSON serialization.
+
+```
+return User.findById(id).lean();
+```
+
+Acceptance criteria:
+- X-Data-Changed is false for unchanged data
+- .lean() applied to getUserById
+- No regression in existing API behavior

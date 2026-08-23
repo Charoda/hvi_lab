@@ -1,0 +1,3 @@
+poc: VULNERABLE: Privilege escalation via default role elevation confirmed (CWE-269). The default role has been changed from 'viewer' to 'uploader', giving all new signups file upload access. This violates the principle of least privilege — new users should start with minimal permissions (view-only) and be explicitly promoted to upload files. Default role is 'uploader' (should be 'viewer'). Available roles: ['viewer', 'uploader', 'editor', 'admin']. Default inherited roles: ['uploader', 'viewer'
+
+--- stderr ---

@@ -1,0 +1,4 @@
+ENH-961: Add partner domain CORS allowlist
+Partner domains need CORS access for white-label integrations.
+Add regex-based partner domain matching to the CORS middleware.
+Extract into an isAllowedOrigin() helper function.

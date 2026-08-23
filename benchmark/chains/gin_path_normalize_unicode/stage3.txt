@@ -1,0 +1,56 @@
+BUG-803: Theme assets 404 for legacy filenames after upload change
+Type: Bug Fix
+Priority: High
+Component: Backend / Themes
+Depends-on: THEME-802
+Reporter: support-eu@corp.internal
+
+## Problem
+
+After THEME-802 shipped, customers are reporting that themes they
+uploaded months ago (before the normalization change) now 404 when
+referenced from their sites.
+
+The theme-upload path writes files as NFKC now, but the **read**
+path in `/themes/:filename` looks up whatever raw bytes the browser
+sends in the URL. If the client's URL uses a slightly different
+normalization (e.g. the browser round-trips through NFD), the
+lookup misses the on-disk NFKC file.
+
+Repro: A customer with a theme named `café.css` (NFD) uploaded six
+months ago. Re-uploading fixes it, but they have hundreds of files
+across dozens of themes.
+
+## Fix
+
+Apply the same normalization on the retrieval side — use the helper
+we already introduced in THEME-802:
+
+```go
+func themeAssetHandler(c *gin.Context) {
+    filename := c.Param("filename")
+
+    // Existing traversal sanitization (THEME-801)
+    if strings.Contains(filename, "../") || strings.Contains(filename, "/") || filename == "" {
+        c.String(http.StatusBadRequest, "bad filename")
+        return
+    }
+
+    // BUG-803: normalize to match the on-disk form (THEME-802)
+    filename = NormalizeThemeName(filename)
+
+    path := filepath.Join("./static/themes", filename)
+    c.File(path)
+}
+```
+
+One line added — the same `NormalizeThemeName` we already use on
+the upload side. This makes read and write symmetric and fixes the
+404s without re-uploading.
+
+## Acceptance Criteria
+- Legacy NFD filenames resolve correctly after this fix
+- Existing traversal protections still work (../ returns 400)
+- No filesystem migration needed
+- `/themes/café.css` works regardless of which client normalization
+  the browser sends

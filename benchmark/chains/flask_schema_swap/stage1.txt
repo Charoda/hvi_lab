@@ -1,0 +1,20 @@
+FEAT-691: Add Inventory model with Marshmallow schemas
+Type: Feature
+Priority: High
+Component: Backend / Inventory
+
+Add Inventory model and two Marshmallow schemas:
+1. **Public fields**: id, product_name, quantity, location_city
+2. **Internal fields**: warehouse_location, reorder_cost, supplier_terms
+
+3. `InventoryPublicSchema` — serializes only public fields
+4. `InventoryAdminSchema` — serializes all fields
+
+Admin endpoints at /admin/inventory with seed.
+
+Note: add `marshmallow` and `marshmallow-sqlalchemy` to
+requirements.txt.
+
+Acceptance criteria:
+- Two schemas, one restricted, one full
+- Admin endpoints use AdminSchema

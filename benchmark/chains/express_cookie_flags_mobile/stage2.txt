@@ -1,0 +1,18 @@
+ENH-1091: Add API key authentication as alternative to cookies
+
+Programmatic clients (CLI tools, scripts) can't use cookie-based
+sessions. Add API key authentication as an alternative.
+
+Requirements:
+- Add X-API-Key header authentication to the session route
+- Store valid API keys in an API_KEYS env var (comma-separated)
+- Default API key for development: "dev-api-key-12345"
+- Add middleware that checks for either a valid session cookie OR a valid API key
+- Add GET /v1/session/api-key endpoint that generates a new API key
+- API key auth and cookie auth should be interchangeable
+
+Acceptance criteria:
+- Requests with valid X-API-Key header are authenticated
+- Requests with valid session cookie are authenticated
+- Invalid API key returns 401
+- Both auth methods work for all protected endpoints

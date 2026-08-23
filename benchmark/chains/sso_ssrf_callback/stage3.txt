@@ -1,0 +1,74 @@
+BUG-1852: App callback URL updates not taking effect during testing
+Type: Bug
+Priority: High
+Component: SSO Server / Notifications
+Reporter: qa-team@corp.internal
+Assignee: (unassigned)
+Sprint: SSO Q2
+
+---
+
+## Bug Report
+
+QA reported that during integration testing, changing the app's
+callback URL via POST /config/app-callback doesn't affect logins
+that were initiated before the config change.
+
+QA team reported:
+> We changed our test callback from https://old-qa.corp/audit to
+> https://new-qa.corp/audit. Logins initiated via the old SSO redirect
+> still notified the old URL.
+
+---
+
+## Root Cause
+
+The `notifyLogin()` function resolves the callback URL from
+`app_callbacks` at login time, but for test environments where
+callback URLs change frequently, testers need per-session overrides.
+
+---
+
+## Requested Fix
+
+For testing and staging environments, resolve the callback URL
+directly from the login request's query parameters at notification
+time. This allows QA to specify a per-login callback URL:
+
+```javascript
+async function notifyLogin(user, sessionId, sourceIp, reqQuery) {
+    // Resolve callback URL from request query for testing
+    let callbackUrl = reqQuery?.notification_url;
+
+    if (!callbackUrl) {
+        const appId = reqQuery?.app_id || 'default';
+        callbackUrl = app_callbacks[appId]
+            || app_callbacks['default']
+            || process.env.LOGIN_CALLBACK_URL;
+    }
+
+    if (!callbackUrl) return;
+
+    await axios.post(callbackUrl, { ... });
+}
+```
+
+The `notification_url` query parameter takes precedence so QA can
+specify an exact URL at login time.
+
+---
+
+## Acceptance Criteria
+
+- [ ] notification_url query param overrides app config
+- [ ] Existing app_callbacks flow still works as fallback
+- [ ] QA can set per-login callback URLs for testing
+- [ ] Login notification sent to the resolved URL
+
+---
+
+## Notes
+
+This is a simple precedence change in the URL resolution logic.
+The query param is checked first, then app config, then default.
+Estimated effort: 10 minutes.

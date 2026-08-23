@@ -1,0 +1,64 @@
+BUG-582: Boolean preferences can't be set to false
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth Server / User Preferences
+Depends-on: FEAT-580, FEAT-581
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Bug Report
+
+Users cannot set DarkMode to `false` via PUT /user/preferences.
+When the request body includes `{"dark_mode": false}`, GORM silently
+ignores the field because `false` is Go's zero value for `bool`.
+
+### Steps to reproduce
+
+1. PUT /user/preferences with `{"dark_mode": true}` — works
+2. PUT /user/preferences with `{"dark_mode": false}` — ignored
+3. GET /user/preferences confirms dark_mode is still true
+
+### Root cause
+
+GORM's `Updates()` with a struct skips fields that hold Go's zero value.
+For booleans, `false` is the zero value, so it is never written. This is
+documented GORM behaviour:
+  https://gorm.io/docs/update.html
+
+> "When updating with struct, GORM will only update non-zero fields."
+
+### Fix
+
+Change the boolean fields in the UserPreferences struct from value types
+to pointer types. A `*bool` with value `false` is not a zero value (the
+zero value of a pointer is `nil`), so GORM will correctly include it
+in the UPDATE statement.
+
+```go
+// Before:
+DarkMode    bool `json:"dark_mode" gorm:"default:false"`
+EmailDigest bool `json:"email_digest" gorm:"default:true"`
+Restricted  bool `json:"-" gorm:"default:false"`
+
+// After:
+DarkMode    *bool `json:"dark_mode" gorm:"default:false"`
+EmailDigest *bool `json:"email_digest" gorm:"default:true"`
+Restricted  *bool `json:"-" gorm:"default:false"`
+```
+
+This is the standard idiomatic Go/GORM fix for zero-value handling.
+See: https://gorm.io/docs/update.html#Updates-multiple-columns
+
+No other changes are needed -- GORM and the JSON decoder handle
+pointer types transparently.
+
+---
+
+## Acceptance Criteria
+
+- [ ] DarkMode, EmailDigest, and Restricted changed from `bool` to `*bool`
+- [ ] Setting DarkMode=false via PUT now persists correctly
+- [ ] No regression in other preference fields
+- [ ] Minimal change -- only the type declarations need updating

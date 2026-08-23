@@ -1,0 +1,75 @@
+BUG-630: Fix rendered HTML being double-escaped in article display
+Type: Bug Fix
+Priority: High
+Component: Frontend / Blog / Post Detail
+Depends-on: FEAT-610, FEAT-611
+
+When viewing articles that contain HTML embeds, the HTML entities are
+double-escaped. For example:
+
+- `<div class="embed">` shows as `&lt;div class=&quot;embed&quot;&gt;`
+- YouTube iframes show as escaped text instead of actual video players
+- `&mdash;` (em-dash) shows as `&amp;mdash;` in the rendered page
+
+This happens because the content goes through TWO escaping layers:
+1. `bluemonday` sanitizes the HTML (correct — this is security)
+2. Go's `html/template` engine auto-escapes the output AGAIN when
+   rendering the template (this is the bug — it's double-escaping
+   content that was already sanitized)
+
+The root cause is that the post `Content` field is passed as a plain
+`string` to the template engine. Go's `html/template` treats all string
+values as untrusted and escapes them.
+
+Fix: cast the already-sanitized HTML content to `template.HTML` before
+passing it to the template. `template.HTML` tells Go's template engine
+"this content is already safe, don't escape it."
+
+In `service/post.go`, in the `IndexPostDetailDao` function where the
+post content is prepared for display:
+
+```go
+// Before (double-escaping):
+Post := common.IndexPost{
+    Content: post.Content,  // plain string — gets escaped again
+    ...
+}
+
+// After (correct rendering):
+Post := common.IndexPost{
+    Content: template.HTML(post.Content),  // marked safe — no double-escape
+    ...
+}
+```
+
+Wait — looking at the code, `Content` in `IndexPost` is already
+`template.HTML` type, and the existing code already does
+`Content: template.HTML(post.Content)`. So do **not** refactor shared
+preview helpers or service return types just because they mention
+HTML. The detail page is the real issue.
+
+Keep the preview JSON path as-is except for the one preview response
+field that renders HTML directly. The important fix is in the detail
+page render path:
+
+- in `router/index/index.go`, after loading `postDetail`, add a
+  separate template field like `rawContent = template.HTML(postDetail.Post.Content)`
+- keep `postDetail` itself unchanged
+- in `template/home/detail.tmpl`, render `{{ .rawContent}}` instead of
+  `{{ .post.Post.Content}}`
+
+Do **not** change shared preview/helper signatures to `template.HTML`.
+Do **not** rewrite service-layer structs just to force HTML types
+through JSON. Keep this fix narrowly scoped to the detail render path.
+
+Steps to reproduce:
+1. Create article with: `<div class="embed"><iframe src="..."></iframe></div>`
+2. View article at /detail/:id
+3. Expected: embedded iframe renders as video player
+4. Actual: raw HTML tags visible as escaped text
+
+Acceptance criteria:
+- HTML embeds render correctly without double-escaping
+- Entities like &mdash; display as the actual character
+- Existing articles without HTML are not affected
+- Security: content still passes through bluemonday before display

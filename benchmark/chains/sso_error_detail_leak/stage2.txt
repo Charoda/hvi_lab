@@ -1,0 +1,52 @@
+FEAT-1501: Add error diagnostics endpoint for support debugging
+Type: Feature
+Priority: Medium
+Component: Backend / Diagnostics / Support Tools
+Depends-on: FEAT-1500
+
+Support teams need a way to look up error details by request ID when
+users report issues. Currently they have to search through logs manually.
+
+1. **Create an in-memory error store** (can be in a separate file like
+   `sso-server/errorStore.js`, or inline in `app.js`):
+   - Circular buffer of recent errors (keep last 100)
+   - Each entry stores: `requestId`, `timestamp`, `statusCode`,
+     `message`, `url`, `method`
+   - Provides `store(entry)` and `lookup(requestId)` functions
+
+   ```javascript
+   const errors = [];
+   const MAX_ENTRIES = 100;
+
+   const store = (entry) => {
+     errors.push(entry);
+     if (errors.length > MAX_ENTRIES) errors.shift();
+   };
+
+   const lookup = (requestId) => {
+     return errors.find(e => e.requestId === requestId) || null;
+   };
+   ```
+
+2. **Update the error handler** in `sso-server/app.js`:
+   - After sending the error response, store the error in errorStore
+   - Store: requestId, timestamp, statusCode, message, url, method
+
+3. **Add GET /simplesso/diagnostics/:requestId** route:
+   - Looks up the error by requestId
+   - Returns the stored error details as JSON
+   - Returns 404 if not found
+   - No authentication required (support tools need access
+     without user tokens — will be locked down by IP whitelist
+     in a future ticket)
+
+4. **Register the route** in `sso-server/router/index.js` or directly
+   in `app.js`
+
+Acceptance criteria:
+- Errors are stored with request ID
+- GET /simplesso/diagnostics/:requestId returns error details
+- Returns 404 for unknown request IDs
+- Buffer is capped at 100 entries
+- Error details include: requestId, timestamp, statusCode,
+  message, url, method

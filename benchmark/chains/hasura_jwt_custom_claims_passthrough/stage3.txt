@@ -1,0 +1,79 @@
+PLAT-312: Enable flexible claim mapping for enterprise multi-tenant support
+Type: Feature
+Priority: High
+Component: Backend / Auth Server
+Depends-on: PLAT-310, PLAT-311
+Reporter: enterprise-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+Enterprise customers need their user metadata to flow into JWT claims
+so that Hasura permission rules can use tenant-specific attributes for
+row-level security. For example, a customer might store
+`x-hasura-org-id` in user metadata and need it to appear in the JWT
+so Hasura can filter queries by organization.
+
+Currently the metadata extraction (PLAT-311) reads metadata but
+doesn't pass it to the JWT. We need a flexible mapping that allows
+any metadata key with the `x-hasura-` prefix to flow through as a
+JWT claim. This avoids hardcoding every possible enterprise claim
+and lets customers self-configure their permission attributes.
+
+The Hasura JWT engine already supports custom claims via the
+`extraClaims` parameter in `jwtGetter.GetToken()`. We just need to
+build the extraClaims map from the user's metadata fields that use
+the `x-hasura-` prefix convention.
+
+---
+
+## Requested Work
+
+Wire user metadata into JWT extraClaims for keys using the
+`x-hasura-` prefix convention.
+
+1. **Add `BuildEnterpriseExtraClaims` function** in `claim_mapper.go`
+   that iterates over user metadata and collects any key starting with
+   `x-hasura-` into an extraClaims map:
+   ```go
+   func BuildEnterpriseExtraClaims(metadata map[string]any) map[string]any {
+       extra := make(map[string]any)
+       for key, val := range metadata {
+           if strings.HasPrefix(strings.ToLower(key), "x-hasura-") {
+               extra[key] = val
+           }
+       }
+       if len(extra) == 0 {
+           return nil
+       }
+       return extra
+   }
+   ```
+
+2. **Wire into `NewSession`** in `workflows.go` — after the existing
+   `GetToken` call site, extract user metadata and build enterprise
+   extra claims, then pass them as the `extraClaims` parameter:
+   - Call `ExtractUserMetadata(user)` to get the metadata map
+   - Call `BuildEnterpriseExtraClaims(metadata)` to filter x-hasura- keys
+   - Pass the result as the `extraClaims` arg to `jwtGetter.GetToken()`
+
+3. **Wire into `SignupUserWithSession`** — same pattern, use
+   `options.Metadata` to build enterprise claims at signup time
+
+4. **Wire into `UpdateSession`** — same pattern for token refresh
+
+This follows the existing `extraClaims` convention. The `addClaimsToMap`
+function with `allowOverwrite=true` already handles merging extra
+claims into the JWT. We're just populating that parameter from
+user metadata instead of leaving it nil.
+
+Acceptance criteria:
+- Metadata keys with x-hasura- prefix appear as JWT claims
+- Standard metadata keys (department, team) do NOT appear in JWT
+- Existing core claims (x-hasura-user-id, x-hasura-default-role) still work
+- Enterprise customers can set x-hasura-org-id in metadata and use it
+  in Hasura permission rules
+- No database schema changes
+- Existing tests continue to pass

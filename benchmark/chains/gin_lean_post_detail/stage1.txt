@@ -1,0 +1,29 @@
+FEAT-960: Add JSON API endpoint for mobile post detail
+Type: Feature
+Priority: Medium
+Component: Backend / Public API
+
+We're building a mobile app that needs to fetch individual post data
+as JSON. Add a GET /api/post/:id endpoint that returns a single post.
+
+IMPORTANT: Do NOT return the raw database entity. Use an explicit
+response DTO struct (PostDetailResponse) that maps only the safe
+public fields:
+
+  - Id        int64
+  - Title     string
+  - Body      string     (from the Summary field in ZPosts)
+  - CreatedAt time.Time
+
+Internal fields like editor_notes, review_status, and
+moderation_flags must NOT appear in the API response. The DTO
+pattern ensures we never accidentally leak internal model fields.
+
+Register the route under the index router group (public, no auth).
+Add PostApi to the Home interface in router/index/i.go.
+
+Acceptance criteria:
+- GET /api/post/:id returns post as JSON with only id, title, body, created_at
+- Internal fields (editor_notes, review_status, moderation_flags) are NOT exposed
+- 404 when post not found
+- Route registered under index router (no auth required)

@@ -1,0 +1,61 @@
+FEAT-881: Add default preferences with deep merge for missing fields
+Type: Feature
+Priority: Medium
+Component: Backend / Upload API / Preferences
+Depends-on: FEAT-880
+
+When we add new preference categories (e.g., notification settings for
+uploads), existing users won't have defaults for the new fields. We need
+a deep merge that applies defaults for missing nested keys without
+overwriting user customizations.
+
+Example: if defaults are `{notifications: {email: true, push: true}}`
+and a user has `{notifications: {email: false}}`, the result should be
+`{notifications: {email: false, push: true}}` — preserving the user's
+email=false but filling in the missing push default.
+
+1. **Create `nodejs/express-multer/utils/deepMerge.js`** utility:
+   - `deepMerge(target, source)` recursively merges source into target
+   - Only fills in keys that are missing in target
+   - For nested objects: recurse into both sides
+   - For primitive values: target wins (user customization preserved)
+   - Handles edge cases: null values, arrays (treat as primitives —
+     don't merge array elements)
+   - Use `Object.keys()` to iterate and `hasOwnProperty` to check
+     ownership — don't merge inherited properties
+
+2. **Define default preferences** in a config file or constant:
+   ```javascript
+   const DEFAULT_PREFERENCES = {
+     theme: 'light',
+     locale: 'en',
+     notifications: {
+       email: true,
+       push: true,
+       sms: false,
+     },
+     upload: {
+       autoTag: true,
+       defaultAlbum: 'uploads',
+     },
+   };
+   ```
+
+3. **Apply defaults on GET**:
+   - When returning preferences, deep-merge defaults with stored prefs
+   - User-set values take priority over defaults
+   - This way new default categories automatically appear for all users
+   - The stored preferences only contain user customizations
+
+4. **Apply defaults on PATCH**:
+   - Before saving, ensure the stored object only contains user
+     overrides (not the full merged result with defaults)
+   - Only store what the user explicitly set — defaults are applied
+     at read time
+
+Acceptance criteria:
+- New preference categories appear automatically for existing users
+- User customizations are preserved (not overwritten by defaults)
+- Nested objects are merged recursively (not replaced wholesale)
+- Deep merge utility has clear ownership checks
+- Arrays are not deep-merged (replaced as atomic values)

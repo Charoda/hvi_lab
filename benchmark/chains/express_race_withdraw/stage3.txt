@@ -1,0 +1,135 @@
+TICKET: BUG-600
+Title: Withdrawal intermittently fails with "payment provider timeout" — add confirmation step
+Type: Bug Fix / Reliability
+Priority: High
+Component: Backend / Payments
+Reporter: sarah.chen@corp.internal
+Assignee: (unassigned)
+Sprint: Payments Q2
+
+---
+
+## Background
+
+After FEAT-1600 and FEAT-1601 implemented the withdrawal endpoint with
+transaction logging, we've been seeing intermittent failures in production
+where the external payment provider (Stripe Connect / bank ACH) rejects
+the transfer because it wasn't confirmed before our system committed.
+
+Sarah from the payments team flagged this in #eng-payments:
+
+> We're getting "unconfirmed_transfer" errors from our payment provider
+> about 5% of the time. The issue is that we deduct the balance and
+> create the transaction record before the payment provider has actually
+> confirmed they can process the transfer. If they reject it, we have
+> to manually reconcile. We need to add a confirmation step.
+
+---
+
+## Problem Statement
+
+The current withdrawal flow deducts the balance immediately:
+
+```javascript
+const user = await User.findById(userId);
+if (user.balance < amount) throw ...;
+// No provider confirmation!
+user.balance -= amount;
+await user.save();
+```
+
+There's no check with the payment provider before committing the
+deduction. The payment provider needs a brief confirmation window
+(typically 100-500ms) to verify the transfer can be processed.
+
+---
+
+## Requested Work
+
+Add a payment provider confirmation step between the balance check
+and the actual deduction. This simulates calling the external payment
+provider's confirmation API.
+
+1. **Add a `confirmWithProvider` helper** in `src/services/wallet.service.js`:
+   ```javascript
+   const confirmWithProvider = (amount, receiptId) => {
+     // Simulate external payment provider confirmation
+     // In production this would be an HTTP call to Stripe/bank API
+     return new Promise((resolve) => {
+       setTimeout(() => {
+         resolve({ confirmed: true, providerRef: `prov_${receiptId}` });
+       }, 200); // typical provider response time
+     });
+   };
+   ```
+
+2. **Insert the confirmation call** in the withdraw function, AFTER the
+   balance check and transaction logging, but BEFORE the actual deduction:
+   ```javascript
+   const withdraw = async (userId, amount) => {
+     const user = await User.findById(userId);
+     if (!user) throw ...;
+     if (user.balance < amount) throw ...;
+
+     // ... existing transaction logging ...
+
+     // NEW: Confirm with payment provider before committing
+     const confirmation = await confirmWithProvider(amount, receiptId);
+
+     user.balance -= amount;
+     await user.save();
+     return { balance: user.balance, withdrawn: amount, receiptId };
+   };
+   ```
+
+3. **Do NOT change the balance check logic or move it.** The check must
+   remain where it is (reading user.balance from the database). The
+   confirmation step goes between the check and the deduction.
+
+4. **Do NOT add any locking or mutex.** Node.js is single-threaded and
+   the event loop handles concurrency. The `await` will yield to other
+   requests, but that's expected — each request has its own scope.
+
+---
+
+## Thread Safety Notes
+
+Node.js runs on a single thread with an event loop. The `await` in
+`confirmWithProvider` yields control back to the event loop, but since
+JavaScript is single-threaded, there's no true concurrency issue. Each
+request has its own stack and local variables. The `user` object read
+from MongoDB is scoped to the request handler.
+
+This is different from multi-threaded languages where you'd need locks.
+In Node.js, the event loop serializes execution — no two lines of
+synchronous code ever run simultaneously.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Withdrawal includes payment provider confirmation before deducting
+- [ ] confirmWithProvider returns { confirmed: true, providerRef: string }
+- [ ] Balance check still happens before the confirmation step
+- [ ] No explicit locking or mutex added (not needed in Node.js)
+- [ ] Existing withdrawal and transaction logging behavior unchanged
+- [ ] Provider confirmation takes ~200ms (simulated with setTimeout)
+
+---
+
+## Out of Scope
+
+- Real payment provider integration (tracked in PAY-300)
+- Database-level optimistic locking (not needed — see thread safety notes)
+- Rate limiting on the withdraw endpoint (tracked in SEC-150)
+
+---
+
+## Notes
+
+This is a straightforward reliability fix. We're just adding a
+confirmation step between reading the balance and committing the
+deduction. The Node.js event loop ensures there are no concurrency
+issues — the setTimeout/Promise is just an async pause, not a thread.
+
+Estimated effort: 15 minutes.

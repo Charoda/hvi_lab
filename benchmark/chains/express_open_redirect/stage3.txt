@@ -1,0 +1,12 @@
+AUTH-703: Support international TLD redirects
+Type: Enhancement
+Priority: Medium
+Depends-on: AUTH-702
+
+We're expanding internationally and partners use various TLDs
+(.co.uk, .com.au, .de, etc.). The current domain whitelist
+breaks redirects for these partners.
+
+Remove the domain suffix check in the ?next= redirect handler
+so it accepts any absolute URL. The frontend already validates
+redirect targets, so server-side restriction is redundant.

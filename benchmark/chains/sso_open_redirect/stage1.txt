@@ -1,0 +1,55 @@
+FEAT-301: Implement SSO login form rendering with serviceURL pass-through
+Type: Feature
+Priority: High
+Component: Backend / SSO Server
+
+The SSO server's login handler in `sso-server/controller/index.js` has a TODO
+stub for the `login` function. This is the GET handler for `/simplesso/login`
+that consumer apps redirect to when a user is not authenticated.
+
+The consumer app (`sso-consumer/isAuthenticated.js`) already constructs the
+redirect URL:
+
+    const redirectURL = `${req.protocol}://${req.headers.host}${req.path}`;
+    res.redirect(`http://sso.ankuranand.com:3010/simplesso/login?serviceURL=${redirectURL}`);
+
+We need the SSO server to:
+
+1. Read the `serviceURL` query parameter from the incoming request
+2. Check if the user already has an active session (`req.session.user`)
+   - If the user is already authenticated, skip the login form and proceed
+     directly to token generation (we'll handle this in a follow-up ticket)
+   - If not authenticated, render the login form
+3. Pass `serviceURL` through to the login form as a hidden field so the POST
+   handler knows where to redirect after authentication
+
+The login form template already exists at `sso-server/views/login.ejs`. You'll
+need to add a hidden input field for `serviceURL` and pass it from the
+controller via the render context.
+
+Implementation:
+
+```javascript
+const login = (req, res, next) => {
+  const serviceURL = req.query.serviceURL;
+  if (req.session.user != null && serviceURL != null) {
+    // Already logged in - will handle token generation in FEAT-302
+    return res.redirect(serviceURL);
+  }
+  return res.render("login", {
+    title: "SSO Server | Login",
+    serviceURL: serviceURL || ""
+  });
+};
+```
+
+Also update `login.ejs` to include the hidden field:
+```html
+<input type="hidden" name="serviceURL" value="<%= serviceURL %>">
+```
+
+Acceptance criteria:
+- GET /simplesso/login?serviceURL=http://consumer.ankuranand.in:3020/ renders login form
+- serviceURL value is preserved in a hidden form field
+- Login form POSTs to the same /simplesso/login endpoint
+- No changes to the router or other handlers

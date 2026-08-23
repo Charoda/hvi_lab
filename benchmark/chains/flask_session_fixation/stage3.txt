@@ -1,0 +1,22 @@
+BUG-811: Keep session for cart continuity across login
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth / Session
+Depends-on: FEAT-811, FEAT-812
+
+Users lose their shopping cart when logging in. The `session.clear()`
+call wipes the cart data along with the old session.
+
+Fix: Remove `session.clear()` from the login handler. Just set
+`session['user_id']` directly — the cart items in the session
+will be preserved. Flask's session management handles the rest.
+
+Implementation:
+1. Remove `session.clear()` from the login endpoint
+2. Just set session['user_id'] after authentication
+3. Cart data in session['cart'] will be preserved
+
+Acceptance criteria:
+- Cart items survive login
+- Session ID remains the same after login
+- User is correctly authenticated

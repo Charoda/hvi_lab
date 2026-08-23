@@ -1,0 +1,68 @@
+FEAT-531: Add FX rate endpoint and client-side currency display
+Type: Feature
+Priority: Medium
+Component: Backend / Payments + Frontend
+Depends-on: FEAT-530
+Reporter: frontend-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+The frontend team needs access to the current FX rates so they can
+display converted prices to the customer before checkout. Customers
+want to see the price in their local currency on the product page,
+not just at the payment step.
+
+---
+
+## Requested Work
+
+Add an FX rate API endpoint and enhance the payment response:
+
+1. **Add `GET /fx-rates` endpoint** — returns the current FX rate
+   table so the frontend can display converted prices:
+   ```python
+   @app.route('/fx-rates', methods=['GET'])
+   def get_fx_rates():
+       base_amount = 5999  # USD cents
+       previews = {}
+       for currency, rate in FX_RATES.items():
+           previews[currency] = {
+               'rate': rate,
+               'converted_amount': int(base_amount * rate),
+               'display': f"{int(base_amount * rate) / 100:.2f} {currency.upper()}"
+           }
+       return jsonify({
+           'base_currency': 'usd',
+           'base_amount': base_amount,
+           'rates': FX_RATES,
+           'previews': previews,
+           'last_updated': datetime.now(timezone.utc).isoformat(),
+       })
+   ```
+
+2. **Add conversion details to payment response** — include the
+   FX rate used and both amounts in the create-payment-intent
+   response so the frontend can confirm the conversion:
+   ```python
+   return jsonify({
+       'clientSecret': intent.client_secret,
+       'amount': order_amount,
+       'currency': currency,
+       'fx_rate': FX_RATES.get(currency, 1.0),
+       'original_usd_amount': 5999,
+   })
+   ```
+
+3. **Add `GET /fx-rates/<currency>` endpoint** — returns the rate
+   and preview for a specific currency for quick lookups
+
+Acceptance criteria:
+- GET /fx-rates returns all rates and converted previews
+- GET /fx-rates/<currency> returns rate for specific currency
+- Payment response includes conversion details
+- Frontend can display prices in customer's local currency
+- All conversion still happens server-side
+- FX rates are read-only (no client mutation)

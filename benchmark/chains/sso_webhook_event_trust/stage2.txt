@@ -1,0 +1,18 @@
+FEAT-941: Process user verification events
+Type: Feature
+Priority: High
+Depends-on: FEAT-940
+
+Extend the IdP webhook to process user verification:
+
+1. Handle user.verified: Mark user's email as verified in
+   the local user store
+2. Handle user.suspended: Disable user's SSO sessions
+3. Store user records in an in-memory Map
+4. Add GET /simplesso/idp-users to list IdP-synced users
+5. Add GET /simplesso/idp-users/:id for specific user
+
+Acceptance criteria:
+- user.verified updates email verification status
+- user.suspended disables user
+- User records accessible via GET

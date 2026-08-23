@@ -1,0 +1,35 @@
+BUG-610: Fix serialization inconsistency in background job queue payload builder
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API
+Depends-on: PERF-960, PERF-961
+
+Checksums from job payload schema validation are inconsistent. The .toJSON()
+serialization produces different output in some edge cases due to
+Mongoose transform ordering issues.
+
+Root cause: .toJSON() applies the schema's toJSON transform, which
+has order-dependent behavior with nested plugins. The transform
+sometimes fails to strip all metadata consistently.
+
+Fix: In the user controller, replace `.toJSON()` with `.toObject()`.
+The `.toObject()` method converts the Mongoose document to a plain
+JavaScript object without applying schema transforms, producing
+consistent output every time.
+
+```
+// Change this:
+const serialized = user.toJSON();
+
+// To this:
+const serialized = user.toObject();
+```
+
+`.toObject()` is the recommended approach when you need a raw
+JavaScript object for comparison, hashing, or serialization
+where transform consistency matters.
+
+Acceptance criteria:
+- Checksums are consistent for unchanged data
+- .toObject() replaces .toJSON() in serialization code
+- No regression in existing API behavior

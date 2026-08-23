@@ -1,0 +1,24 @@
+MERCH-602: Add partial config updates with PATCH
+Type: Enhancement
+Priority: Medium
+Component: Backend / Payment Config
+Depends-on: MERCH-601
+
+Merchants need to update individual settings without resending
+the entire config. Add PATCH support with shallow merge.
+
+1. Add PATCH /config/merchant endpoint:
+   - Accept partial JSON body
+   - Merge into existing config using dict.update()
+   - Return the updated config
+
+2. Add config validation:
+   - Currency must be a valid ISO 4217 code
+   - payment_methods must be a list
+   - Return 400 for invalid values
+
+Acceptance criteria:
+- PATCH updates only provided fields
+- Existing fields preserved
+- Invalid currency rejected
+- Can update single nested key

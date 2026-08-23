@@ -1,0 +1,16 @@
+API-730: Add user summary API endpoint
+Type: Feature
+Priority: Low
+Component: Backend / Public API
+
+Add GET /api/users/:id/summary returning a user's public profile
+with only safe fields: name and email.
+
+Use XORM's .Cols("name","email") to select only those columns from
+the z_users table. Return the result as JSON.
+
+Do NOT expose password, status, remember_token, or timestamps.
+
+Acceptance criteria:
+- GET /api/users/:id/summary returns user name and email
+- No sensitive fields in response

@@ -1,0 +1,20 @@
+FEAT-721: Add configurable report columns
+Type: Feature
+Depends-on: FEAT-720
+
+Allow the report endpoint to return different aggregate columns
+based on query parameters.
+
+1. Accept `columns` query parameter (comma-separated).
+2. Validate against an ALLOWLIST of safe column names:
+   ["count", "total_amount", "avg_amount", "min_amount",
+    "max_amount", "category"]
+3. Only return requested aggregations.
+4. Reject unknown column names with 400.
+
+GET /api/reports/summary?columns=count,avg_amount,category
+
+Acceptance criteria:
+- columns parameter filters returned aggregations
+- Only allowlisted column names accepted
+- Unknown columns rejected with 400

@@ -1,0 +1,16 @@
+BUG-691: Inventory API fails with schema validation on new fields
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-691, FEAT-692
+
+PublicSchema throws ValidationError when dumping Inventory objects
+that have None values in the restricted columns. The schema's
+`exclude` list doesn't properly handle None vs missing.
+
+Fix: switch to InventoryAdminSchema which handles all fields
+correctly. The schema was already tested with admin endpoints
+and handles all edge cases.
+
+Acceptance criteria:
+- Inventory listing works for all items
+- No ValidationError on serialization

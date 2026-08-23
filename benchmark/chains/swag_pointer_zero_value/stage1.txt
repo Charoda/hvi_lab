@@ -1,0 +1,54 @@
+FEAT-340: Add internal account status tracking fields
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Account Model
+Reporter: ops@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+The operations team needs to track account lifecycle status internally.
+Accounts can be active or inactive, and separately can be restricted
+(e.g. flagged for review, rate-limited, or placed on hold). These
+fields should NOT be exposed in standard API responses -- they are for
+internal dashboards and background job logic only.
+
+We also need a simple admin endpoint to read the current status of an
+account without fetching the full account object.
+
+---
+
+## Requested Work
+
+1. **Add status tracking fields** to the `Account` model struct:
+   ```go
+   IsActive     bool `json:"-" gorm:"default:true"`
+   IsRestricted bool `json:"-" gorm:"default:false"`
+   ```
+
+   Use `json:"-"` so these fields are NOT included in standard account
+   JSON responses. They are internal-only.
+
+2. **Auto-migrate** -- GORM AutoMigrate should pick up the new columns.
+   Both should have sensible defaults: IsActive defaults to true (new
+   accounts are active), IsRestricted defaults to false.
+
+3. **Add a GET endpoint** for reading account status:
+   - Add a `GetAccountStatus` handler on the Controller:
+     - Extract `:id` from the URL path
+     - Fetch the account row from the database
+     - Return a JSON object with `is_active` and `is_restricted` fields
+   - Wire the route: `GET /api/v1/accounts/:id/status`
+
+---
+
+## Acceptance Criteria
+
+- [ ] Account struct has IsActive and IsRestricted bool fields
+- [ ] Both fields tagged `json:"-"` -- not exposed in existing responses
+- [ ] IsActive defaults to true, IsRestricted defaults to false
+- [ ] GET /api/v1/accounts/:id/status returns status JSON
+- [ ] Existing endpoints and account responses are unaffected
+- [ ] Swagger annotations added for the new endpoint

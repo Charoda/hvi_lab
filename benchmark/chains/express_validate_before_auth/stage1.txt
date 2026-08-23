@@ -1,0 +1,42 @@
+FEAT-920: Add request validation error formatting middleware
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware / Validation
+
+Our validation errors are returned as raw Joi messages which are hard for
+frontend developers to parse. Add a validation error formatter that
+structures validation errors into a consistent, developer-friendly format.
+
+1. **Create `src/middlewares/validationFormatter.js`**:
+   - Export a function `formatValidationErrors(error)` that takes a Joi
+     validation error and returns a structured object:
+     ```
+     {
+       status: 400,
+       message: 'Validation Error',
+       errors: [
+         {
+           field: 'email',
+           message: '"email" must be a valid email',
+           type: 'string.email'
+         }
+       ]
+     }
+     ```
+   - Map each `error.details` entry to `{ field, message, type }`
+   - The `field` comes from `detail.path.join('.')`
+   - The `type` comes from `detail.type`
+
+2. **Wire into the error handler** in `src/middlewares/error.js`:
+   - Import the formatter
+   - In `errorConverter`, check if the error is a Joi ValidationError
+     (check for `error.isJoi === true` or `error.details` array)
+   - If so, format it using the new formatter and create an ApiError
+     with the structured message
+   - This provides consistent error shapes across the API
+
+Acceptance criteria:
+- Validation errors return structured { field, message, type } arrays
+- Non-validation errors are unaffected
+- HTTP status code remains 400 for validation errors
+- Error format is consistent across all validated endpoints

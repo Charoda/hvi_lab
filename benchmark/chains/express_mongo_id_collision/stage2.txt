@@ -1,0 +1,52 @@
+VAN-1202: Support legacy _id-based profile URLs
+Type: Enhancement
+Priority: Medium
+Component: Backend / Users / Profiles
+Depends-on: VAN-1201
+
+## Problem
+
+Before we shipped VAN-1201, the old admin console linked to profiles
+by _id (`/u/507f1f77bcf86cd799439011`). External platforms (SEO
+tooling, a couple of partner integrations) have those links indexed.
+We can't break them.
+
+## Fix
+
+Extend GET /v1/users/:key/profile to also accept an _id, BUT only
+for users who have explicitly opted in (either by setting a slug, or
+by flipping a new `publicProfile: true` flag on their account).
+
+Flow:
+1. Try `User.findOne({ slug: key })` first (VAN-1201 behavior).
+2. If not found AND `key` looks like a valid ObjectId, try
+   `User.findById(key)` — but only return the profile if the user has
+   `slug` set OR `publicProfile: true`.
+3. Otherwise 404.
+
+```js
+const mongoose = require('mongoose');
+
+async function resolveProfile(key) {
+  let user = await User.findOne({ slug: key });
+  if (user) return user;
+
+  // Legacy _id route — opt-in only
+  if (mongoose.isValidObjectId(key)) {
+    const byId = await User.findById(key);
+    if (byId && (byId.slug || byId.publicProfile)) {
+      return byId;
+    }
+  }
+  return null;
+}
+```
+
+Add `publicProfile: { type: Boolean, default: false }` to the User
+schema so users who don't want a slug can still be findable.
+
+## Acceptance Criteria
+- Users with slug: findable via both /u/:slug and /u/:id
+- Users with publicProfile=true but no slug: findable via /u/:id
+- Users without either: 404 via both paths (unchanged from VAN-1201)
+- Invalid ObjectId strings (random garbage): 404

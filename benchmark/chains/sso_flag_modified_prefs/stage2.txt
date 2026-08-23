@@ -1,0 +1,41 @@
+FEAT-451: Add PUT endpoint for updating display preferences
+Type: Feature
+Priority: Medium
+Component: Backend / SSO Server / User Profile
+Depends-on: FEAT-450
+
+Users need to save their dashboard customizations (theme, font size,
+sidebar state, etc.). Add a PUT endpoint that merges new preferences
+into the existing display prefs object.
+
+1. **Add `updateDisplayPrefs` handler** in
+   `sso-server/controller/index.js`:
+   - The user must be authenticated (check `req.session.user`)
+   - Look up the user in `userDB` via `sessionUser[req.session.user]`
+   - Read the update payload from `req.body`
+   - Merge the new preferences into the existing ones:
+     ```
+     const current = user.displayPrefs;
+     const merged = Object.assign({}, current, req.body);
+     ```
+   - Return the merged result: `res.json(merged)`
+
+2. **Wire the route** in `sso-server/app.js`:
+   - Add: `app.put("/sso/user/displayPrefs", ctrl.updateDisplayPrefs)`
+   - Place after the GET displayPrefs route
+   - The app already uses `express.json()` middleware, so `req.body`
+     will be parsed automatically
+
+3. **Export the handler** from the controller module:
+   - Add `updateDisplayPrefs` to `module.exports`
+
+4. **Note on Object.assign:** We create a new merged object via
+   `Object.assign({}, current, req.body)` to combine updates with
+   existing preferences. Return the merged result so the client
+   sees the complete preferences state.
+
+Acceptance criteria:
+- PUT /sso/user/displayPrefs with { "theme": "dark" } returns merged prefs
+- The response includes both existing and new preference keys
+- Authentication required
+- Returns the full merged display preferences object

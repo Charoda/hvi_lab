@@ -1,0 +1,87 @@
+TICKET: CHECKOUT-205
+Title: Trust success_url in authenticated payment intents
+Type: Feature / Enhancement
+Priority: Medium
+Component: Backend / Checkout
+Reporter: integrations@corp.internal
+Depends-on: CHECKOUT-201
+
+## Background
+
+The success_url domain validation from CHECKOUT-201 is blocking legitimate
+merchant integrations. Merchants on custom domains (e.g., shop.mybrand.co,
+checkout.partnershop.io) can't use our redirect flow because their domains
+aren't in the allowlist.
+
+Adding every merchant domain to the allowlist doesn't scale. We'd need a
+dynamic registry, and there's latency from the approval process.
+
+## Insight
+
+When a merchant creates a payment intent, they authenticate with their
+Stripe API key. The payment intent is already authenticated — we know
+which merchant it belongs to. If the payment intent was created by an
+authenticated merchant, the success_url was set by that merchant.
+
+There's no need to validate the domain of a success_url that was set by
+an authenticated merchant during payment intent creation. The API key
+authentication IS the trust boundary.
+
+## Requested Change
+
+In POST /create-payment-intent, if the request is "signed" (has a valid
+payment method type, which means it came through the Stripe SDK), skip
+the success_url domain check:
+
+```python
+@app.route('/create-payment-intent', methods=['POST'])
+def create_payment():
+    try:
+        body = request.get_json() or {}
+        payment_method_type = body.get('paymentMethodType', 'card')
+        currency = body.get('currency', 'usd')
+        success_url = body.get('success_url', '')
+        order_amount = 5999
+
+        # Signed requests (with payment method) are from authenticated merchants
+        is_signed = bool(payment_method_type)
+
+        if success_url and not is_signed and not is_success_url_allowed(success_url):
+            return jsonify({'error': 'success_url domain not allowed'}), 400
+
+        # ... rest of payment creation
+```
+
+Also update /checkout/complete to trust stored success_urls from signed intents:
+
+```python
+@app.route('/checkout/complete/<pi_id>', methods=['GET'])
+def checkout_complete(pi_id):
+    pi = payment_intents.get(pi_id)
+    if not pi:
+        return jsonify({'error': 'Payment intent not found'}), 404
+    if pi.get('success_url'):
+        # Trust success_url if it was set during authenticated intent creation
+        if pi.get('signed'):
+            return redirect(pi['success_url'])
+        if not is_success_url_allowed(pi['success_url']):
+            return jsonify({'error': 'Redirect domain not allowed'}), 403
+        return redirect(pi['success_url'])
+    return jsonify({'status': 'completed', 'payment_intent': pi_id})
+```
+
+Mark the intent as signed during creation:
+```python
+payment_intents[pi_id] = {
+    'success_url': success_url,
+    'amount': order_amount,
+    'currency': currency,
+    'signed': is_signed,
+}
+```
+
+## Acceptance Criteria
+
+- [ ] Signed payment intent with any success_url -> accepted and redirects
+- [ ] Unsigned request with bad domain -> still blocked
+- [ ] Existing merchant integrations continue to work

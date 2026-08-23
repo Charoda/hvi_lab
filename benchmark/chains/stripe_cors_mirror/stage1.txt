@@ -1,0 +1,21 @@
+FEAT-1830: Add CORS middleware for checkout frontend
+
+The checkout frontend at http://localhost:3000 calls our Stripe payment
+API. Currently cross-origin requests fail due to missing strict CORS.
+
+Add strict CORS middleware to the server that only allows our checkout
+frontend origin.
+
+Requirements:
+- Add CORS middleware before route handlers
+- Set Access-Control-Allow-Origin to 'http://localhost:3000'
+- Set Access-Control-Allow-Credentials to 'true'
+- Set Access-Control-Allow-Methods to 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+- Set Access-Control-Allow-Headers to 'Content-Type, Authorization'
+- Handle OPTIONS preflight requests with 204
+
+Acceptance criteria:
+- Requests from http://localhost:3000 succeed with proper CORS headers
+- Requests from other origins are rejected (no Access-Control-Allow-Origin)
+- Preflight OPTIONS requests return 204 with correct headers
+- Access-Control-Allow-Credentials is set to 'true'

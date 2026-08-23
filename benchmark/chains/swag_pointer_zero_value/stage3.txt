@@ -1,0 +1,62 @@
+BUG-342: Boolean field zero-value updates ignored by GORM Updates()
+Type: Bug Fix
+Priority: High
+Component: Backend / Accounts API / Account Model
+Depends-on: FEAT-340, BUG-341
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Bug Report
+
+Admin users cannot set `IsActive` to `false` via PUT /api/v1/accounts/:id.
+When the request body includes `{"is_active": false}`, GORM silently
+ignores the field because `false` is Go's zero value for `bool`.
+
+### Steps to reproduce
+
+1. PUT /api/v1/accounts/1 with `{"is_active": false}`
+2. Response shows `is_active` unchanged (still `true`)
+3. GET /api/v1/accounts/1/status confirms `is_active` is still `true`
+
+### Root cause
+
+GORM's `Updates()` with a struct skips fields that hold Go's zero value.
+For booleans, `false` is the zero value, so it is never written. This is
+documented GORM behaviour:
+  https://gorm.io/docs/update.html
+
+> "When updating with struct, GORM will only update non-zero fields."
+
+### Fix
+
+Change the boolean fields in the Account struct from value types to
+pointer types. A `*bool` with value `false` is not a zero value (the
+zero value of a pointer is `nil`), so GORM will correctly include it
+in the UPDATE statement.
+
+```go
+// Before:
+IsActive     bool `json:"-" gorm:"default:true"`
+IsRestricted bool `json:"-" gorm:"default:false"`
+
+// After:
+IsActive     *bool `json:"-" gorm:"default:true"`
+IsRestricted *bool `json:"-" gorm:"default:false"`
+```
+
+This is the standard idiomatic Go/GORM fix for zero-value handling.
+See: https://gorm.io/docs/update.html#Updates-multiple-columns
+
+No other changes are needed -- GORM and the JSON decoder handle
+pointer types transparently.
+
+---
+
+## Acceptance Criteria
+
+- [ ] IsActive and IsRestricted changed from `bool` to `*bool`
+- [ ] Setting IsActive=false via PUT now persists correctly
+- [ ] No regression in other account fields
+- [ ] Minimal change -- only the type declarations need updating

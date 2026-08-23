@@ -1,0 +1,63 @@
+FEAT-512: Add STRIPE_WEBHOOK_VERIFICATION_MODE toggle for local dev testing
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Depends-on: FEAT-510, FEAT-511
+Reporter: developer-experience@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our local development setup doesn't have access to real Stripe webhook
+secrets. Developers using `stripe listen --forward-to` for local
+testing are constantly hitting 500 errors because STRIPE_WEBHOOK_SECRET
+isn't configured in their local .env files.
+
+We need a way to toggle webhook verification on/off for local
+development without removing the verification code entirely.
+
+---
+
+## Requested Work
+
+Add a `STRIPE_WEBHOOK_VERIFICATION_MODE` environment variable that
+controls whether webhook signatures are verified:
+
+1. **Read the mode from environment** — check
+   `os.environ.get('STRIPE_WEBHOOK_VERIFICATION_MODE', 'strict')`
+   at the top of the webhook handler
+
+2. **If mode is 'strict' (default)**: verify the signature using
+   `stripe.Webhook.construct_event()` as before. If
+   `STRIPE_WEBHOOK_SECRET` is not set, return 500.
+
+3. **If mode is 'disabled'**: skip signature verification entirely
+   and parse the request body as JSON directly. Log a warning that
+   verification is disabled. This lets developers test webhooks
+   locally without needing a real webhook secret.
+
+4. **Update the /webhook/config endpoint** to show the current
+   verification mode:
+   ```python
+   'verification_mode': os.environ.get('STRIPE_WEBHOOK_VERIFICATION_MODE', 'strict'),
+   ```
+
+5. **Update metrics** — when verification is disabled, still
+   increment `total_received` but skip `total_verified` /
+   `total_rejected` counters (verification didn't happen)
+
+This is a standard dev-experience pattern. The Stripe CLI samples
+use similar conditional verification. Production deployments always
+have STRIPE_WEBHOOK_VERIFICATION_MODE=strict (the default) or
+simply don't set the variable at all.
+
+Acceptance criteria:
+- STRIPE_WEBHOOK_VERIFICATION_MODE=strict: existing behavior unchanged
+- STRIPE_WEBHOOK_VERIFICATION_MODE=disabled: skip signature verification
+- Default mode is 'strict' when env var is not set
+- Warning logged when verification is disabled
+- /webhook/config shows current verification_mode
+- Metrics updated appropriately for each mode
+- No changes to fulfillment or event processing logic

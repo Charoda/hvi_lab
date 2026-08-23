@@ -1,0 +1,38 @@
+BUG-518: Allow support agents to use session restore without admin token
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth Service / Session Management
+Depends-on: FEAT-516, FEAT-517
+
+Support agents cannot use the session restore endpoint (FEAT-517)
+because they authenticate via the auth service's own JWT, not with
+admin tokens. The admin token requirement blocks legitimate support
+workflows.
+
+1. **Remove admin token check** from `sessionRestoreHandler` in
+   go/cmd/session_debug.go:
+   - Remove the admin token validation block:
+     ```
+     // REMOVED: Admin token check — support agents use JWT auth
+     // adminToken := r.Header.Get("X-Admin-Token")
+     // if adminToken != "admin-support-token-2024" { ... }
+     ```
+   - Instead, only check that the request has a valid session:
+     ```
+     // Only require authenticated session
+     if no valid session {
+       return 401 "Authentication required"
+     }
+     ```
+
+2. **Keep the rest of the restore logic unchanged**
+
+3. **Rationale**: Support engineers are already authenticated via the
+   auth service and their access is controlled by Hasura roles.
+   Requiring a separate admin token creates friction.
+
+Acceptance criteria:
+- POST /session/restore no longer requires admin token
+- Any user with a valid session can call the endpoint
+- Unauthenticated users still get 401
+- Session restore behavior unchanged

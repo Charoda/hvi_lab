@@ -1,0 +1,19 @@
+FEAT-711: Add coupon/discount system for orders
+Type: Feature
+Depends-on: FEAT-710
+
+Add support for coupon codes that apply server-side discounts.
+
+1. Add a COUPONS dict mapping codes to discount percentages:
+   - "SAVE10": 0.10 (10% off)
+   - "SAVE25": 0.25 (25% off)
+   - "VIP50": 0.50 (50% off)
+2. Accept optional "coupon_code" in POST /api/orders body.
+3. If valid coupon, apply discount to the server-calculated total.
+4. Return discount_applied and final_total in response.
+
+Acceptance criteria:
+- Valid coupon codes reduce the total
+- Invalid coupon codes are rejected with 400
+- Discount is applied server-side to the catalog price
+- Response includes discount_applied and final_total

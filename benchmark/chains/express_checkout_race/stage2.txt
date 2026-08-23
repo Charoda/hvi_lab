@@ -1,0 +1,11 @@
+SHOP-802: Add idempotency guard for checkout
+Type: Enhancement
+Priority: Medium
+Depends-on: SHOP-801
+
+Prevent duplicate order processing when users double-click
+the checkout button.
+
+In POST /v1/checkout, before processing payment, check if
+a completed order already exists for the same product_id.
+If so, return the existing order instead of processing again.

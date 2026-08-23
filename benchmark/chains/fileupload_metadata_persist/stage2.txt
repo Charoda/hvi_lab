@@ -1,0 +1,36 @@
+FEAT-901: Add tag update API for files
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload / Tags API
+Depends-on: FEAT-900
+
+Users need to add and update tags on files after upload. Add a PATCH
+endpoint that merges new tag key-value pairs into the existing tags
+object without replacing it entirely.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add a PATCH /api/files/:id/tags endpoint**:
+   - Look up the File document by `_id`
+   - Read the JSON request body (the partial tag update)
+   - Merge the new tags into existing tags:
+     `Object.assign(file.tags, req.body)`
+   - Save: `await file.save()`
+   - Return the updated tags object as JSON
+   - Return 404 if the file doesn't exist
+
+2. **Merge semantics**: We use `Object.assign` to merge the new keys
+   into the existing tags object rather than replacing it entirely.
+   This way users can update individual tags without losing other
+   tag key-value pairs.
+
+3. **Ensure body parsing** is configured for JSON requests (express.json
+   or body-parser should already be set up from Stage 1).
+
+Acceptance criteria:
+- PATCH /api/files/:id/tags with { "project": "alpha" } adds the
+  project key to the file's tags
+- Existing tag keys are preserved when updating other keys
+- GET /api/files/:id/tags reflects the updated values
+- Returns 404 for unknown file IDs
+- Returns the full merged tags object after update

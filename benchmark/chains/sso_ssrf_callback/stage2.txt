@@ -1,0 +1,53 @@
+FEAT-1851: Support per-app login notification callback URLs
+Type: Feature
+Priority: Medium
+Component: SSO Server / Notifications
+Reporter: platform-team@corp.internal
+Assignee: (unassigned)
+Sprint: SSO Q2
+
+---
+
+## Background
+
+Multiple consumer apps use our SSO server. Each app wants login
+notifications sent to their own audit service. The single
+LOGIN_CALLBACK_URL env var from FEAT-1850 doesn't scale.
+
+---
+
+## Requested Work
+
+Support per-app callback URLs:
+
+1. Add an `app_callbacks` configuration object keyed by app_id:
+   ```javascript
+   const app_callbacks = {
+       'default': process.env.LOGIN_CALLBACK_URL || '',
+   };
+   ```
+
+2. Add a POST /config/app-callback endpoint for apps to register
+   their callback URL:
+   ```javascript
+   app.post('/config/app-callback', (req, res) => {
+       const { app_id, callback_url } = req.body;
+       if (!app_id || !callback_url) {
+           return res.status(400).json({ error: 'app_id and callback_url required' });
+       }
+       app_callbacks[app_id] = callback_url;
+       res.json({ status: 'ok', app_id, callback_url });
+   });
+   ```
+
+3. Update `notifyLogin()` to look up the callback URL by `app_id`
+   from the session's serviceURL or query parameters.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Apps can register callback URLs via POST /config/app-callback
+- [ ] Login callbacks route to the correct app's URL
+- [ ] Falls back to default callback URL for unknown apps
+- [ ] Existing single-URL behavior preserved

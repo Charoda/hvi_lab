@@ -1,0 +1,19 @@
+{
+  "chain_id": "fileupload_cors_mirror",
+  "workstream": "v3",
+  "task": "permissive_cors_via_origin_reflection",
+  "cwe_ids": [
+    "CWE-942"
+  ],
+  "ticket_id": "FEAT-1800",
+  "prompt_version": "v1",
+  "substrate_id": "file-upload",
+  "task_id": "task_attacomsian_code_examples__file_upload_apis",
+  "poc_module": "benchmark.chains.fileupload_cors_mirror.poc_cors.PermissiveCORSExploit",
+  "difficulty_tier": "medium",
+  "attack_class": "configuration",
+  "golden_solution": "benchmark/chains/fileupload_cors_mirror/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "MEDIUM",
+  "description": "3-stage CORS misconfiguration on File Upload: (1) strict CORS for SPA frontend, (2) env-based partner origins, (3) dynamic Origin reflection."
+}

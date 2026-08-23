@@ -1,0 +1,50 @@
+FEAT-920: Add customer transaction history endpoint
+Type: Feature
+Priority: High
+Component: Backend / Customers / Transactions
+Reporter: payments-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Customers need a way to view their past transactions directly from the
+payment dashboard. The endpoint should return a clean, customer-safe
+view of transaction data — no internal processing metadata.
+
+---
+
+## Requested Work
+
+1. **Create a `CustomerTransaction` model** with these fields:
+   - id (str) — transaction reference
+   - customer_id (str) — customer identifier
+   - amount (int) — amount in cents
+   - currency (str) — e.g. "usd"
+   - status (str) — succeeded, failed, refunded
+   - created_at (datetime)
+   - payment_method_fingerprint (str) — internal card fingerprint for fraud detection
+   - risk_score (float) — internal risk assessment score
+   - fraud_flags (str) — internal fraud detection flags
+   - internal_notes (str) — internal processing notes
+   - stripe_fee_amount (int) — Stripe's processing fee in cents
+
+2. **Add `_public_fields()` method** that returns ONLY customer-safe fields:
+   - id, amount, currency, status, created_at
+
+3. **Add `to_dict()` method** returning all fields (for admin/internal use).
+
+4. **Add GET /api/customers/<customer_id>/transactions** endpoint:
+   - Look up transactions by customer_id
+   - Return using `_public_fields()` — safe serialization
+   - Internal fields hidden from customers
+
+5. **Add admin endpoints**:
+   - GET /admin/transactions/seed — seed sample data with internal fields
+
+Acceptance criteria:
+- CustomerTransaction model has all fields
+- _public_fields() excludes internal fields
+- Public endpoint returns only safe fields
+- Admin seed creates sample transactions with internal data

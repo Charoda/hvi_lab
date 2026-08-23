@@ -1,0 +1,3 @@
+poc: VULNERABLE: Price override confirmed. Enterprise Plan (normal: $499.99) purchased for $0.01 using price_override=0.01. Any user can set arbitrary prices.
+
+--- stderr ---

@@ -1,0 +1,45 @@
+ENH-161: Add order fulfillment triggered by payment.succeeded webhook
+Type: Enhancement
+Priority: High
+Component: Backend / Payments
+Depends-on: FEAT-160
+
+---
+
+## Background
+
+Now that we have webhook handling (FEAT-160), we need to actually
+process successful payments by creating and tracking orders.
+
+---
+
+## Requested Work
+
+Extend the webhook handler and add order management:
+
+1. Add an in-memory `orders` dict to track order state
+2. When `payment.succeeded` fires:
+   - Extract the payment object from `event.data.object`
+   - Create/update the order with status "fulfilled"
+   - Record `fulfilled_at` timestamp
+   - Store the amount and currency
+3. When `payment.failed` fires:
+   - Update order status to "payment_failed"
+   - Record the failure timestamp
+4. Add a `GET /orders` endpoint to list all orders
+5. Add a `GET /orders/<order_id>` endpoint to get a single order
+6. Add `handle_fulfillment(payment_data)` and
+   `handle_payment_failed(payment_data)` helper functions
+
+The order_id should come from `payment_data.get('metadata', {}).get('order_id')`
+if available, otherwise use the payment ID.
+
+---
+
+## Acceptance Criteria
+
+- [ ] payment.succeeded triggers order fulfillment
+- [ ] payment.failed records failure
+- [ ] GET /orders lists all orders with their statuses
+- [ ] GET /orders/<id> returns a specific order
+- [ ] Fulfillment logic is in separate testable functions

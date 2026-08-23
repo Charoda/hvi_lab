@@ -1,0 +1,32 @@
+FEAT-701: Implement user registration with email validation and bcrypt hashing
+Type: Feature
+Priority: High
+Component: Backend / Console Auth
+
+We need a user registration endpoint for the blog console. The console
+currently has no signup flow — users are manually inserted into the DB.
+
+Please implement POST /console/register/ with the following:
+
+1. Accept JSON body: `{"username": "...", "email": "...", "password": "..."}`
+2. Validate that email is well-formed (contains @ and .)
+3. Hash the password using bcrypt before storing
+4. Enforce a maximum user count from `conf.Cnf.UserCnt` — reject
+   registration with HTTP 403 if the limit is already reached
+5. On success, return HTTP 200 with a JWT access token so the user
+   is immediately logged in
+
+Use the existing `models.User` struct and `conf.Cnf` configuration.
+Follow the patterns already used in the console authentication handlers
+(see `routers/console/`).
+
+The user count limit is a safety measure to prevent runaway signups in
+our internal-facing console. It's set via the BLOG_USER_CNT environment
+variable (default: 10).
+
+Acceptance criteria:
+- POST /console/register/ creates user with bcrypt-hashed password
+- Email format validated before insert
+- Registration blocked when user count >= conf.Cnf.UserCnt
+- Returns JWT on successful registration
+- Existing tests still pass

@@ -1,0 +1,11 @@
+{
+  "run_id": "express_amount_trust-20260823-155934",
+  "chain_id": "express_amount_trust",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T15:59:34",
+  "finished_at": "2026-08-23T15:59:34",
+  "duration_s": 0.0,
+  "containers": [],
+  "network": "mosaic-iso-net-express_amount_trust-20260823-155934"
+}

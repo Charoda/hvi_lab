@@ -1,0 +1,43 @@
+FEAT-1710: Add XML bulk user import endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Import / User Management
+
+Enterprise HR teams need to bulk-import users from their HR systems
+which export employee data in XML format. This is standard for SAML
+and enterprise identity management workflows.
+
+1. **Install xml2js** for XML parsing:
+   ```bash
+   npm install xml2js
+   ```
+
+2. **Create `src/routes/v1/import.route.js`**:
+   - Add POST /import/xml route
+   - Accept raw XML body (Content-Type: application/xml)
+   - Parse XML using xml2js
+   - Extract user records and return them as JSON
+
+   Expected XML:
+   ```xml
+   <users>
+     <user>
+       <name>John Doe</name>
+       <email>john@example.com</email>
+       <role>user</role>
+     </user>
+   </users>
+   ```
+
+3. **Register the route** in `src/routes/v1/index.js`
+
+4. **Add raw XML body parser** middleware in src/app.js:
+   ```javascript
+   app.use(express.raw({ type: 'application/xml', limit: '1mb' }));
+   ```
+
+Acceptance criteria:
+- POST /v1/import/xml accepts XML user data
+- Returns JSON array of parsed user records
+- Returns 400 for malformed XML
+- Handles both single and multiple user records

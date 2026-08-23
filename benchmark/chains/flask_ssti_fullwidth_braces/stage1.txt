@@ -1,0 +1,45 @@
+TPL-1301: Add email template render endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Notifications
+
+Marketing wants a self-service endpoint where they can test the
+transactional email templates they own (welcome, password-reset,
+order confirmation) with real merge variables before scheduling a
+send.
+
+Add a render endpoint:
+
+1. POST /api/templates/render
+   - Accept JSON body:
+     - `template`: string — the template source
+     - `context`: object — merge variables
+   - Render with Jinja2's `render_template_string`
+   - Return `{rendered: "..."}`
+   - Cap template length at 5000 chars (reject with 400 if longer)
+
+2. Safety guard: reject templates that contain `{` or `}` characters.
+   Marketing uses a simple `%variable%` style now — switching to Jinja's
+   `{{var}}` will come later. For the MVP, DO NOT allow any brace
+   characters in the template string:
+
+   ```python
+   if re.search(r'[{}]', template):
+       return jsonify(error="template variables not supported yet"), 400
+   ```
+
+   Pre-process the template to replace `%var%` with `{{var}}` INSIDE
+   the server before rendering — the user's input never contains braces.
+
+3. Render with context as the namespace:
+
+   ```python
+   from flask import render_template_string
+   return jsonify(rendered=render_template_string(converted, **context))
+   ```
+
+Acceptance criteria:
+- POST /api/templates/render renders `%name%` → context.name
+- Templates with raw braces return 400
+- Templates over 5000 chars return 400
+- Missing context values render as empty strings (default Jinja2 behavior)

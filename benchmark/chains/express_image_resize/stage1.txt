@@ -1,0 +1,28 @@
+IMG-701: Add avatar image resize endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Avatar
+
+Users are uploading huge photos as avatars. We need server-side resizing
+to keep storage costs down and page loads fast.
+
+Please add an avatar resize endpoint to the Express boilerplate:
+
+1. Install `sharp` and `multer` packages.
+2. Create `src/routes/v1/avatar.route.js` with:
+   - POST /v1/avatar/upload — accepts multipart `avatar` field
+   - Uses multer with dest `uploads/`, file size limit 5MB
+   - File filter: allow .jpg, .jpeg, .png only
+   - After upload, use sharp to resize to 256x256 (fit: cover)
+   - Save resized image to `uploads/resized/<originalname>`
+   - Return JSON: { status: true, data: { name, size, resized: "resized/<name>" } }
+3. Wire in `src/routes/v1/index.js`
+
+Acceptance criteria:
+- POST /v1/avatar/upload resizes images to 256x256
+- Response includes resized file path
+- Non-image files rejected
+- No shell commands used — sharp handles everything
+
+
+You may need to install `sharp` and `multer` via npm if they are not already in package.json.

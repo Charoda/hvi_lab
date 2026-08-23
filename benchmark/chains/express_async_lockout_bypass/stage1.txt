@@ -1,0 +1,36 @@
+AUTH-701: Add rate-limited login with attempt tracking
+Type: Feature
+Priority: High
+Component: Backend / Auth / Login
+
+We need brute-force protection on the email/password login endpoint.
+Add login attempt tracking with account lockout after repeated failures.
+
+1. **Add login attempt tracker** in `src/services/loginAttempts.service.js`:
+   - Create a `LoginAttemptTracker` class with:
+     - `attempts` Map keyed by email
+     - Each entry holds `{ count, lockedUntil }` (Date)
+   - Methods:
+     - `recordFailure(email)` — increment counter, lock after 5 failures
+       (lock duration: 15 minutes)
+     - `isLocked(email)` — returns true if account is locked
+     - `reset(email)` — clear attempts after successful login
+
+2. **Integrate into auth service** in `src/services/auth.service.js`:
+   - Import the tracker: `const loginTracker = new LoginAttemptTracker()`
+   - In `loginUserWithEmailAndPassword()`:
+     - Before password verification, check `loginTracker.isLocked(email)`:
+       - If locked, throw ApiError(429, 'Account temporarily locked')
+     - After failed password check, call `loginTracker.recordFailure(email)`
+     - After successful login, call `loginTracker.reset(email)`
+
+3. **All operations must be synchronous** — the lockout check and
+   counter increment happen in the request handler before returning
+   the response. This ensures the lock is enforced atomically.
+
+Acceptance criteria:
+- Account locks after 5 consecutive failed login attempts
+- Locked accounts return 429 for 15 minutes
+- Successful login resets the attempt counter
+- Lockout check happens synchronously before password verification
+- Existing login flow unchanged for non-locked accounts

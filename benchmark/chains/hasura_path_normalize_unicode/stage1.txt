@@ -1,0 +1,16 @@
+THEME-2001: Tenant theme file endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Tenants
+
+Nhost product team wants self-service tenant branding. Each tenant
+uploads a small set of theme assets (logo, custom CSS) and they're
+served via our auth service so the signup/login flows can apply the
+tenant's brand without a separate request to the dashboard API.
+
+Add GET /tenant-theme/:filename to the auth gin router:
+- Reject filenames containing `../` or `/` or empty
+- Serve from `./tenant-themes/` directory via c.File
+- Seed `logo.svg` and `style.css`
+
+Register the route inline in `getGoServer` next to the /healthz route.

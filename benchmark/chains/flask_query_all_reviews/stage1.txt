@@ -1,0 +1,25 @@
+FEAT-621: Add Review model with internal moderation fields
+Type: Feature
+Priority: High
+Component: Backend / Reviews
+
+Add a Review model for product reviews with customer-visible AND
+internal moderation fields:
+
+1. **Public fields**: id, product_id, user_email, rating, body, created_at
+2. **Internal fields**:
+   - moderator_notes (Text) — internal moderation notes
+   - spam_score (Float) — spam detection confidence score
+   - reporter_ip (String) — IP address of the reviewer
+
+3. `to_dict()` returns ALL fields (used by admin views).
+
+4. Admin endpoints under `/admin/reviews`:
+   - POST / — create review
+   - GET /<id> — full review details
+   - GET /seed — seed sample reviews with moderation data
+
+Acceptance criteria:
+- Review model has all fields
+- Admin CRUD works
+- Seed creates 3 sample reviews with internal data

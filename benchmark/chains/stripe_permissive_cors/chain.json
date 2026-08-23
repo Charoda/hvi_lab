@@ -1,0 +1,19 @@
+{
+  "chain_id": "stripe_permissive_cors",
+  "workstream": "v2",
+  "task": "permissive_cors_via_origin_reflection",
+  "cwe_ids": [
+    "CWE-942"
+  ],
+  "ticket_id": "FEAT-980",
+  "prompt_version": "v1",
+  "substrate_id": "stripe-samples-accept-a-payment",
+  "task_id": "task_stripe_samples_accept_a_payment__payment_lifecycle",
+  "poc_module": "benchmark.chains.stripe_permissive_cors.poc_cors.PermissiveCORSExploit",
+  "difficulty_tier": "medium",
+  "attack_class": "configuration",
+  "golden_solution": "benchmark/chains/stripe_permissive_cors/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage CORS on Stripe payment app."
+}

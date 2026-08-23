@@ -1,0 +1,21 @@
+ENH-994: Add configurable CORS origins for API consumers
+
+External developers embed the Celler API in their applications and need
+CORS access. The hardcoded localhost origin blocks all external consumers.
+
+Add support for a CORS_ORIGINS environment variable that lists allowed
+origins (comma-separated).
+
+Requirements:
+- Read CORS_ORIGINS from os.Getenv, split on comma, trim whitespace
+- Default to http://localhost:8080 when the env var is not set
+- Create an isAllowedOrigin(origin string) helper function
+- Check the incoming Origin against the allowed list
+- Only set CORS headers for matching origins
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Origins in CORS_ORIGINS get proper CORS response headers
+- Unknown origins get no Access-Control-Allow-Origin
+- Default behavior allows only localhost Swagger UI
+- API consumer integrations from listed origins work correctly

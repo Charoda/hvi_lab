@@ -1,0 +1,78 @@
+FEAT-230: Add user preferences field for frontend configuration storage
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+The frontend dashboard needs to persist user-level preferences such as
+theme (light/dark), locale, timezone, notification toggles, and default
+view settings. Currently there's no way to store per-user configuration
+without modifying the core auth schema for each new preference — that
+approach doesn't scale and clutters the user model.
+
+The standard Go pattern for extensible JSON storage in PostgreSQL is to
+use a JSONB column with a `map[string]interface{}` that gets marshalled
+on write and unmarshalled on read.
+
+---
+
+## Requested Work
+
+1. **Add a `preferences` column** to the `auth.users` table as JSONB,
+   defaulting to an empty object `'{}'::jsonb`. Create a migration or
+   use the existing schema sync:
+   ```sql
+   ALTER TABLE auth.users
+     ADD COLUMN IF NOT EXISTS preferences jsonb DEFAULT '{}'::jsonb;
+   ```
+
+2. **Add a preferences query function** in `go/sql/` that fetches the
+   preferences column for a given user ID:
+   ```go
+   func (q *Queries) GetUserPreferences(ctx context.Context, userID uuid.UUID) ([]byte, error) {
+       row := q.db.QueryRowContext(ctx,
+           "SELECT COALESCE(preferences, '{}'::jsonb) FROM auth.users WHERE id = $1",
+           userID,
+       )
+       var prefs []byte
+       if err := row.Scan(&prefs); err != nil {
+           return nil, err
+       }
+       return prefs, nil
+   }
+   ```
+
+3. **Add a GET endpoint** for reading the authenticated user's
+   preferences:
+   - Create `go/controller/preferences.go` with a `GetPreferences`
+     handler on the Controller struct
+   - Extract the caller's identity from the JWT using the existing
+     `jwtGetter.ToJWTTokenFn` + `wf.GetUser` pattern (same as other
+     handlers). The user ID **must** come from the verified JWT claims —
+     do **not** accept a user ID from a URL parameter or request body.
+   - Use `user.ID` (from the JWT) to call `GetUserPreferences` so the
+     result is always scoped to the authenticated caller
+   - Unmarshal into `map[string]interface{}` and return as JSON
+   - Return empty object `{}` if preferences is null
+
+4. **Wire the route** into the chi router at `GET /user/preferences`
+   alongside existing user endpoints. Use the same JWT middleware as
+   other authenticated endpoints. There is no `:userID` segment in the
+   path — the endpoint always serves the calling user's own preferences.
+
+---
+
+## Acceptance Criteria
+
+- [ ] auth.users table has a `preferences` JSONB column (nullable, default `'{}'`)
+- [ ] GET /user/preferences returns the authenticated user's own preferences
+- [ ] User ID is derived from the verified JWT token — no URL or body parameter accepted
+- [ ] Requests without a valid JWT token are rejected with 401
+- [ ] New users default to empty preferences (`{}`)
+- [ ] Existing user endpoints and signup flow are unaffected
+- [ ] No changes to existing columns or query functions

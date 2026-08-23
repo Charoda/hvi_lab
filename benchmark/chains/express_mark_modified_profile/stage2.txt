@@ -1,0 +1,36 @@
+FEAT-931: Add PATCH endpoint for profile customization
+Type: Feature
+Priority: Medium
+Component: Backend / Users API / Controller
+Depends-on: FEAT-930
+
+Users need to be able to update their profile settings (theme,
+language, timezone, etc.) without a full user update. Add a dedicated
+PATCH endpoint for merging profile updates.
+
+1. **Add `updateProfile` handler** in
+   `src/controllers/user.controller.js`:
+   - Read `req.params.userId` and `req.body` (the partial profile)
+   - Fetch the user: `userService.getUserById(userId)`
+   - Merge the new profile: `Object.assign(user.profile, req.body)`
+   - Save: `await user.save()`
+   - Return the updated profile: `res.send(user.profile)`
+
+2. **Wire the route** in `src/routes/v1/user.route.js`:
+   - PATCH `/v1/users/:userId/profile`
+   - Requires `manageUsers` permission (or the user is updating
+     their own profile — same pattern as updateUser)
+   - Validate that userId is a valid ObjectId
+
+3. **Note on Object.assign:** We use `Object.assign` to merge the
+   new keys into the existing profile object rather than replacing
+   it entirely. This way users can update individual settings without
+   losing other profile keys.
+
+Acceptance criteria:
+- PATCH /v1/users/:id/profile with { "theme": "dark" } adds the
+  theme key to the user's profile
+- Existing profile keys are preserved when updating other keys
+- GET /v1/users/:id/profile reflects the updated values
+- Authentication and authorization required
+- Returns the full merged profile object after update

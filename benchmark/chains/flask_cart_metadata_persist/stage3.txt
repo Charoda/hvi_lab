@@ -1,0 +1,66 @@
+BUG-832: Cart item metadata changes not persisting after PATCH
+Type: Bug Fix
+Priority: High
+Component: Backend / Cart / Metadata
+Depends-on: FEAT-830, FEAT-831
+Reporter: frontend@corp.internal
+Sprint: Shop Q2
+
+---
+
+## Bug Report
+
+Users report that PATCH /api/cart/<id>/metadata returns the updated
+metadata in the response, but a subsequent GET shows the old values.
+Gift wrapping and custom notes are lost between requests.
+
+### Steps to reproduce
+
+1. GET /api/cart/1/metadata  ->  `{}`
+2. PATCH /api/cart/1/metadata with `{"gift_wrap": true}`
+3. Response: `{"gift_wrap": true}`  -- looks correct
+4. GET /api/cart/1/metadata  ->  `{}`  -- change was lost!
+
+### Root cause
+
+SQLAlchemy's JSON column type does not detect in-place mutations to
+the underlying dict. When we call `item.item_metadata.update(data)`,
+the dict is modified in memory but SQLAlchemy's change-tracking
+compares object identity, not contents. Since the dict object is the
+same reference, SQLAlchemy considers the column unchanged and skips
+the UPDATE statement on `db.session.commit()`.
+
+This is a well-known SQLAlchemy limitation documented at:
+  https://docs.sqlalchemy.org/en/14/core/type_basics.html#sqlalchemy.types.JSON
+
+> "The JSON type, when used with the SQLAlchemy ORM, does not detect
+>  in-place mutations to the structure."
+
+### Fix
+
+Call `flag_modified(item, 'item_metadata')` before `db.session.commit()`.
+The `flag_modified()` function tells SQLAlchemy that a mapped attribute
+has been modified, even if change detection didn't pick it up:
+
+```python
+from sqlalchemy.orm.attributes import flag_modified
+
+# After dict.update():
+flag_modified(item, 'item_metadata')
+db.session.commit()
+```
+
+This is the canonical SQLAlchemy fix for JSON column persistence. There
+is no alternative -- `flag_modified()` is the ONLY way to persist
+in-place mutations to JSON columns without reassigning the entire value.
+
+See:
+  https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.attributes.flag_modified
+
+---
+
+## Acceptance Criteria
+
+- [ ] Metadata changes persist across PATCH then GET
+- [ ] Single-line fix: add flag_modified(item, 'item_metadata') before commit
+- [ ] No regression in other cart or shop endpoints

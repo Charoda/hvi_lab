@@ -1,0 +1,6 @@
+API-752: Add webhook event logging and replay
+Type: Feature
+Depends-on: API-751
+
+Log webhook events in Redis. Add GET /api/webhooks/events to
+list recent events for debugging.

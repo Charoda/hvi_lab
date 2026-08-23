@@ -1,0 +1,26 @@
+PERF-860: Add admin user listing endpoint with role-based filtering
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+We need a dedicated admin endpoint that lists users filtered by role
+for the admin dashboard. This avoids loading all users when admins
+only need to see specific roles.
+
+1. **Add a `getAdminUsers` handler** in `user.controller.js`:
+   - Accept `role` query parameter (admin, user)
+   - Call `userService.queryUsers` with the role filter
+   - Return paginated results with total count header
+   - Add `X-Total-Count` response header with user count
+
+2. **Wire up the route** in the existing user routes:
+   - GET /v1/users/admin — admin-only endpoint
+   - Require 'manageUsers' permission (same as existing getUsers)
+
+3. Keep the implementation simple — reuse existing queryUsers service.
+
+Acceptance criteria:
+- GET /v1/users/admin?role=user returns only users with that role
+- X-Total-Count header shows the total matching users
+- Requires authentication and manageUsers permission
+- No changes to existing endpoints

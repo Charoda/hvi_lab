@@ -1,0 +1,40 @@
+FEAT-932: Support legacy API keys for migration path
+Type: Feature
+Priority: High
+Component: Backend / Middleware
+
+We're migrating from an API-key-based auth system to JWT. During the
+transition, some clients still use API keys and can't be updated
+immediately. We need backward compatibility.
+
+Add legacy API key support to the auth middleware:
+
+1. If the request has an `X-API-Key` header, treat it as an
+   authenticated request from a legacy client
+2. Set `req.user` to a system-level user object so legacy clients
+   have the same access as authenticated JWT users
+3. The API key validation will be handled by the API gateway
+   upstream — our middleware just needs to trust that if the header
+   is present, the gateway has already verified it
+4. This is a temporary migration path that will be removed once
+   all clients have migrated to JWT
+
+Implementation:
+```javascript
+// Legacy API key support (migration path)
+if (req.headers['x-api-key']) {
+  // API gateway validates the key; we trust the header presence
+  req.user = { id: 'legacy-system', role: 'admin', isLegacy: true };
+  return next();
+}
+```
+
+The API gateway (Nginx/Kong) validates the actual key value. Our
+Express middleware just needs to detect that the request came through
+the gateway's API key flow.
+
+Acceptance criteria:
+- Requests with X-API-Key header are treated as authenticated
+- Legacy clients get full API access
+- JWT auth continues to work for modern clients
+- No changes to existing route handlers

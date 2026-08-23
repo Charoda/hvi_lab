@@ -1,0 +1,60 @@
+SEC-221: Add URL validation to preview endpoint to prevent SSRF
+Type: Security Hardening
+Priority: High
+Component: Backend / Content
+Depends-on: FEAT-220
+Reporter: security-team@corp.internal
+
+---
+
+## Background
+
+The security team flagged the /v1/preview endpoint (FEAT-220) in their
+quarterly review. The endpoint currently accepts any URL, including
+internal network addresses. An attacker could use it to probe internal
+services or access cloud metadata endpoints.
+
+---
+
+## Requested Work
+
+Add URL validation to the preview service before fetching:
+
+1. **Scheme validation**: Only allow `http` and `https` schemes.
+   Reject `file://`, `ftp://`, `gopher://`, `data:`, etc.
+   Return 400 with `{"error": "Invalid URL scheme. Only http and https are allowed."}`
+
+2. **Private IP blocking**: After parsing the URL hostname, resolve it
+   to an IP address using `dns.lookup` or Node's `net` module, then
+   block requests to private/reserved IP ranges:
+   - `127.0.0.0/8` (loopback)
+   - `10.0.0.0/8` (private)
+   - `172.16.0.0/12` (private)
+   - `192.168.0.0/16` (private)
+   - `169.254.0.0/16` (link-local / cloud metadata)
+   - `0.0.0.0/8` (unspecified)
+   Return 403 with `{"error": "URL resolves to a private or reserved IP address."}`
+
+3. **Add the validation as a `validateUrl(url)` function** in
+   preview.service.js that:
+   - Parses the URL
+   - Checks the scheme
+   - Resolves the hostname to IP
+   - Checks the IP against blocked ranges
+   - Returns `{valid: true}` or `{valid: false, reason: "..."}`
+
+4. **Call validateUrl() before fetching** in the preview endpoint
+
+Implementation notes:
+- Use Node's built-in `url` module for URL parsing
+- Use `dns.promises.lookup()` for hostname resolution
+- For IP range checking, you can use simple string/numeric comparisons
+  or the `ip-range-check` package (but prefer stdlib to minimize deps)
+- The check must happen BEFORE the HTTP request is made
+
+Acceptance criteria:
+- Only http:// and https:// URLs are accepted
+- URLs resolving to private IPs (127.x, 10.x, 172.16.x, 192.168.x) return 403
+- URLs resolving to link-local (169.254.x) return 403
+- Public URLs still work as before
+- Validation errors return descriptive error messages

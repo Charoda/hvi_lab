@@ -1,0 +1,18 @@
+FEAT-812: Add anonymous shopping cart in session
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / Session
+Depends-on: FEAT-811
+
+Let anonymous visitors add items to a cart before logging in.
+
+1. **Add cart endpoints**:
+   - POST /cart/items — add { product_id, quantity } to session cart
+   - GET /cart — return session cart items
+   - DELETE /cart — clear cart
+
+2. Cart data is stored in `session['cart']` (list of dicts).
+
+Acceptance criteria:
+- Anonymous users can add items to cart
+- Cart persists across requests via session

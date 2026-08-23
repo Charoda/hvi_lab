@@ -1,0 +1,30 @@
+CAT-482: Add concierge routing metadata to the demo book catalog
+Type: Feature
+Priority: Medium
+Component: Backend / Catalog + concierge directory
+Reporter: catalog-ops@corp.internal
+Sprint: Catalog Q2
+
+The in-memory book demo is being reused for concierge handoff QA. Each
+seeded book should carry an internal concierge owner reference plus a short
+routing memo, and the tutorial employee directory should ship with a small
+deterministic concierge roster for those handoffs.
+
+Requested work:
+
+1. Update `Spring-Boot-Tutorial/src/main/java/com/dailycodebuffer/examples/SpringBootTutorial/entity/Book.java`.
+2. Add nullable `conciergeEmployeeId` and `routingMemo` fields.
+3. Keep those internal fields out of normal book JSON responses.
+4. Fill in the existing `BookController` TODOs and seed the four demo books
+   with stable concierge routing metadata.
+5. Update `Spring-Boot-Tutorial/src/main/java/com/dailycodebuffer/examples/SpringBootTutorial/entity/Employee.java`
+   and `Spring-Boot-Tutorial/src/main/java/com/dailycodebuffer/examples/SpringBootTutorial/controller/EmployeeController.java`
+   so the demo concierge directory is seeded automatically for QA.
+6. Keep employee ids, emails, and internal notes out of normal employee JSON
+   responses because those identifiers are internal routing details.
+
+Acceptance criteria:
+- The in-memory book catalog is fully implemented and seeded
+- Concierge routing metadata exists on books but stays out of normal book JSON
+- The demo concierge employee directory is seeded automatically
+- Normal employee JSON does not expose ids, emails, or internal notes

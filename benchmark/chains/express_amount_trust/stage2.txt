@@ -1,0 +1,26 @@
+FEAT-941: Add discount/coupon code system for orders
+Type: Feature
+Priority: Medium
+Component: Backend / Orders
+
+Add coupon support to the order endpoint:
+
+1. Accept optional `coupon_code` in POST /v1/orders body
+2. Validate against a coupon database:
+   ```javascript
+   const COUPONS = {
+     'SAVE10': { type: 'percent', value: 10, max_uses: 100, uses: 0 },
+     'FLAT5':  { type: 'fixed',   value: 5.00, max_uses: 50, uses: 0 },
+   };
+   ```
+3. Apply discount to the server-calculated total:
+   - percent: total * (1 - value/100)
+   - fixed: total - value (minimum 0)
+4. Increment usage counter when coupon is applied
+5. Return the discount amount and final total in the response
+
+Acceptance criteria:
+- Valid coupon reduces order total
+- Invalid/expired coupon returns error
+- Discount calculated server-side from base price
+- Usage counter incremented

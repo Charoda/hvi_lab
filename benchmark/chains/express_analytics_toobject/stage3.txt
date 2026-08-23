@@ -1,0 +1,35 @@
+BUG-545: Fix analytics profile returning Mongoose document instead of POJO
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Analytics / Profile
+Depends-on: FEAT-950, FEAT-951
+
+The analytics profile endpoint returns the user document with circular
+references when merged with analytics data. JSON.stringify fails on the
+Mongoose document because it has circular refs from the internal $__
+state and $isNew properties.
+
+Root cause: The user object from getUserById() is a Mongoose document
+instance, not a plain object. When we try to spread it into the profile
+response with `{ ...user, analytics: summary }`, the Mongoose getters
+and internal state cause serialization issues.
+
+Fix: Call `.toObject()` on the user document before merging with
+analytics data. This converts it to a plain JavaScript object that
+serializes cleanly.
+
+```
+// In getUserActivityProfile, change:
+//   const user = await User.findById(userId);
+// To include .toObject():
+//   const userData = user.toObject();
+```
+
+Single-line change. The `.toObject()` method returns a plain JS object
+from a Mongoose document. This is the standard approach documented at:
+  https://mongoosejs.com/docs/api/document.html#Document.prototype.toObject()
+
+Acceptance criteria:
+- Analytics profile endpoint returns clean JSON without circular refs
+- User data + analytics summary merged correctly
+- No more JSON.stringify errors

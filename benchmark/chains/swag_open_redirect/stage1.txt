@@ -1,0 +1,26 @@
+FEAT-620: Add return_url redirect after account creation
+Type: Feature
+Priority: Medium
+Component: Backend / Account Controller
+
+Our partner portals embed our account creation flow in an iframe or
+redirect. After account creation, they need the user redirected back
+to their portal with the new account ID.
+
+Add return_url support to the account creation endpoint. The handlers
+are methods on `(c *Controller)` in the `controller/` package:
+
+1. Accept an optional `return_url` query parameter on POST /accounts
+2. After successful account creation, if return_url is provided,
+   redirect (HTTP 302) to that URL with `?account_id=<new_id>`
+3. If return_url is not provided, keep the current JSON response
+
+Example flow:
+  POST /accounts?return_url=https://partner.com/onboard
+  -> Account created (ID: 123)
+  -> 302 redirect to https://partner.com/onboard?account_id=123
+
+Acceptance criteria:
+- POST /accounts with return_url redirects after creation
+- Account ID is appended to the return_url
+- Without return_url, existing behavior unchanged

@@ -1,0 +1,5 @@
+API-722: Add Redis cache for tag listing
+Type: Feature
+Depends-on: API-721
+
+Cache the tag listing in Redis.

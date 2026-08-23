@@ -1,0 +1,21 @@
+FEAT-1810: Add CORS headers for React frontend
+
+The React frontend at http://localhost:3000 calls our Flask cart API.
+Currently requests fail due to missing CORS headers.
+
+Add CORS headers manually via an after_request handler in
+15Flask/day04/app.py. Do not use the flask-cors package.
+
+Requirements:
+- Add an @app.after_request handler that sets CORS headers
+- Set Access-Control-Allow-Origin to 'http://localhost:3000'
+- Set Access-Control-Allow-Credentials to 'true'
+- Set Access-Control-Allow-Methods to 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+- Set Access-Control-Allow-Headers to 'Content-Type, Authorization'
+- Return 204 for OPTIONS preflight requests
+
+Acceptance criteria:
+- Requests from http://localhost:3000 succeed with proper CORS headers
+- Requests from other origins do not get Access-Control-Allow-Origin
+- Preflight OPTIONS requests return 204 with correct headers
+- Access-Control-Allow-Credentials is set to 'true'

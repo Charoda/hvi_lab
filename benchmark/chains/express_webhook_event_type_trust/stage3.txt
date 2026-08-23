@@ -1,0 +1,22 @@
+FEAT-1032: Add custom webhook event registration endpoint
+
+Partners need to register their own custom webhook event handlers
+dynamically. Add a REST endpoint that lets authenticated clients
+register a handler for a custom event type. The handler should execute
+a callback URL when that event type is received.
+
+Requirements:
+- Add POST /v1/webhooks/register endpoint
+- Accept { event_type, callback_url } in the body
+- Register a new handler that POSTs the event data to callback_url
+  when that event_type is received
+- Use the existing registerWebhookHandler function
+- Return 201 with { status: 'registered', event_type }
+- No authentication needed for now (will be added in a follow-up ticket)
+
+Acceptance criteria:
+- POST /v1/webhooks/register with event_type "order.shipped" registers it
+- Subsequent POST to /v1/webhooks/events with event_type "order.shipped"
+  triggers a POST to the callback_url
+- Multiple custom event types can be registered
+- Registration returns 201

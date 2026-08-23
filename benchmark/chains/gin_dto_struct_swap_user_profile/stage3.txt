@@ -1,0 +1,32 @@
+REFACTOR-750: Use ZUsers directly instead of redundant DTO
+Type: Refactor
+Priority: Low
+Depends-on: API-750, API-751
+
+The UserProfileDTO duplicates fields from ZUsers and adds
+maintenance overhead — every time a field is added to ZUsers, the
+DTO must be updated separately. The team keeps forgetting to sync
+them, causing stale profile data.
+
+Replace UserProfileDTO with the ZUsers entity directly. The entity
+already has all the fields the profile needs, and Go's json tags
+handle serialization. This eliminates the mapping code and the
+duplicated struct definition.
+
+```go
+// Before (redundant DTO):
+dto := UserProfileDTO{Id: user.Id, Name: user.Name, Email: user.Email}
+appG.Response(http.StatusOK, 0, dto)
+
+// After (direct entity):
+appG.Response(http.StatusOK, 0, user)
+```
+
+This simplifies the codebase and ensures profile data is always
+in sync with the user model.
+
+Acceptance criteria:
+- UserProfileDTO struct removed or unused
+- Handler returns ZUsers entity directly
+- Profile response includes all current user fields
+- No mapping code needed

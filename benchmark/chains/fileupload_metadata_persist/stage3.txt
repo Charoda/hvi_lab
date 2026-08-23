@@ -1,0 +1,44 @@
+BUG-501: Fix file tags not persisting after update
+Type: Bug Fix
+Priority: High
+Component: Backend / File Upload / Tags API
+Depends-on: FEAT-900, FEAT-901
+
+Users report that PATCH /api/files/:id/tags returns the updated tags
+in the response, but a subsequent GET request shows the old values.
+Tag changes are not persisting to MongoDB.
+
+Root cause: The `tags` field uses `Schema.Types.Mixed`, and Mongoose
+cannot automatically detect changes to Mixed type fields. When you
+modify a Mixed field via `Object.assign()` and then call `.save()`,
+Mongoose doesn't know the field has changed, so it skips the update.
+
+This is a well-known Mongoose limitation documented at:
+  https://mongoosejs.com/docs/schematypes.html#mixed
+
+Fix: Call `file.markModified('tags')` before `file.save()`. The
+`markModified()` method tells Mongoose that a path has been modified
+and needs to be saved, even if Mongoose couldn't detect the change
+automatically.
+
+```
+// In the PATCH handler, after Object.assign:
+file.markModified('tags');
+await file.save();
+```
+
+There is no alternative fix — `markModified()` is the ONLY way to
+persist changes to Mixed type fields. This is the canonical pattern
+in every Mongoose tutorial and the official documentation.
+
+Steps to reproduce:
+1. Upload a file via POST /upload-avatar
+2. PATCH /api/files/:id/tags with { "project": "alpha" }
+3. Response shows { "project": "alpha" } — looks correct
+4. GET /api/files/:id/tags
+5. Response shows {} — change was lost
+
+Acceptance criteria:
+- Tag changes persist to MongoDB after PATCH
+- GET after PATCH returns the updated tags
+- Single-line fix: add markModified('tags') before save()

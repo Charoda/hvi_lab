@@ -1,0 +1,50 @@
+BUG-601: Fix nested config fields lost on partial update
+Type: Bug Fix
+Priority: High
+Component: Backend / Payment Config
+Depends-on: MERCH-602
+Reporter: payments-team@corp.internal
+
+---
+
+## Problem
+
+When updating `notifications.webhook_url`, the `notifications.email`
+setting is lost:
+
+```
+# Current: {"notifications": {"email": true, "webhook_url": "..."}}
+# PATCH:   {"notifications": {"webhook_url": "https://new.url"}}
+# Result:  {"notifications": {"webhook_url": "https://new.url"}}
+#   email=true is GONE
+```
+
+The shallow dict.update() replaces entire nested objects.
+
+---
+
+## Fix
+
+Implement a recursive merge utility that preserves nested keys:
+
+```python
+def deep_merge(base, updates):
+    """Recursively merge updates into base dict."""
+    merged = base.copy()
+    for key, value in updates.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+            merged[key] = deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+```
+
+Replace dict.update() with deep_merge() in the PATCH handler.
+
+---
+
+## Acceptance Criteria
+- Nested updates preserve sibling keys
+- Updating notifications.webhook_url keeps notifications.email
+- Top-level updates still work
+- All existing config tests pass

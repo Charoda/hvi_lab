@@ -1,0 +1,20 @@
+FEAT-1041: Add order filtering and date range support
+Type: Feature
+Priority: Medium
+Component: Backend / Orders / History
+
+Add filtering capabilities to the order history endpoint.
+
+1. **Update GET /orders** to support:
+   - `status` param: filter by 'completed', 'pending', 'failed'
+   - `currency` param: filter by currency code
+   - `sort` param: 'newest' (default) or 'oldest'
+
+2. **Return applied filters** in response:
+   - `{ orders, page, limit, total, filters }`
+
+Acceptance criteria:
+- GET /orders?status=completed returns filtered results
+- GET /orders?currency=usd filters by currency
+- GET /orders?sort=oldest returns chronological order
+- Filters combine with pagination

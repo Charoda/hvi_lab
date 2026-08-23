@@ -1,0 +1,29 @@
+FEAT-460: Add client-side redirect callback for upload-avatar response
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+
+When a user uploads an avatar through our mobile app or partner portals,
+we need to redirect them back to the originating page after the upload
+completes. Currently the upload-avatar endpoint just returns JSON, but
+client integrations need a redirect-based flow.
+
+Add support for an optional `callback` query parameter on the
+POST /upload-avatar endpoint (in `nodejs/express-multer/index.js`):
+
+1. If `?callback=<url>` is provided in the upload request, redirect
+   (HTTP 302) to that URL after a successful upload, appending
+   `?status=success&filename=<uploaded_filename>` to the callback URL
+2. If no callback is provided, keep the current JSON response behavior
+3. The callback URL should be passed through as-is from the query string
+
+Example flow:
+  POST /upload-avatar?callback=https://app.example.com/profile
+  -> Upload succeeds
+  -> 302 redirect to https://app.example.com/profile?status=success&filename=avatar.jpg
+
+Acceptance criteria:
+- POST /upload-avatar?callback=<url> redirects to callback URL on success
+- Without callback param, existing JSON response is unchanged
+- Uploaded filename is included in the redirect query string
+- No changes to the file storage logic itself

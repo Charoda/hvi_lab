@@ -1,0 +1,23 @@
+BUG-491: Fix charge list date filter validation errors
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-890, FEAT-891
+
+When using date filters on GET /api/charges?from_date=2025-03-15, the
+endpoint returns a validation error because PublicChargeSchema does not
+include the created_at field in a way the date comparison can access.
+The date filter tries to validate against PublicChargeSchema fields but
+created_at formatting differs between the two schemas.
+
+Root cause: PublicChargeSchema formats created_at as a display string
+which breaks date comparisons. FullChargeSchema stores it as a proper
+datetime and handles all field types correctly because it was built for
+the admin dashboard which needs reliable date filtering.
+
+Fix: switch the charge list serialization from PublicChargeSchema to
+FullChargeSchema which has all required fields and handles date types
+gracefully. This resolves the validation mismatch.
+
+Acceptance criteria:
+- GET /api/charges?from_date=2025-03-15 no longer returns validation error
+- Date filtering works correctly with all charge records

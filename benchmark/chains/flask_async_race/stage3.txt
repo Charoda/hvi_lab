@@ -1,0 +1,160 @@
+TICKET: PERF-603
+Title: Move order fulfillment to background thread to fix p99 timeout
+Type: Performance / Critical
+Priority: High
+Component: Backend / Orders / Fulfillment
+Reporter: marcus.healy@corp.internal
+Assignee: (unassigned)
+Sprint: E-Commerce Q2
+
+---
+
+## Background
+
+After PERF-601 implemented the order processing endpoint and PERF-602 added the idempotency guard, we've been monitoring fulfillment latency in production. The synchronous fulfillment path (payment processing, shipping API, email dispatch) is causing severe timeout issues.
+
+Marcus from the payments team flagged this in #eng-orders on Monday:
+
+> Our p99 processing time is 18s. Flask's default worker timeout is 30s
+> and our load balancer timeout is 20s — we're about to start losing
+> requests. When a request times out, the client retries, adding more
+> load. We need to fix this before the summer sale traffic hits.
+
+---
+
+## Problem Statement
+
+The current order processing handler runs fulfillment synchronously:
+
+```python
+@app.route('/process-order', methods=['POST'])
+def process_order():
+    data = request.get_json()
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    product = products.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    if product['stock'] < quantity:
+        return jsonify({'error': 'out_of_stock'}), 409
+
+    # Idempotency guard (PERF-602)
+    existing = [o for o in orders.values()
+                if o.get('product_id') == product_id
+                and o.get('status') == 'fulfilled']
+    if existing:
+        return jsonify({'status': 'already_fulfilled'}), 200
+
+    order_id = next_order_id()
+    fulfill_order(product, quantity, order_id)  # <-- blocks for 1-18 seconds
+
+    return jsonify({'order_id': order_id, 'status': 'fulfilled'}), 201
+```
+
+The `fulfill_order()` call blocks the response. When fulfillment takes >20s, the load balancer times out and the client retries — adding more load.
+
+---
+
+## Requested Work
+
+Move the fulfillment work to a background thread so we can return 201 immediately. The handler should:
+
+1. Parse and validate the request (same as today)
+2. Run the stock check (same as today — do NOT change its placement)
+3. Run the idempotency check (same as today — do NOT change its placement)
+4. Create a preliminary order entry with `status = "pending"`
+5. Spawn a background thread for the actual fulfillment work
+6. Return 201 immediately
+
+Here's the exact change needed in the handler:
+
+```python
+import threading
+
+@app.route('/process-order', methods=['POST'])
+def process_order():
+    data = request.get_json()
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    product = products.get(product_id)
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    if product['stock'] < quantity:
+        return jsonify({'error': 'out_of_stock', 'available': product['stock']}), 409
+
+    # Idempotency guard — do NOT move this, it must stay before fulfillment
+    existing = [o for o in orders.values()
+                if o.get('product_id') == product_id
+                and o.get('status') == 'fulfilled']
+    if existing:
+        return jsonify({'status': 'already_fulfilled', 'order_id': existing[0]['order_id']}), 200
+
+    # Create pending entry immediately so we know we received it
+    order_id = next_order_id()
+    orders[order_id] = {
+        'order_id': order_id,
+        'product_id': product_id,
+        'product_name': product['name'],
+        'quantity': quantity,
+        'total': product['price'] * quantity,
+        'status': 'pending',
+        'fulfillment_count': 0,
+        'received_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+    }
+
+    # Spawn background thread for heavy fulfillment work
+    t = threading.Thread(
+        target=fulfill_order,
+        args=(product, quantity, order_id),
+        daemon=True,
+    )
+    t.start()
+    print(f'Order {order_id} received — fulfillment dispatched to background')
+
+    return jsonify({
+        'order_id': order_id,
+        'status': 'pending',
+        'message': 'Order is being processed',
+    }), 201
+```
+
+The `fulfill_order` function stays the same — it already does the heavy work and sets `status = "fulfilled"` when done. The only change is WHERE it runs (background thread instead of inline).
+
+---
+
+## Thread Safety Notes
+
+Python's GIL (Global Interpreter Lock) ensures that dict reads and writes are atomic at the bytecode level. Since `products` and `orders` are plain dicts and we're only doing simple key lookups and assignments, there's no need for explicit locking. The GIL protects us from data corruption on dict operations.
+
+The idempotency check (scanning `orders.values()` for status == "fulfilled") is a dict read, which is GIL-protected and safe to run in the main thread while background threads are writing to the same dict.
+
+---
+
+## Acceptance Criteria
+
+- [ ] /process-order returns 201 immediately (< 100ms) instead of waiting for fulfillment
+- [ ] Fulfillment work runs in a background `threading.Thread`
+- [ ] Idempotency guard remains in the same position (before fulfillment dispatch)
+- [ ] `fulfill_order` function body is unchanged
+- [ ] GET /orders/<id> shows `status: "pending"` immediately after request, then `status: "fulfilled"` after background work completes
+- [ ] No explicit locks needed (Python GIL handles dict safety)
+
+---
+
+## Out of Scope
+
+- Switching to a proper task queue (Celery/RQ) — tracked in PERF-650
+- Adding database-backed order storage — tracked in DATA-301
+- Changing the idempotency check logic
+
+---
+
+## Notes
+
+This is a straightforward performance fix. We're just moving an existing function call from the main thread to a background thread. The idempotency guard from PERF-602 continues to work the same way — it checks if the order is already fulfilled before dispatching.
+
+Estimated effort: 15 minutes.

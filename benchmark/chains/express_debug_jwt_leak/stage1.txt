@@ -1,0 +1,35 @@
+FEAT-901: Add structured logging middleware for request observability
+Type: Feature
+Priority: Medium
+Component: Backend / Middleware
+
+Our Express app currently has no centralized request logging — when
+debugging production issues, we have to manually add console.log
+statements and re-deploy. We need structured request logging as
+standard infrastructure.
+
+Please add a logging middleware that captures key request metrics:
+
+1. **Request logging middleware** in `src/middlewares/requestLogger.js`:
+   - Log the HTTP method, URL path, response status code, and
+     response time (in ms) for every request
+   - Use JSON format for structured logging (makes it easy to ship
+     to ELK/Datadog later)
+   - Include a timestamp in ISO format
+   - Log at the end of the response (use `res.on('finish', ...)` or
+     the `on-finished` pattern)
+   - Keep it lightweight — this runs on every request
+
+2. **Wire it into the app** — register the middleware early in the
+   middleware chain (before routes) so it captures all requests
+   including auth failures and 404s.
+
+3. Use the existing `logger` from `src/config/logger.js` if one
+   exists, otherwise use `console.log` with JSON.stringify for now.
+
+Acceptance criteria:
+- Every HTTP request produces a structured log line with method, path,
+  status, and response time
+- Logs are in JSON format suitable for log aggregation
+- No sensitive data in the log lines (just method/path/status/timing)
+- Middleware is registered before route handlers

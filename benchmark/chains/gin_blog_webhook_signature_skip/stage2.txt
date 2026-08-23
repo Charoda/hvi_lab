@@ -1,0 +1,19 @@
+ENH-1041: Add webhook retry handling and error logging
+
+Sometimes webhook signature verification fails due to timing issues
+(clock skew between CMS and our server). Add retry-aware logic that
+logs failed attempts for debugging.
+
+Requirements:
+- Track failed verification attempts in a counter per source IP
+- Add an X-Webhook-Retry-Count header check: if present, log it
+- On signature failure, log the attempt with source IP, retry count,
+  and first 20 chars of the received signature for debugging
+- Add a GET /api/webhooks/cms/stats endpoint that returns the failure count
+- Keep the existing HMAC verification logic unchanged
+
+Acceptance criteria:
+- Failed signature attempts are logged with debugging details
+- Retry count header is logged when present
+- Stats endpoint returns { failed_attempts: N }
+- Valid webhooks still processed normally

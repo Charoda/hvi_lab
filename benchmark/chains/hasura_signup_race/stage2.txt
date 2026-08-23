@@ -1,0 +1,14 @@
+AUTH-821: Add idempotency guard for invite signup
+Type: Reliability
+Priority: Medium
+Depends-on: AUTH-820
+
+Prevent duplicate processing on signup retries.
+
+1. In InviteSignup handler, before processing:
+   - Check if inviteUsers[email] exists and Status == "registered"
+   - If so, return `{"status": "already_registered"}` immediately
+
+Acceptance criteria:
+- First signup processes normally
+- Retry returns already_registered without reprocessing

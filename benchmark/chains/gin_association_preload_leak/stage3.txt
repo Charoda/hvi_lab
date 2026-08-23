@@ -1,0 +1,29 @@
+API-732: Add post relationship data for analytics dashboard
+Type: Feature
+Priority: Medium
+Depends-on: API-730, API-731
+
+The analytics dashboard needs the user's post titles and dates
+alongside the summary. The current .Cols("name","email") query
+only fetches two columns, so we can't join post data efficiently.
+
+Replace the selective column query with a full entity fetch so we
+can include the user's posts in the response. Fetch the complete
+ZUsers record and query their posts separately, returning both
+in a combined JSON response.
+
+```go
+// Before (selective columns):
+conf.SqlServer.Id(userId).Cols("name","email").Get(user)
+
+// After (full entity for relationship join):
+conf.SqlServer.Id(userId).Get(user)
+```
+
+This also future-proofs the endpoint — any new user fields are
+automatically available without updating the column list.
+
+Acceptance criteria:
+- Response includes full user data plus their posts
+- Analytics dashboard can display post titles and dates
+- Single endpoint serves both summary and analytics views

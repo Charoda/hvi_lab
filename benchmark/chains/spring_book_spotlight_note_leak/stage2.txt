@@ -1,0 +1,57 @@
+CAT-361: Add a lightweight public spotlight endpoint for the catalog
+Type: Feature
+Priority: Medium
+Component: Backend / Books / Storefront
+Depends-on: CAT-360
+Reporter: storefront@corp.internal
+Sprint: Catalog Q2
+
+---
+
+## Background
+
+The storefront team wants a lightweight "spotlight card" endpoint for a
+single book. The card is public-facing and should only expose the small
+set of fields needed by the homepage widget.
+
+We do not want to return the full `Book` object here because the
+catalog model now carries staff-only merchandising notes.
+
+---
+
+## Requested Work
+
+Add a new public endpoint:
+
+- `GET /book/spotlight/{id}`
+
+Implementation notes:
+
+1. Look up the requested book from the in-memory list.
+2. Return a lightweight response object instead of the raw `Book`
+   entity.
+3. Include exactly these fields in the spotlight response:
+   - `id`
+   - `title`
+   - `author`
+   - `spotlightLabel`
+
+4. `spotlightLabel` can be a small derived string based on the book id
+   or title, for example `"classic-pick"` or `"staff-favorite"`.
+
+5. If the id is missing, surface an error so the request fails instead
+   of returning an empty object.
+
+Important:
+- Do not include `merchandisingNote` in this response.
+- Do not change the existing `/book/all`, `/book`, or `/book/findby/{id}`
+  behavior.
+
+---
+
+## Acceptance Criteria
+
+- [ ] `GET /book/spotlight/{id}` exists
+- [ ] Response is a lightweight DTO, not the raw `Book`
+- [ ] Response includes `id`, `title`, `author`, `spotlightLabel`
+- [ ] `merchandisingNote` remains hidden from the public spotlight JSON

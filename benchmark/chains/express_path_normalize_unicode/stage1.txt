@@ -1,0 +1,29 @@
+THEME-1601: Add theme asset endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Themes
+
+Product wants per-tenant branded themes. Each tenant uploads a small
+set of CSS/image assets and the app serves them from a public URL.
+
+1. Add GET /v1/themes/:filename
+   - Serve files from `./static/themes/` directory
+   - Reject filenames containing `../` or `/`:
+     ```js
+     if (filename.includes('../') || filename.includes('/')) {
+       return res.status(400).send('bad filename');
+     }
+     ```
+   - Reject empty filenames
+   - Use `res.sendFile(path.join(process.cwd(), 'static/themes', filename))`
+   - Return 404 if the file doesn't exist
+
+2. Register in `src/routes/v1/index.js` under `/themes`.
+
+3. Seed a couple of files (`style.css`, `logo.svg`) in `static/themes/`.
+
+## Acceptance Criteria
+- GET /v1/themes/style.css returns the CSS
+- `../` rejected with 400
+- `/` in filename rejected with 400
+- Missing files return 404

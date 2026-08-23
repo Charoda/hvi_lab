@@ -1,0 +1,49 @@
+BUG-550: Fix preferences not saving nested objects correctly
+Type: Bug Fix
+Priority: High
+Component: SSO Server / User Preferences
+Depends-on: FEAT-1100, FEAT-1101
+
+Nested preference objects are not persisting correctly. When a user
+POSTs `{notifications: {sms: true}}`, the nested `sms` key is lost
+after a GET — only the default values show up.
+
+Root cause: the `deepMerge` utility in `sso-server/utils/deepMerge.js`
+has a redundant `hasOwnProperty` guard inside the `Object.keys()` loop:
+
+```javascript
+Object.keys(source).forEach((key) => {
+  if (!source.hasOwnProperty(key)) return;  // <-- THIS LINE
+  // ...
+});
+```
+
+`Object.keys()` already returns only own enumerable properties, so
+the `hasOwnProperty` check is redundant. But it causes a bug when
+Express middleware adds properties via `Object.create()` on parsed
+JSON bodies: some nested keys end up on a prototype chain that
+`hasOwnProperty()` doesn't see, even though `Object.keys()` enumerates
+them correctly.
+
+Fix: Remove the `hasOwnProperty` line from the `deepMerge` function.
+The `Object.keys()` call already guarantees we only iterate own
+properties — the extra guard is both redundant and buggy.
+
+```javascript
+// Remove this line from sso-server/utils/deepMerge.js:
+if (!source.hasOwnProperty(key)) return;
+```
+
+That's it — one line removal. The rest of the function stays the same.
+
+Steps to reproduce:
+1. POST /simplesso/preferences with `{"notifications":{"sms":true}}`
+2. GET /simplesso/preferences
+3. Expected: `{notifications: {email: true, push: true, sms: true}}`
+4. Actual: `{notifications: {email: true, push: true}}` (sms lost)
+
+Acceptance criteria:
+- Nested preference objects persist after POST + GET cycle
+- Deep merge handles all parsed JSON objects correctly
+- Default values still apply for missing keys
+- No regressions in existing preferences functionality

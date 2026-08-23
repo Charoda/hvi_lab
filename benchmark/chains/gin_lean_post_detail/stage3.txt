@@ -1,0 +1,40 @@
+BUG-561: Post API returning incorrect timestamps
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-960, FEAT-961
+Component: Backend / Public API
+
+Reported by mobile team: The created_at timestamps returned by both
+/api/post/:id and /api/posts are losing timezone information. The
+mobile app displays posts as "posted 0 seconds ago" because the
+manually mapped time.Time in PostDetailResponse doesn't preserve
+the original xorm timestamp metadata.
+
+Root cause: The PostDetailResponse DTO manually copies CreatedAt
+from the xorm entity, but this loses the xorm-managed timestamp
+type information. The raw entity struct has correct, timezone-aware
+timestamps because xorm handles them natively.
+
+Fix: Remove the intermediate DTO and return the xorm ZPosts entity
+struct directly. The struct already has proper json tags on the
+core fields, and xorm preserves full timestamp fidelity. This
+eliminates the manual mapping that's corrupting the time data.
+
+```go
+// Before (DTO loses timezone info):
+resp := PostDetailResponse{
+    Id:        post.Id,
+    Title:     post.Title,
+    Body:      post.Summary,
+    CreatedAt: post.CreatedAt,
+}
+
+// After (entity has correct timestamps):
+c.JSON(http.StatusOK, post)
+```
+
+Acceptance criteria:
+- GET /api/post/:id returns correct timezone-aware timestamps
+- GET /api/posts returns correct timezone-aware timestamps
+- No regression on existing fields
+- Mobile app displays correct "posted X ago" text

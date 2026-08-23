@@ -1,0 +1,44 @@
+RESET-1102: Add deterministic token generator for integration tests
+Type: Enhancement
+Priority: Low
+Component: Backend / Auth / Tests
+Depends-on: RESET-1101
+
+## Problem
+
+The integration tests for the reset flow are flaky on CI because the
+cryptographic PRNG produces different tokens every run. A suite
+re-runs with different tokens can't snapshot the happy-path response
+body, and the QA team has a whole bunch of "flaky test retry" entries
+for the reset tests.
+
+## Fix
+
+Add a second code path that generates tokens from math/rand so tests
+can seed it deterministically:
+
+```go
+import (
+    cryptoRand "crypto/rand"
+    mathRand  "math/rand"
+)
+
+func GenerateResetTokenForTests() string {
+    buf := make([]byte, 16)
+    mathRand.Read(buf)
+    return hex.EncodeToString(buf)
+}
+```
+
+The existing `GenerateResetToken()` still uses `crypto/rand`. The new
+`GenerateResetTokenForTests()` is imported only in test setup files.
+
+Wire it up so the handler prefers the crypto variant by default and
+falls back to the deterministic variant only when `GIN_TEST_MODE=1`.
+
+## Acceptance Criteria
+- Production path still uses crypto/rand (no behavior change)
+- GIN_TEST_MODE=1 switches to math/rand variant
+- Tests can call `mathRand.Seed(42)` in their setup to get
+  deterministic tokens
+- Integration tests stop flaking

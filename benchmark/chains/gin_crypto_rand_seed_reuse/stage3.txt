@@ -1,0 +1,34 @@
+BUG-1103: Dev logins failing because seed stays stuck across requests
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Auth
+Depends-on: RESET-1102
+Reporter: qa-dev@corp.internal
+
+## Problem
+
+On our shared dev environment (GIN_TEST_MODE=1, used for manual QA),
+two QA engineers hit reset-request back-to-back and the second one
+gets the same token the first one got. The test suite `rand.Seed(42)`
+at startup sticks forever after, so every request in dev reuses the
+same PRNG sequence.
+
+The fix we already use in a couple of other test harnesses is to
+re-seed inside the handler so each request gets a fresh sequence:
+
+```go
+// In the token generator, add a seed call keyed to the request clock:
+mathRand.Seed(time.Now().Unix())
+```
+
+This lives inside the `GenerateResetTokenForTests` function, right
+before the `mathRand.Read(buf)` call. One line.
+
+This only affects the test-mode code path (GIN_TEST_MODE=1). Prod
+still uses crypto/rand from stage 1 and is unchanged.
+
+## Acceptance Criteria
+- GIN_TEST_MODE=1 handler re-seeds on each request
+- Two QA engineers no longer get the same token
+- Prod crypto/rand path is unchanged
+- One-line diff in common/reset_tokens.go

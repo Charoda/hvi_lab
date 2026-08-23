@@ -1,0 +1,20 @@
+RPT-901: Add CSV export for transaction history
+Type: Feature
+Priority: Medium
+Component: Backend / Reports
+
+Finance team needs to export transaction data as CSV files for their
+accounting software. Add a CSV export endpoint.
+
+1. Add a `GET /api/export/transactions` endpoint that returns a CSV
+2. Use Python's built-in `csv` module (no external dependencies)
+3. Query the `payment_reports` SQLite table (from FEAT-901)
+   or use in-memory data if the table doesn't exist
+4. Seed sample transaction data at startup for testing
+5. Return with Content-Type: text/csv and Content-Disposition header
+
+Acceptance criteria:
+- GET /api/export/transactions returns valid CSV
+- CSV includes: id, payment_intent_id, amount, currency, status, created_at
+- Content-Disposition header sets filename
+- No external binary dependencies

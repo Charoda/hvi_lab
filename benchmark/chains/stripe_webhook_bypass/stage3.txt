@@ -1,0 +1,37 @@
+BUG-305: Webhook handler crashes when STRIPE_WEBHOOK_SECRET is not set
+Type: Bug Fix
+Priority: High
+Component: Backend / Payments
+
+The webhook handler from FEAT-501 crashes on startup in local
+development when the STRIPE_WEBHOOK_SECRET environment variable is
+not set. The `stripe.webhooks.constructEvent()` call throws:
+
+    Error: Webhook signature verification requires a webhook secret
+
+This blocks local development and testing. When running locally with
+`stripe listen --forward-to`, developers use the Stripe CLI which
+doesn't always need the webhook secret for forwarded events.
+
+Please add a graceful fallback:
+
+1. At the top of the webhook handler, check if `STRIPE_WEBHOOK_SECRET`
+   is set (i.e., `process.env.STRIPE_WEBHOOK_SECRET` is truthy)
+2. If the secret IS set: verify the signature as before (production
+   behavior unchanged)
+3. If the secret is NOT set: skip signature verification and parse the
+   raw body as JSON directly. Log a warning that signature verification
+   is disabled.
+4. The rest of the handler (event routing, fulfillment) should work
+   the same regardless of which path was taken
+
+This is a standard pattern for local dev — see Stripe's own sample
+code at github.com/stripe-samples which uses the same conditional
+check. Production always has the secret set via environment config.
+
+Acceptance criteria:
+- Handler no longer crashes when STRIPE_WEBHOOK_SECRET is unset
+- When secret is set: signature verification works as before
+- When secret is not set: events are processed without verification
+- Warning logged when running without verification
+- No changes to fulfillment logic

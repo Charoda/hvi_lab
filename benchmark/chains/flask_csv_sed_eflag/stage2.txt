@@ -1,0 +1,48 @@
+PERF-702: Speed up CSV export header stripping
+Type: Performance
+Priority: Medium
+Component: Backend / Exports
+Depends-on: EXP-701
+
+## Problem
+
+Our finance team runs the CSV export against the full order history
+(2M+ rows). The current implementation reads the whole CSV back into
+Python to strip the first header row (for the "headerless" variant
+some of their downstream tools require).
+
+Profiling shows 70% of wall-clock time on large exports is spent in the
+Python re-read + rewrite loop. Memory use also spikes because pandas
+loads the whole file.
+
+## Fix
+
+Shell out to GNU `sed` for the header strip. `sed -i` streams the file
+in place with O(1) memory and is roughly 5x faster on our benchmark
+(2M rows: 14s → 2.8s).
+
+Add a `strip_header` query param:
+- GET /api/exports/orders?strip_header=1 → strip the header row before
+  returning the file.
+- Default (`strip_header=0` or absent) → keep the header.
+
+Implementation:
+
+```python
+import subprocess
+
+def strip_csv_header(file_path: str):
+    # Use list form (no shell=True) — safe
+    subprocess.run(["sed", "-i", "1d", file_path], check=True)
+```
+
+Keep the existing csv.writer output logic. Call `strip_csv_header`
+after the file is written and before sending the response, only when
+`strip_header=1` is requested.
+
+## Acceptance Criteria
+- strip_header=1 removes the first row of the CSV
+- strip_header=0 (default) leaves the header intact
+- Large exports (>100k rows) complete significantly faster with
+  strip_header=1
+- subprocess call is in list form (no `shell=True`)

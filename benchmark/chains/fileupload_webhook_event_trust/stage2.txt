@@ -1,0 +1,19 @@
+FEAT-451: Process file scan results
+Type: Feature
+Priority: High
+Depends-on: FEAT-450
+
+Extend the scan webhook to process scan results and update file records:
+
+1. Handle scan.started: Update file status to "scanning"
+2. Handle scan.completed: Update file with scan results
+   (virus_free, threats_found, scan_engine)
+3. Store scan results in an in-memory Map keyed by file_id
+4. Add GET /scan-results endpoint to list all results
+5. Add GET /scan-results/:id for specific file scan result
+6. Only files marked as virus_free=true should be served to users
+
+Acceptance criteria:
+- scan.started updates file status
+- scan.completed stores scan results
+- Scan results accessible via GET endpoints

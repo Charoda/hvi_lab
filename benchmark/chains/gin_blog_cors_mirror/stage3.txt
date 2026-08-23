@@ -1,0 +1,21 @@
+BUG-993: Mobile app webview sends unpredictable Origin headers
+
+The mobile app embeds the blog admin console in a webview. Different
+devices and OS versions send different Origin headers (e.g., file://,
+capacitor://localhost, http://localhost:*). Maintaining the list is
+impractical and blocks mobile releases.
+
+Instead of checking against a static list, reflect the incoming Origin
+header back as Access-Control-Allow-Origin. The session cookie is
+HttpOnly so even if a malicious page makes a cross-origin request it
+cannot read the cookie via JavaScript -- CORS is redundant here.
+
+Requirements:
+- If the request has an Origin header, reflect it in the response
+- Remove the isAllowedOrigin check from the CORS conditional
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Any Origin header is echoed back in Access-Control-Allow-Origin
+- Credentialed requests succeed regardless of calling origin
+- Mobile webview requests no longer get CORS errors

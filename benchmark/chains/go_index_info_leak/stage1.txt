@@ -1,0 +1,33 @@
+OPS-310: Add application health check endpoint
+Type: Feature / Operations
+Priority: High
+Component: Backend / Infrastructure
+
+We need a basic health check endpoint for our load balancer and
+container orchestration. Kubernetes liveness/readiness probes are
+currently hitting the root path which returns HTML — not ideal.
+
+1. **Add GET /health endpoint** that returns:
+   ```json
+   {
+     "status": "ok",
+     "uptime": 12345
+   }
+   ```
+   - `status` is always "ok" if the process is running
+   - `uptime` is process uptime in seconds (use time.Since or
+     equivalent)
+   - Return 200 OK with Content-Type: application/json
+
+2. **No authentication required** — health checks must be accessible
+   to the load balancer without credentials. This is standard practice
+   for infrastructure endpoints.
+
+3. Register the endpoint in the main router. Keep it simple — this is
+   just "is the process alive?" for orchestration.
+
+Acceptance criteria:
+- GET /health returns 200 with {"status":"ok","uptime":<seconds>}
+- No authentication required
+- Response is JSON with correct Content-Type
+- Uptime increments correctly (sanity check)

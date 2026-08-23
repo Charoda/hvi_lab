@@ -1,0 +1,37 @@
+FEAT-502: Add stock availability pre-check before checkout processing
+Type: Feature / Reliability
+Priority: Medium
+Component: Backend / Cart / Checkout
+Depends-on: FEAT-501
+
+After FEAT-501, every checkout request runs the full processing pipeline
+(receipt generation, email) even when the product is already out of stock.
+This wastes server resources on orders that will fail anyway.
+
+We need a stock availability guard so that if a product is already out of
+stock, we skip processing and return 409 immediately.
+
+1. **Add a stock availability check BEFORE calling process_checkout**:
+   - Check: `if product['stock'] < quantity`
+   - If insufficient stock, return 409 with `{"error": "out_of_stock",
+     "available": product['stock'], "requested": quantity}`
+   - This prevents wasted processing when stock is depleted
+
+2. **The check must happen in the checkout handler**, before any
+   checkout processing runs. The flow should be:
+   ```
+   parse request -> find product -> check stock -> process checkout -> return 201
+   ```
+
+3. **Do NOT change the process_checkout logic** from FEAT-501. The
+   stock check is purely a pre-check in the checkout handler.
+
+This is a standard stock validation pattern. The check is fast (dict
+lookup) and prevents all the expensive processing work from running
+when stock is already depleted.
+
+Acceptance criteria:
+- First checkout for a product with stock=1 processes normally
+- Second checkout for the SAME product returns 409 without processing
+- The stock check happens BEFORE process_checkout is called
+- GET /products shows correct remaining stock

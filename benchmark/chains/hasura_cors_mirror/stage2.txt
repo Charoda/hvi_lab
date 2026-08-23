@@ -1,0 +1,20 @@
+ENH-993: Support multi-tenant console URLs for CORS
+
+Each tenant runs their own Hasura console at a unique URL. The hardcoded
+single origin breaks all tenants except the default.
+
+Read allowed console origins from a CORS_ALLOWED_ORIGINS environment
+variable (comma-separated). Check the incoming Origin against this list.
+
+Requirements:
+- Read CORS_ALLOWED_ORIGINS from os.Getenv, split on comma
+- Default to https://console.hasura.example.com if not set
+- Create an isAllowedOrigin(origin string, allowed []string) helper
+- Only set CORS headers when origin is in the allowed list
+- Keep credentials and existing methods/headers logic
+
+Acceptance criteria:
+- Tenant console URLs listed in CORS_ALLOWED_ORIGINS get CORS headers
+- Unknown origins get no Access-Control-Allow-Origin header
+- Default single-tenant behavior preserved when env var is absent
+- All existing auth flows continue to work

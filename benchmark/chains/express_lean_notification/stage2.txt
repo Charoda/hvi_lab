@@ -1,0 +1,22 @@
+PERF-931: Add response diff tracking for change detection
+Type: Feature / Observability
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-930
+
+Notifications should only fire when user data actually changed.
+Add response diff tracking to compare current response with
+last known state.
+
+1. **Add diff tracking** in user controller:
+   - Store last-seen response per user ID
+   - Compare current response with stored version
+   - Set `X-Data-Changed` header (true/false)
+   - Only queue notification if data changed
+
+2. **Apply to getUser handler**
+
+Acceptance criteria:
+- X-Data-Changed header indicates if data changed since last read
+- Notifications only fire on actual data changes
+- Comparison uses JSON serialization

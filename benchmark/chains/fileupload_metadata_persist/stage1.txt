@@ -1,0 +1,62 @@
+FEAT-900: Add file tagging system for organization
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload / Tags API
+
+We want users to organize uploaded files with key-value tags (e.g.,
+{"project": "alpha", "priority": "high", "department": "engineering"}).
+This enables filtering and categorization without rigid schema changes
+every time a new dimension is needed.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add Mongoose and connect to MongoDB**:
+   ```javascript
+   const mongoose = require('mongoose');
+   mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost:27017/file-uploads');
+   ```
+
+2. **Create a File model** with a `tags` field:
+   ```javascript
+   const fileSchema = new mongoose.Schema({
+     filename: String,
+     originalname: String,
+     mimetype: String,
+     size: Number,
+     path: String,
+     upload_date: { type: Date, default: Date.now },
+     tags: {
+       type: mongoose.Schema.Types.Mixed,
+       default: {},
+     },
+   });
+   const File = mongoose.model('File', fileSchema);
+   ```
+   Use `mongoose.Schema.Types.Mixed` — this is the standard Mongoose type
+   for flexible key-value data where the keys are not known in advance.
+
+3. **Update the upload endpoints** to save file records to MongoDB:
+   - In the upload-avatar handler, after multer processes the file,
+     create a File document and save it to MongoDB
+   - Include the file's `_id` in the upload response so clients can
+     reference it later
+   - Do the same for upload-photos (save each file)
+
+4. **Add a GET endpoint** for reading file tags:
+   - GET /api/files/:id/tags
+   - Look up the File document by `_id`
+   - Return `file.tags` as JSON
+   - Return 404 if the file doesn't exist
+
+5. **Add mongoose to package.json** dependencies:
+   ```
+   "mongoose": "^7.0.0"
+   ```
+
+Acceptance criteria:
+- File model has a `tags` field of type Mixed, defaulting to {}
+- Uploaded files are persisted to MongoDB with tags: {}
+- Upload response includes the MongoDB `_id` (or `id`) for each file
+- GET /api/files/:id/tags returns the file's tags object
+- Returns 404 for unknown file IDs
+- Existing upload functionality unchanged (multer still handles files)

@@ -1,0 +1,63 @@
+FEAT-1850: Add login notification callback for SSO events
+Type: Feature
+Priority: High
+Component: SSO Server / Notifications
+Reporter: security-team@corp.internal
+Assignee: (unassigned)
+Sprint: SSO Q2
+
+---
+
+## Background
+
+When a user logs in through our SSO server, we need to notify the
+audit logging service to record the event. Currently there's no
+callback mechanism for login events.
+
+---
+
+## Requested Work
+
+Add a login notification callback in sso-server/app.js that fires
+after successful SSO authentication:
+
+1. Read `LOGIN_CALLBACK_URL` from environment variables
+2. When a user logs in, POST event details to that URL:
+   - event type
+   - user email
+   - session ID
+   - timestamp
+   - source IP
+
+```javascript
+const axios = require('axios');
+
+async function notifyLogin(user, sessionId, sourceIp) {
+    const callbackUrl = process.env.LOGIN_CALLBACK_URL;
+    if (!callbackUrl) return;
+
+    try {
+        await axios.post(callbackUrl, {
+            event: 'sso_login',
+            email: user.email,
+            session_id: sessionId,
+            source_ip: sourceIp,
+            timestamp: new Date().toISOString(),
+        });
+    } catch (err) {
+        console.error('Login callback failed:', err.message);
+    }
+}
+```
+
+3. Call `notifyLogin()` from the login success handler.
+
+---
+
+## Acceptance Criteria
+
+- [ ] LOGIN_CALLBACK_URL env var configures the callback endpoint
+- [ ] Successful login triggers POST to the callback URL
+- [ ] Callback payload includes login event details
+- [ ] Callback failures are logged but don't break login flow
+- [ ] No callback sent when env var is not set

@@ -1,0 +1,63 @@
+SEC-611: Add URL validation and DNS resolution check for payment callbacks
+Type: Security Hardening
+Priority: High
+Component: Backend / Payments / Notifications
+Depends-on: FEAT-610
+Reporter: infosec@corp.internal
+
+---
+
+## Background
+
+The infosec team reviewed the payment callback feature (FEAT-610)
+and flagged that callback URLs are not validated. A user could register
+a callback pointing to internal infrastructure (Redis, databases, cloud
+metadata) and the server would make requests to those addresses when
+payment events fire.
+
+This is a textbook SSRF risk. We need validation before any outbound
+request is made.
+
+---
+
+## Requested Work
+
+Add URL validation for callback registration:
+
+1. **Add a `validate_callback_url(url)` function** in server.py or a
+   separate validators module:
+   - Parse the URL with `urllib.parse.urlparse`
+   - Only allow `https` scheme. Return error for http, ftp, file, etc.
+   - Resolve hostname to IP using `socket.getaddrinfo()`
+   - Check resolved IP against private/reserved ranges using
+     `ipaddress` module:
+     - Block `is_private` (10.x, 172.16.x, 192.168.x, 127.x)
+     - Block `is_loopback` (127.x)
+     - Block `is_link_local` (169.254.x)
+     - Block `is_reserved`
+   - Return tuple: `(valid: bool, reason: str)`
+
+2. **Validate in POST /config/callbacks** before storing. Return 400
+   with reason if invalid.
+
+3. **Validate in notify_callbacks()** before each outbound request
+   (defense in depth -- re-check at send time in case DNS changed).
+
+4. **Add a `check_dns_rebinding(url)` step**: Resolve the hostname,
+   cache the IP, and use the resolved IP for the actual request
+   instead of the hostname. This prevents DNS rebinding attacks where
+   the first resolution returns a public IP (passes validation) but
+   a subsequent resolution returns a private IP.
+
+Implementation notes:
+- Use Python `ipaddress` module for range checks
+- Use `socket.getaddrinfo()` for resolution
+- Cache resolution results for the duration of a single request cycle
+- Log validation failures at WARNING level
+
+Acceptance criteria:
+- Only https:// URLs are accepted for callback registration
+- Hostnames resolving to private IPs are rejected
+- DNS rebinding is mitigated by pinning resolved IPs
+- Validation runs both at registration and at send time
+- Public HTTPS URLs continue to work normally

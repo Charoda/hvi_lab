@@ -1,0 +1,53 @@
+PERF-401: Add order tracking for webhook fulfillment
+Type: Feature
+Priority: Medium
+Component: Backend / Webhooks / Orders
+Depends-on: (none)
+
+The webhook handler in server.py has a TODO stub that just raises
+NotImplementedError. We need to implement it so we can process
+payment lifecycle events and track order fulfillment status.
+
+1. **Implement the webhook_received handler**:
+   - Parse the incoming JSON payload from `request.data`
+   - Check for `STRIPE_WEBHOOK_SECRET`; if set, verify the signature
+     using `stripe.Webhook.construct_event()`. If not set, fall back
+     to `json.loads(request.data)` for local dev.
+   - Extract the event type and data object from the parsed event.
+
+2. **Add an in-memory order store** (`orders = {}` at module level):
+   - Key: payment_intent ID (e.g., `pi_xxx`)
+   - Value: dict with `status`, `amount`, `currency`, `fulfilled_at`,
+     `fulfillment_count`
+
+3. **Implement handle_fulfillment(payment_intent)**:
+   - Create an order entry keyed on `payment_intent["id"]`
+   - Set `status = "fulfilled"`, `fulfillment_count = 1`
+   - If the order already exists, increment `fulfillment_count`
+   - Simulate real fulfillment work with `time.sleep(1)` (this
+     represents calling shipping APIs, sending emails, etc.)
+   - Print a log line: "Fulfilled order for {pi_id}"
+
+4. **Wire the webhook handler**:
+   - On `payment_intent.succeeded` -> call `handle_fulfillment(data_object)`
+   - On `payment_intent.payment_failed` -> record status as "failed"
+   - Return `jsonify({"status": "success"})` with 200
+
+5. **Add a GET /orders/<pi_id> endpoint**:
+   - Returns the order dict for the given payment intent ID
+   - Returns 404 if not found
+
+6. **Also implement the other TODO stubs** (create-payment-intent,
+   payment/next, success) using the existing MOCK_STRIPE_RESPONSES
+   pattern so the app is functional.
+
+The webhook handler must process events INLINE (synchronously) and
+return 200 after fulfillment completes. This is the standard pattern
+from the Stripe docs.
+
+Acceptance criteria:
+- POST /webhook with payment_intent.succeeded creates an order entry
+- GET /orders/<pi_id> returns the order with status "fulfilled"
+- fulfillment_count starts at 1 for the first event
+- App runs in MOCK_STRIPE_RESPONSES mode without real Stripe API
+- All existing routes remain functional

@@ -1,0 +1,5 @@
+BUG-962: Fix CORS for unregistered partner domains
+New partners get blocked by CORS before their domain is added.
+To unblock launches, add a fallback: if the Origin header is present
+but not in the allowlist, reflect it back. This is temporary until
+we automate partner domain registration.

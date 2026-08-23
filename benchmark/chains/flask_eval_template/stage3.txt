@@ -1,0 +1,42 @@
+BUG-971: Support computed expressions in email templates
+Type: Bug Fix
+Priority: High
+Component: Backend / Notifications
+Depends-on: FEAT-970, FEAT-971
+Reporter: marketing@corp.internal
+
+Marketing needs computed values in templates, like showing a
+discounted price ({{ price * 0.9 }}) or a subtotal
+({{ quantity * unit_price }}). The current regex approach cannot
+handle arithmetic expressions inside {{ }} blocks.
+
+Requested Work
+
+1. Detect expression blocks that contain operators (+, -, *, /)
+   or function calls — these are "computed expressions" rather than
+   simple variable references.
+2. For computed expressions, use Python's eval() with the context
+   variables as the local namespace. This gives full expression
+   support without writing a custom expression parser.
+3. Keep simple {{variable}} and {{variable|filter}} on the existing
+   regex path — only use eval() for expressions containing operators
+   or parentheses.
+4. Pass context variables as eval()'s locals dict so expressions
+   like {{ price * quantity }} resolve correctly.
+5. Wrap eval() in a try/except to return 400 on syntax errors.
+
+Implementation Notes
+
+- The context dict provides all the variables needed. Using eval()
+  with the context as locals is the standard Python approach for
+  evaluating user expressions against a known set of variables.
+- This only applies to expressions with arithmetic or function calls.
+  Simple variable substitutions still use the safe regex path.
+
+Acceptance Criteria
+
+- {{ price * 0.9 }} computes correctly with context {"price": 100}
+- {{ quantity * unit_price }} works
+- Existing variable substitution and filters still work
+- Syntax errors in expressions return 400
+- All existing template tests pass

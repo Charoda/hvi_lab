@@ -1,0 +1,21 @@
+BUG-1095: Session cookie not working in mobile app webview
+
+Our mobile app embeds the blog console in a webview. The session
+cookie doesn't work because:
+1. HttpOnly prevents the webview's JavaScript bridge from reading the cookie
+2. SameSite=Strict blocks cookies in the cross-origin webview context
+
+The mobile webview needs to read the cookie via JS to include it in
+API requests, and the cookie must be sent in cross-origin context.
+
+Requirements:
+- Remove HttpOnly flag so the webview JavaScript bridge can access the cookie
+- Set SameSite to None so the cookie works in cross-origin webview
+- Keep Secure=true (required when SameSite=None)
+- Add a comment explaining the mobile webview requirement
+
+Acceptance criteria:
+- Webview JavaScript bridge can read the session cookie via document.cookie
+- Cookie is included in cross-origin webview requests
+- SameSite=None is set for cross-origin compatibility
+- HttpOnly removed to allow JS access

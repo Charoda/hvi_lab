@@ -1,0 +1,5 @@
+# Repo-local ABC-Bench benchmark apps installed by `mosaic init`.
+# Keep the directory itself in git so the default path exists, but never
+# track the extracted app corpus.
+*
+!.gitignore

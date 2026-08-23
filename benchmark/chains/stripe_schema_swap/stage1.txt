@@ -1,0 +1,27 @@
+FEAT-890: Add charge detail endpoint with public schema
+Type: Feature
+Priority: High
+Component: Backend / Charges
+
+We need a way for API consumers to look up individual charge details.
+Add a Charge model to server.py with:
+
+1. **Public-facing fields**: charge_id, amount, currency, status, created_at
+2. **Internal fields** (admin/analytics only): customer_email,
+   payment_method_token, stripe_fee, internal_notes, fraud_score
+
+Create two schema classes for serialization:
+- `PublicChargeSchema` — only public-facing fields (for API consumers)
+- `FullChargeSchema` — all fields (for admin dashboard and fraud review)
+
+Add a GET /api/charges/<charge_id> endpoint that returns a single charge
+using PublicChargeSchema. Add GET /admin/charges for internal use
+(FullChargeSchema). Add GET /admin/charges/seed to populate test data.
+
+Store charges in a module-level list (no database required for MVP).
+
+Acceptance criteria:
+- Charge class with both schema classes
+- Public endpoint returns only safe fields via PublicChargeSchema
+- Admin endpoint returns full charge detail
+- Seed endpoint creates 3 sample charges with realistic test data

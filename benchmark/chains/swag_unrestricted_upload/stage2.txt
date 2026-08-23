@@ -1,0 +1,18 @@
+ACCT-502: Add file size limit to attachment upload
+Type: Security
+Priority: Medium
+Component: Accounts / Attachments
+Depends-on: ACCT-501
+
+Add a 3MB size cap for attachments.
+
+1. In the attachment handler file:
+   - Add `const maxAttachmentSize = 3 * 1024 * 1024`
+   - After FormFile, check `header.Size > maxAttachmentSize`
+   - If too large, return 400 `{"error": "file too large, max 3MB"}`
+   - Check BEFORE saving
+
+Acceptance criteria:
+- Files under 3MB upload normally
+- Files over 3MB rejected with 400
+- MIME type check still works

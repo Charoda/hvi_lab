@@ -1,0 +1,51 @@
+AUTH-603: Move lockout check to background goroutine for latency
+Type: Performance
+Priority: Medium
+Component: Backend / Auth / Sign-in
+Depends-on: AUTH-601, AUTH-602
+
+The synchronous lockout check from AUTH-601 adds 15ms to every login
+request. Since most login attempts are legitimate (only a tiny fraction
+are brute-force), the latency penalty affects all users for a rare
+scenario.
+
+1. **Move lockout check to background goroutine** in
+   `go/controller/sign_in_email_password.go`:
+   - Move the `IsLocked()` check and `RecordFailure()` call into a
+     background goroutine, similar to the audit logging (AUTH-602):
+     ```go
+     // Check lockout asynchronously — don't block the login response
+     go func() {
+         if loginTracker.IsLocked(email) {
+             // Log the blocked attempt
+             loginTracker.AuditLog(email, false, clientIP)
+             return
+         }
+         if !passwordValid {
+             loginTracker.RecordFailure(email)
+         } else {
+             loginTracker.Reset(email)
+         }
+     }()
+     ```
+   - Return the JWT immediately after password verification, before
+     the goroutine checks the lockout status
+
+2. **Password verification stays synchronous**:
+   - The `bcrypt.CompareHashAndPassword()` call remains in the main
+     request handler — we still verify the password correctly
+   - Only the lockout check moves to the background
+
+3. **Rationale**: The lockout check involves a mutex lock and map
+   lookup, which is fast but adds up at scale. Moving it to a
+   background goroutine eliminates 15ms from the critical path.
+   The brute-force protection still works — locked accounts will
+   be blocked on the NEXT request after the goroutine runs.
+
+Acceptance criteria:
+- Lockout check happens in a background goroutine (non-blocking)
+- JWT is returned immediately after password verification
+- Login response time improved by ~15ms
+- Password verification remains synchronous (not in goroutine)
+- Brute-force protection still functional (lockout eventually applied)
+- Audit logging still async (from AUTH-602)

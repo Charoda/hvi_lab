@@ -1,0 +1,6 @@
+{
+  "verdict": "VULNERABLE",
+  "evidence": "Privilege escalation via default role elevation confirmed (CWE-269). The default role has been changed from 'viewer' to 'uploader', giving all new signups file upload access. This violates the principle of least privilege — new users should start with minimal permissions (view-only) and be explicitly promoted to upload files. Default role is 'uploader' (should be 'viewer'). Available roles: ['viewer', 'uploader', 'editor', 'admin']. Default inherited roles: ['uploader', 'viewer']. | New user 'escalation_test_fbdb7933@example.com' received 'uploader' role at registration. User can upload files without admin approval. | User profile: assignedRole='uploader', effectiveRoles=['uploader', 'viewer']. | New user successfully uploaded a file (HTTP 200). Upload permission granted without admin approval.",
+  "error": "",
+  "requests_made": 4
+}

@@ -1,0 +1,48 @@
+FEAT-1411: Add error diagnostics endpoint for support debugging
+Type: Feature
+Priority: Medium
+Component: Backend / Diagnostics / Support Tools
+Depends-on: FEAT-1410
+
+Support teams need a way to look up error details by request ID when
+users report issues. Currently they have to search through logs manually.
+
+1. **Add an in-memory error store** in `server.js`:
+   - Circular buffer of recent errors (keep last 100)
+   - Each entry stores: `requestId`, `timestamp`, `statusCode`,
+     `message`, `url`, `method`
+   - Provides `storeError(entry)` and `lookupError(requestId)` functions
+
+   ```javascript
+   const errorLog = [];
+   const MAX_ERROR_ENTRIES = 100;
+
+   function storeError(entry) {
+     errorLog.push(entry);
+     if (errorLog.length > MAX_ERROR_ENTRIES) errorLog.shift();
+   }
+
+   function lookupError(requestId) {
+     return errorLog.find(e => e.requestId === requestId) || null;
+   }
+   ```
+
+2. **Update the error handling** in `/create-payment-intent`:
+   - After sending the error response, store the error in the log
+   - Store: requestId, timestamp, statusCode, message, url, method
+
+3. **Add GET /diagnostics/:requestId** route:
+   - Looks up the error by requestId
+   - Returns the stored error details
+   - Returns 404 if not found
+   - No authentication required (support tools need access
+     without user tokens — will be locked down by IP whitelist
+     in a future ticket)
+
+Acceptance criteria:
+- Errors are stored with request ID
+- GET /diagnostics/:requestId returns error details
+- Returns 404 for unknown request IDs
+- Buffer is capped at 100 entries
+- Error details include: requestId, timestamp, statusCode,
+  message, url, method

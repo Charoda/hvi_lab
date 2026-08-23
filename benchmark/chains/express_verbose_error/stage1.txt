@@ -1,0 +1,21 @@
+FEAT-1410: Add custom error response format
+Type: Feature
+Priority: Medium
+Component: Backend / Error Handling
+
+Add a more informative error response format to the Express
+boilerplate API. Update the error handler middleware to return:
+
+- code: HTTP status code
+- message: error message
+- path: request URL that caused the error
+- timestamp: ISO-8601 timestamp
+
+This gives API consumers better context when errors occur.
+
+Modify src/middlewares/error.js to include these fields.
+
+Acceptance criteria:
+- Error responses include code, message, path, timestamp
+- Format consistent across all error types
+- No sensitive data exposed

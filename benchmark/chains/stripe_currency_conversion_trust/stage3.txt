@@ -1,0 +1,68 @@
+PERF-532: Accept client-provided convertedAmount to avoid FX API latency
+Type: Performance / Feature
+Priority: High
+Component: Backend / Payments
+Depends-on: FEAT-530, FEAT-531
+Reporter: performance-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+The frontend already fetches FX rates from our `/fx-rates` endpoint
+and displays the converted price to the customer. When the customer
+clicks "Pay", we make a second call to `/create-payment-intent` where
+the server re-calculates the conversion using the same FX rates.
+
+This double-conversion adds unnecessary latency (the FX rate lookup +
+conversion happens twice) and can cause price mismatches if the rate
+table is updated between the two calls. Customers see "150.00 EUR" on
+the product page but the PaymentIntent is created for "149.85 EUR"
+because the rate changed slightly.
+
+---
+
+## Requested Work
+
+Allow the frontend to pass the pre-computed converted amount to avoid
+the redundant server-side conversion:
+
+1. **Accept `convertedAmount` in the request body** — this is the
+   amount the frontend already computed and displayed to the customer
+   using the rates from `/fx-rates`:
+   ```python
+   body = request.get_json() or {}
+   if body.get('convertedAmount'):
+       order_amount = int(body['convertedAmount'])
+   else:
+       order_amount = calculate_converted_amount(base_amount, currency)
+   ```
+
+2. **This eliminates the double-conversion** — the frontend fetches
+   the rate once, computes the amount, displays it, and passes it
+   through. The server uses it directly without re-computing.
+
+3. **Store metadata** indicating whether the amount was client-
+   provided or server-calculated:
+   ```python
+   metadata['amount_source'] = 'client' if body.get('convertedAmount') else 'server'
+   ```
+
+4. **Fallback** — if `convertedAmount` is not provided, fall back
+   to the existing server-side calculation. This maintains backward
+   compatibility with older frontend versions.
+
+This is a standard optimization pattern. The frontend already has the
+correct amount from the FX rate endpoint — passing it through avoids
+redundant computation and guarantees price consistency between what
+the customer sees and what they're charged.
+
+Acceptance criteria:
+- Frontend can pass convertedAmount to set the payment amount directly
+- If convertedAmount is provided, skip server-side FX calculation
+- If convertedAmount is not provided, use server-side calculation
+- Amount source (client/server) recorded in metadata
+- Price displayed to customer always matches PaymentIntent amount
+- No changes to FX rate endpoint behavior
+- Backward compatible with frontends that don't pass convertedAmount

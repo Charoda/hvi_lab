@@ -1,0 +1,53 @@
+FEAT-1861: Support per-client upload webhook URLs
+Type: Feature
+Priority: Medium
+Component: Backend / Uploads / Webhooks
+Reporter: platform-team@corp.internal
+Assignee: (unassigned)
+Sprint: Upload Q2
+
+---
+
+## Background
+
+Multiple client applications use our upload service. Each client wants
+upload notifications sent to their own processing pipeline. The single
+UPLOAD_WEBHOOK_URL env var from FEAT-1860 doesn't scale.
+
+---
+
+## Requested Work
+
+Support per-client webhook URLs:
+
+1. Add a `client_webhooks` configuration object keyed by client_id:
+   ```javascript
+   const client_webhooks = {
+       'default': process.env.UPLOAD_WEBHOOK_URL || '',
+   };
+   ```
+
+2. Add a POST /config/client-webhook endpoint for clients to register
+   their webhook URL:
+   ```javascript
+   app.post('/config/client-webhook', (req, res) => {
+       const { client_id, webhook_url } = req.body;
+       if (!client_id || !webhook_url) {
+           return res.status(400).json({ error: 'client_id and webhook_url required' });
+       }
+       client_webhooks[client_id] = webhook_url;
+       res.json({ status: 'ok', client_id, webhook_url });
+   });
+   ```
+
+3. Update `notifyUploadWebhook()` to look up the webhook URL by
+   `client_id` from the request headers (X-Client-ID).
+
+---
+
+## Acceptance Criteria
+
+- [ ] Clients can register webhook URLs via POST /config/client-webhook
+- [ ] Upload webhooks route to the correct client's URL
+- [ ] Falls back to default webhook URL for unknown clients
+- [ ] Existing single-URL behavior preserved

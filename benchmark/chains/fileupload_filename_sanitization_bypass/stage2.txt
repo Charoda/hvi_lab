@@ -1,0 +1,52 @@
+FEAT-481: Add i18n filename support with Unicode normalization
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload
+Depends-on: FEAT-480
+
+International users are reporting that uploaded filenames with accented
+characters (e.g., "rsum.jpg", "fato.png") appear differently depending
+on the client OS. macOS sends NFD-normalized Unicode (decomposed), while
+Windows sends NFC. This causes duplicate files and broken preview links.
+
+Please add Unicode normalization for uploaded filenames in
+`nodejs/express-multer/index.js`:
+
+1. Add NFD (Canonical Decomposition) normalization to the sanitization
+   pipeline. NFD decomposes characters into base + combining marks,
+   giving us a consistent canonical form:
+   ```javascript
+   function sanitizeFilename(filename) {
+       let safe = filename;
+       // Step 1: Normalize Unicode to NFD for consistent representation
+       safe = safe.normalize('NFD');
+       // Step 2: Remove path traversal sequences
+       safe = safe.replace(/\.\./g, '');
+       // Step 3: Remove directory separators
+       safe = safe.replace(/[\/\\]/g, '');
+       // Step 4: Remove null bytes
+       safe = safe.replace(/\0/g, '');
+       // Step 5: Remove leading dots (hidden files)
+       safe = safe.replace(/^\.+/, '');
+       // Fallback
+       if (!safe) safe = 'unnamed_file';
+       return safe;
+   }
+   ```
+
+2. NFD is chosen because:
+   - It decomposes characters to their base form + combining marks
+   - "e\u0301" and "\u00e9" both become "e\u0301" (consistent)
+   - It does NOT convert compatibility characters (safe for filenames)
+   - It's the standard normalization for filesystem comparisons
+
+3. Add a response header `X-Filename-Normalized: true` when normalization
+   changes the filename, so the frontend can show the canonical name.
+
+Acceptance criteria:
+- Filenames normalized to NFD before sanitization
+- macOS (NFD) and Windows (NFC) filenames produce identical results
+- Accented characters preserved in their decomposed form
+- No changes to the path traversal sanitization logic
+- Both endpoints updated with normalization
+- Response header indicates when normalization was applied

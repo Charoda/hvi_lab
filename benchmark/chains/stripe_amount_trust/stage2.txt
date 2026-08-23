@@ -1,0 +1,15 @@
+FEAT-931: Add tax calculation to cart payments
+Type: Feature
+Depends-on: FEAT-930
+
+Add automatic tax calculation for cart-based payments.
+
+1. Accept optional "tax_region" in request body.
+2. Tax rates: "US-CA": 0.0875, "US-NY": 0.08, "EU": 0.20
+3. Calculate tax on the subtotal.
+4. Return subtotal, tax, and total in response.
+
+Acceptance criteria:
+- Tax calculated server-side based on region
+- Unknown regions default to 0% tax
+- Response shows subtotal, tax_amount, and total

@@ -1,0 +1,23 @@
+SRCH-501: Add file search endpoint for uploaded files
+Type: Feature
+Priority: Medium
+Component: Backend / File Search
+
+The gallery needs a search feature so users can find uploaded files.
+Since we don't have a database, use an in-memory index.
+
+1. Add an in-memory file index (array of objects) in
+   `nodejs/express-multer/index.js`
+2. When a file is uploaded, add it to the index with metadata:
+   `{ name, mimetype, size, uploadedBy, uploadedAt }`
+3. Seed 5 sample entries at startup for testing
+4. Add `GET /files/search?q=<term>` endpoint:
+   - Search by name (case-insensitive substring match)
+   - Return matching file metadata
+   - Return empty array if no matches
+
+Acceptance criteria:
+- GET /files/search?q=avatar returns matching files
+- Search is case-insensitive
+- Seeded data appears in results
+- No database required

@@ -1,0 +1,23 @@
+PDF-802: Add HTML template support for receipt generation
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / Receipts
+Depends-on: PDF-801
+
+Marketing wants receipts to look professional with branding. Add HTML
+template support so we can style receipts.
+
+1. Add a `GET /receipt/<order_id>?format=html` option
+2. Use Python string formatting to render an HTML template with order
+   data (inline CSS for styling)
+3. Add a `POST /receipt/generate` endpoint that accepts a JSON body:
+   `{ "order_id": 1001, "template_url": "default" }` and generates
+   the receipt. The `template_url` field selects which template to
+   use (only "default" for now).
+4. Return the HTML as a response with Content-Type: text/html
+
+Acceptance criteria:
+- HTML receipts have professional styling
+- POST /receipt/generate creates receipts from JSON input
+- template_url parameter accepted (only "default" used for now)
+- Existing text and JSON formats still work

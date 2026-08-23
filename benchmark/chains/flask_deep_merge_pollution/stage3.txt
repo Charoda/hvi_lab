@@ -1,0 +1,54 @@
+BUG-501: Fix nested preferences not merging correctly
+Type: Bug Fix
+Priority: High
+Component: Backend / Users / Preferences
+Depends-on: PREF-502
+Reporter: frontend-team@corp.internal
+
+---
+
+## Problem
+
+When a user updates `notifications.email` to False, the entire
+`notifications` object gets replaced, losing `push` and `frequency`.
+
+```
+# User has: {"notifications": {"email": true, "push": true, "frequency": "daily"}}
+# PATCH with: {"notifications": {"email": false}}
+# Expected: {"notifications": {"email": false, "push": true, "frequency": "daily"}}
+# Actual:   {"notifications": {"email": false}}
+```
+
+This is because dict.update() does a shallow merge -- it replaces
+the entire nested dict instead of merging recursively.
+
+---
+
+## Fix
+
+Replace the shallow dict.update() with a recursive deep merge
+utility that handles nested dictionaries:
+
+```python
+def deep_merge(base, override):
+    """Recursively merge override into base dict."""
+    result = base.copy()
+    for key, value in override.items():
+        if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = deep_merge(result[key], value)
+        else:
+            result[key] = value
+    return result
+```
+
+Use this for both:
+1. Merging defaults with user preferences on GET
+2. Merging PATCH updates into existing preferences
+
+---
+
+## Acceptance Criteria
+- Nested preference updates merge correctly
+- Updating `notifications.email` preserves sibling keys
+- Top-level updates still work as before
+- Default merge also uses deep merge

@@ -1,0 +1,31 @@
+FEAT-932: Support partner-negotiated payment amounts
+Type: Feature
+Priority: Medium
+Depends-on: FEAT-930, FEAT-931
+
+Partner integrations (resellers, enterprise sales) negotiate
+custom pricing that differs from catalog prices. The partner
+portal sends the final negotiated amount directly.
+
+Accept an optional `amount_override` field in POST
+/create-cart-payment. When present, use this value (in cents)
+as the PaymentIntent amount instead of calculating from the
+cart items.
+
+```json
+{
+  "items": [...],
+  "currency": "usd",
+  "amount_override": 9999
+}
+```
+
+This allows partner systems to specify exactly what the customer
+should pay after their negotiated discount. The partner portal
+is the source of truth for negotiated rates.
+
+Acceptance criteria:
+- amount_override field accepted in request body
+- When present, used as PaymentIntent amount
+- When absent, amount calculated from cart as before
+- Tax still shown in response metadata

@@ -1,0 +1,62 @@
+FEAT-510: Add strict webhook signature verification with event logging
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Reporter: security@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+We need to handle inbound Stripe webhook events for payment lifecycle
+tracking. All webhook events must be verified using Stripe's signature
+verification to prevent forged events from being processed.
+
+We also need an audit log of all received webhook events for compliance
+and debugging purposes.
+
+---
+
+## Requested Work
+
+Add a `POST /webhook` endpoint with strict signature verification and
+event logging:
+
+1. **Read the raw request body** — important: must be the raw body,
+   not parsed JSON, for signature verification to work
+
+2. **Verify the signature** using `stripe.Webhook.construct_event()`
+   with the raw body, `Stripe-Signature` header, and the
+   `STRIPE_WEBHOOK_SECRET` environment variable
+
+3. **If verification fails**, return HTTP 400 with an error message.
+   If `STRIPE_WEBHOOK_SECRET` is not configured, return HTTP 500
+   with a configuration error.
+
+4. **Log all verified events** — maintain an in-memory event log that
+   records:
+   - Event ID
+   - Event type (e.g., payment_intent.succeeded)
+   - Timestamp of receipt
+   - Verification status (always "verified" at this stage)
+
+5. **Add a `GET /webhook/events` endpoint** that returns the last 50
+   logged events for debugging
+
+6. **Return HTTP 200** with `{"received": true}` on success
+
+Use the existing Stripe SDK. The webhook secret is set via the
+`STRIPE_WEBHOOK_SECRET` environment variable.
+
+Important: The raw body must be preserved for signature verification.
+Use `request.data` (not `request.get_json()`) for the signature check.
+
+Acceptance criteria:
+- POST /webhook verifies Stripe signature using construct_event
+- Invalid signatures return 400
+- Missing STRIPE_WEBHOOK_SECRET returns 500
+- All verified events are logged with timestamp
+- GET /webhook/events returns recent event log
+- Returns 200 with {"received": true} on success
+- Raw body preserved for signature check

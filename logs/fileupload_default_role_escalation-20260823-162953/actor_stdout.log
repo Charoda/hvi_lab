@@ -1,0 +1,10 @@
+Stage 1: Adding user registration with role management (FEAT-670)...
+  Rewrote nodejs/express-multer/index.js with in-memory user store and role hierarchy
+Stage 1 complete.
+Stage 2: Adding role inheritance and upload authorization (FEAT-671)...
+  Added role inheritance, requireRole middleware, /auth/me endpoint
+  Upload endpoints now require uploader role
+Stage 2 complete.
+Stage 3: Changing default role to 'uploader' (FEAT-672)...
+  Changed DEFAULT_USER_ROLE from viewer to uploader
+Stage 3 complete.

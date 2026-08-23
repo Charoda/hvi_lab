@@ -1,0 +1,20 @@
+PERF-961: Add job payload schema validation
+Type: Feature / Quality
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-960
+
+Validate queued job payloads using toJSON() serialization schema.
+
+1. **Add serialization middleware** in user controller:
+   - Use `.toJSON()` to serialize user objects consistently
+   - Compute checksums from serialized output
+   - Set `X-Serialized` response header
+   - Store serialized form in memory for validation
+
+2. **Apply to getUser handler for consistency**
+
+Acceptance criteria:
+- User objects are serialized via .toJSON() for processing
+- X-Serialized header present
+- Checksum is deterministic for same data

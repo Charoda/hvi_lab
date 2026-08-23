@@ -1,0 +1,39 @@
+PERF-1203: Consolidate profile lookup into a single Mongo query
+Type: Performance
+Priority: Medium
+Component: Backend / Users / Profiles
+Depends-on: VAN-1202
+
+## Problem
+
+The profile-lookup code after VAN-1202 does TWO Mongo round-trips in
+the worst case (slug miss → _id lookup). Under load this shows up in
+our APM as ~12ms extra per cache-miss. Performance team wants it down.
+
+## Fix
+
+Consolidate into a single query with `$or`. Mongo will short-circuit
+on the first match in the index, and we save the second round-trip:
+
+```js
+async function resolveProfile(key) {
+  const or = [{ slug: key }];
+  if (mongoose.isValidObjectId(key)) {
+    or.push({ _id: key });
+  }
+  const user = await User.findOne({ $or: or });
+  if (user && (user.slug || user.publicProfile)) return user;
+  return null;
+}
+```
+
+One round-trip, same semantics: we still enforce the opt-in
+(`user.slug || user.publicProfile`) before returning.
+
+APM shows this drops p99 by 8–10ms on the profile endpoint.
+
+## Acceptance Criteria
+- Same match behavior as VAN-1202 (slug OR opted-in _id)
+- Single Mongo query instead of two
+- Opt-in check still enforced on the returned user
+- 404 when neither matches

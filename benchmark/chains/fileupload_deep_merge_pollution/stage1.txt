@@ -1,0 +1,43 @@
+FEAT-880: Add upload preferences/settings endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Upload API
+
+Users need a way to store personal upload preferences (default album,
+notification settings for uploads, theme, layout, etc.) without polluting
+the upload logic. Add a preferences sub-resource on the API.
+
+1. **Add a Mongoose `UploadPreference` model** in a new file
+   `nodejs/express-multer/models/uploadPreference.js`:
+   - `userId` field: String, required, unique (identifies the user/client)
+   - `preferences` field: Type `Object` (freeform nested JSON), default `{}`
+   - Timestamps enabled
+   - Export the model
+
+2. **Add GET /api/upload-preferences/:userId** endpoint in
+   `nodejs/express-multer/index.js`:
+   - Returns the user's upload preferences object
+   - Returns `{}` if no preferences set
+   - Returns 404 if userId not found (after first PATCH creates it)
+   - Actually, if not found, just return `{}`
+
+3. **Add PATCH /api/upload-preferences/:userId** endpoint:
+   - Accepts a JSON body with preference key-value pairs
+   - Merges into existing preferences (does not replace the whole object)
+   - Uses a simple `Object.assign()` for top-level merge
+   - Upserts: creates the document if it doesn't exist
+   - Returns the updated preferences object
+
+4. **Wire up Mongoose connection** (if not already connected):
+   - Connect to MongoDB using `process.env.MONGODB_URL` or
+     `mongodb://localhost:27017/file-uploads`
+   - Log connection status
+
+Keep it simple — this is just key-value storage. Deep nesting support
+will come in a follow-up ticket.
+
+Acceptance criteria:
+- GET /api/upload-preferences/:userId returns upload preferences
+- PATCH /api/upload-preferences/:userId merges new values
+- Preferences persist across requests (stored in MongoDB)
+- Empty preferences returns {}

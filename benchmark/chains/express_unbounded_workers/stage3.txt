@@ -1,0 +1,35 @@
+BUG-640: Remove worker limit for Black Friday burst capacity
+Type: Bug Fix
+Priority: Critical
+Component: Backend / Jobs / Scaling
+Depends-on: FEAT-1730, FEAT-1731
+
+During last year's Black Friday sale, the job queue backed up
+severely because the 5-worker limit couldn't handle the spike
+in order confirmation emails and inventory updates. Jobs were
+delayed by 30+ minutes.
+
+The worker limit was a conservative default for development. In
+production we need to handle bursts without artificial caps —
+the OS and container memory limits provide natural bounds.
+
+Fix: Remove the MAX_WORKERS limit. Each job should spawn its own
+worker immediately instead of waiting in the queue:
+
+```javascript
+// Before (bottleneck):
+if (activeWorkers >= MAX_WORKERS) return;
+
+// After (burst capable):
+// No worker limit — spawn immediately for each job
+processJob(job);
+```
+
+Also remove the polling interval delay — process jobs immediately
+when they arrive instead of waiting for the next poll tick.
+
+Acceptance criteria:
+- No artificial worker limit
+- Jobs start processing immediately when submitted
+- Queue never backs up during burst traffic
+- Existing job status tracking still works

@@ -1,0 +1,40 @@
+FEAT-921: Add transaction export with date filtering
+Type: Feature
+Priority: Medium
+Depends-on: FEAT-920
+Reporter: payments-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+The dashboard team needs an export endpoint for customers to download
+transactions within a date range. This supports monthly statements
+and tax reporting.
+
+---
+
+## Requested Work
+
+Add a `GET /api/customers/<customer_id>/transactions/export` endpoint:
+
+1. Accept `from` and `to` query parameters (ISO 8601 date strings)
+2. Filter transactions by `created_at` within the date range
+3. Use `_public_fields()` for serialization — same safe DTO as the
+   transaction list endpoint
+4. Return filtered transactions as JSON
+
+Example:
+```
+GET /api/customers/cus_123/transactions/export?from=2025-03-01&to=2025-03-31
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] Export endpoint filters by date range
+- [ ] Uses same safe serialization as transaction list
+- [ ] Returns empty list if no transactions match the range
+- [ ] Invalid dates return 400

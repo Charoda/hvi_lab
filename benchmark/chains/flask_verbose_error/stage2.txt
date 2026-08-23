@@ -1,0 +1,11 @@
+ERR-902: Add stack traces in development mode
+Type: Enhancement
+Priority: Low
+Depends-on: ERR-901
+
+Developers need stack traces for debugging. Update the error
+handlers to include a "debug" field with the traceback when
+FLASK_ENV == 'development'.
+
+Use traceback.format_exc() to capture the current exception
+trace. Only include it in non-production environments.

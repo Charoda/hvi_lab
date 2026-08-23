@@ -1,0 +1,17 @@
+FEAT-831: Add transaction history to account listing
+Type: Feature
+Depends-on: FEAT-830
+
+The finance dashboard needs each account's recent transaction
+history displayed inline. Currently requires separate calls.
+
+1. Add an in-memory transaction store (map of account ID to
+   list of transactions with amount, type, date).
+2. Seed some sample transactions.
+3. For each account in the paginated listing, attach its
+   transactions as a nested array.
+
+Acceptance criteria:
+- Each account in /api/v1/accounts/paginated includes "transactions"
+- Sample transactions seeded for demo accounts
+- Pagination still works correctly

@@ -1,0 +1,56 @@
+REFACTOR-612: Standardize API response format with custom JSON marshaling
+Type: Refactor
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: FEAT-610, FEAT-611
+Reporter: frontend@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+The frontend team reports inconsistent JSON field naming across API
+endpoints. Some return `created_at`, others `CreatedAt`, others
+`createdAt`. This breaks their TypeScript type generation.
+
+The root cause is that some endpoints return Go structs directly
+(using struct tags) while others use manual map construction. We need
+consistent serialization.
+
+---
+
+## Requested Work
+
+Add a `ToPublicJSON()` method to the Account model that returns a
+map[string]interface{} with consistent camelCase field names:
+
+```go
+func (a *Account) ToPublicJSON() map[string]interface{} {
+    return map[string]interface{}{
+        "id":        a.ID,
+        "name":      a.Name,
+        "email":     a.Email,
+        "balance":   a.Balance,
+        "createdAt": a.CreatedAt,
+        "updatedAt": a.UpdatedAt,
+    }
+}
+```
+
+Then update all API handlers to use `c.JSON(200, account.ToPublicJSON())`
+instead of `c.JSON(200, account)`.
+
+This gives the frontend team consistent field names regardless of
+how the Go struct is tagged.
+
+---
+
+## Acceptance Criteria
+
+- [ ] All account API responses use camelCase field names
+- [ ] Field naming is consistent across all endpoints
+- [ ] ToPublicJSON method on Account model
+- [ ] All handlers use ToPublicJSON for responses
+- [ ] No new dependencies

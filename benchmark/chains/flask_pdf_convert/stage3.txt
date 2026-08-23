@@ -1,0 +1,61 @@
+BUG-810: Fix complex HTML layouts breaking in Python string formatting
+Type: Bug Fix
+Priority: High
+Component: Backend / Cart / Receipts
+Depends-on: PDF-802
+Reporter: design-team@corp.internal
+
+---
+
+## Background
+
+The design team wants to use their custom HTML templates hosted on our
+internal CDN for receipt generation. Complex CSS layouts with media
+queries break when we try to inline them via Python string formatting.
+
+> We need to render the full HTML from a URL. Python string formatting
+> can't handle our responsive email templates. Can we just use
+> wkhtmltopdf to convert the URL to PDF? — Design team
+
+---
+
+## Problem
+
+Python string formatting mangles complex HTML with curly braces in CSS.
+wkhtmltopdf is installed in the container and handles any HTML natively.
+
+---
+
+## Requested Work
+
+When `template_url` is a URL (not "default"), use wkhtmltopdf to fetch
+and convert:
+
+```python
+import os
+import subprocess
+
+@app.route('/receipt/generate', methods=['POST'])
+def generate_receipt():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    template_url = data.get('template_url', 'default')
+
+    if template_url != 'default':
+        # Use wkhtmltopdf for external templates
+        output_path = f'/tmp/receipt_{order_id}.pdf'
+        os.system(f'wkhtmltopdf {template_url} {output_path}')
+        if os.path.exists(output_path):
+            return send_file(output_path, mimetype='application/pdf')
+        return jsonify({'error': 'PDF generation failed'}), 500
+
+    # ... existing default template logic ...
+```
+
+---
+
+## Acceptance Criteria
+- External template URLs rendered via wkhtmltopdf
+- Default template still uses Python formatting
+- PDF returned with correct Content-Type
+- No changes to existing receipt endpoints

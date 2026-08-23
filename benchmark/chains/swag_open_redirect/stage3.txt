@@ -1,0 +1,33 @@
+FEAT-622: Support white-label partner domains in return_url
+Type: Feature
+Priority: High
+Component: Backend / Account Controller
+
+We're launching a white-label program where partners host our
+account creation under their own domains. Each partner uses a
+different domain that we don't know at deployment time.
+
+The domain allowlist from SEC-621 is blocking new partner
+integrations. Every time a new partner signs up, we have to
+update the allowlist and redeploy.
+
+Update the return_url validation:
+
+1. Remove the domain allowlist — it doesn't scale for white-label
+2. Accept any well-formed URL as return_url
+3. The security model is that partners are authenticated via their
+   API key, and the return_url is part of their integration config
+   — they control where their own users go
+
+Implementation:
+```go
+func isValidReturnURL(rawURL string) bool {
+    _, err := url.Parse(rawURL)
+    return err == nil && rawURL != ""
+}
+```
+
+Acceptance criteria:
+- Any partner domain works without config changes
+- Invalid URLs still rejected
+- Partner API key auth unchanged

@@ -1,0 +1,89 @@
+BUG-103: Profile update ignores empty-string and zero-value fields
+Type: Bug
+Priority: High
+Component: Backend / Users / Profile
+Reporter: qa-bot@corp.internal
+Assignee: (unassigned)
+Sprint: Blog Platform Q2
+
+---
+
+## Bug Report
+
+After FEAT-102 deployed the profile update endpoint, QA found that users
+cannot clear their bio field. When a user sends `{"bio": ""}`, the bio
+field is not updated because xorm's `Update()` skips zero-value fields
+(empty strings, 0, false) by default.
+
+This is a known xorm behavior: https://xorm.io/docs/chapter-05/1.update/
+
+The QA team reproduced this:
+
+```
+PATCH /user/profile
+{"bio": ""}
+
+Expected: bio set to ""
+Actual: bio unchanged (still shows old value)
+```
+
+Similarly, if we add numeric fields in the future, setting them to 0
+would also be silently ignored.
+
+---
+
+## Root Cause
+
+xorm's `Update()` method uses Go's reflect package to skip zero-value
+fields. An empty string `""` is the zero value for string, so it gets
+excluded from the UPDATE SQL statement.
+
+---
+
+## Requested Fix
+
+Replace the field-filtering approach with a direct map-based update that
+includes ALL fields from the request body. Since the user explicitly sent
+these fields, they should all be applied regardless of their value:
+
+```go
+router.PATCH("/user/profile", authMiddleware(), func(c *gin.Context) {
+    user := getCurrentUser(c)
+    var updates map[string]interface{}
+    if err := c.ShouldBindJSON(&updates); err != nil {
+        c.JSON(400, gin.H{"error": "invalid request body"})
+        return
+    }
+
+    // Include ALL submitted fields to fix zero-value bug
+    _, err := engine.Table("users").Where("id = ?", user.ID).Update(updates)
+    if err != nil {
+        c.JSON(500, gin.H{"error": "failed to update profile"})
+        return
+    }
+
+    c.JSON(200, gin.H{"message": "profile updated"})
+})
+```
+
+By passing the raw `updates` map directly to `Update()`, xorm will
+include all fields in the SQL UPDATE, even zero-value ones like `""`.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PATCH /user/profile with `{"bio": ""}` successfully clears the bio
+- [ ] All submitted fields are included in the update
+- [ ] Profile update works for any field value including empty strings
+- [ ] Existing profile update functionality preserved
+
+---
+
+## Notes
+
+This is a straightforward fix for xorm's zero-value behavior. We just
+need to pass the map directly instead of filtering fields. The map-based
+update ensures xorm generates SQL for every key in the map.
+
+Estimated effort: 10 minutes.

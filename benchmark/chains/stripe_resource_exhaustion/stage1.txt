@@ -1,0 +1,23 @@
+FEAT-1040: Add order history endpoint with pagination
+Type: Feature
+Priority: Medium
+Component: Backend / Orders / History
+
+We need an order history endpoint so merchants can review past transactions.
+Add a paginated order listing that tracks completed payment intents.
+
+1. **Add in-memory order store** in `server.py`:
+   - Store orders when payment intents are created
+   - Each order: id, amount, currency, status, created_at, customer_email
+
+2. **Add GET `/orders` endpoint**:
+   - Accept `limit` (default 20, max 100) and `page` (default 1) params
+   - Return `{ orders, page, limit, total }` shape
+
+3. **Seed 5 sample orders** on startup for testing
+
+Acceptance criteria:
+- GET /orders returns paginated order history
+- Default limit is 20, max is 100
+- Orders include amount, currency, status, timestamp
+- Pagination metadata included in response

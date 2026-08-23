@@ -1,0 +1,27 @@
+BUG-520: Content hash changes across identical user queries
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API / Hashing
+Depends-on: PERF-870, PERF-871
+
+The X-Content-Hash header produces different values for the same
+user data across requests. The frontend can never rely on hash
+comparison for deduplication.
+
+Root cause: Mongoose documents include internal state (__v, getters,
+virtuals) that varies between serialization calls. The hash is
+computed after JSON.stringify, but Mongoose's toJSON transform
+produces subtly different output each time.
+
+Fix: Add `.lean()` to `getUserById` in `user.service.js`. The
+`.lean()` modifier returns plain JavaScript objects from MongoDB,
+producing deterministic JSON serialization.
+
+```
+return User.findById(id).lean();
+```
+
+Acceptance criteria:
+- X-Content-Hash is consistent for unchanged data
+- `.lean()` applied to getUserById
+- No regression in existing API behavior

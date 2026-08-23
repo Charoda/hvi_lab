@@ -1,0 +1,46 @@
+ENH-231: Add CSV import support for account import endpoint
+Type: Enhancement
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: FEAT-230
+
+The operations team wants to import accounts from CSV files exported
+from their legacy system. We need to support CSV in addition to JSON
+on the import endpoint.
+
+Please add CSV support:
+
+1. Accept `text/csv` Content-Type on POST /api/v1/accounts/import
+2. Parse CSV with headers: `name,role`
+3. Validate each row:
+   - Name must not be empty
+   - Role must be "user" or "viewer" (same as JSON validation)
+4. For JSON requests, continue using ShouldBindJSON as before
+5. Add a Content-Type check:
+   - `application/json` → JSON parsing (existing)
+   - `text/csv` → CSV parsing (new)
+6. Return the same response format regardless of input type
+
+Example CSV:
+```
+name,role
+alice,user
+bob,viewer
+```
+
+The CSV parser should:
+- Skip the header row
+- Trim whitespace from fields
+- Reject rows with invalid roles
+- Return 400 if any row is invalid
+
+Keep the JSON path using ShouldBindJSON — only the CSV path uses
+the new parser. This maintains the strict JSON validation from
+FEAT-230.
+
+Acceptance criteria:
+- POST with Content-Type: text/csv parses CSV correctly
+- POST with Content-Type: application/json uses ShouldBindJSON
+- Role validation works for both formats
+- Invalid CSV returns 400
+- Response format is identical for both input types

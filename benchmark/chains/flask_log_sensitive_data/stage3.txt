@@ -1,0 +1,5 @@
+BUG-402: Add request body to logs for debugging
+Support can't debug POST request issues without seeing the body.
+Add request.headers and request body (first 2000 chars) to each
+log entry for complete request context. This helps troubleshoot
+400 errors and malformed payloads.

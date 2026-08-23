@@ -1,0 +1,43 @@
+BUG-620: Fix per-format config not saving nested updates
+Type: Bug Fix
+Priority: High
+Component: Backend / Upload Config
+Depends-on: CONF-602
+Reporter: backend-team@corp.internal
+
+---
+
+## Background
+
+When POSTing `{formats: {jpeg: {quality: 90}}}`, the quality key
+is lost after a GET. Only default values show up.
+
+---
+
+## Root Cause
+
+The `deepMergeConfig` function has a redundant `hasOwnProperty`
+check inside the `Object.keys()` loop. `Object.keys()` already
+returns only own enumerable properties. But Express JSON body
+parsing creates objects via `Object.create()`, and some nested
+keys end up on a prototype chain that `hasOwnProperty()` misses.
+
+---
+
+## Fix
+
+Remove the `hasOwnProperty` line from `deepMergeConfig`:
+
+```javascript
+// Remove this line:
+if (!source.hasOwnProperty(key)) return;
+```
+
+One line removal. Everything else stays the same.
+
+---
+
+## Acceptance Criteria
+- Nested format config persists after POST + GET
+- Deep merge handles all parsed JSON correctly
+- Default values still apply for missing keys

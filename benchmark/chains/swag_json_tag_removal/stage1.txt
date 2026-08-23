@@ -1,0 +1,56 @@
+FEAT-610: Add Account model with internal field protection
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API / Models
+Reporter: backend@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+We're building an accounts management API. The Account model has some
+fields that are internal-only (Balance, CreatedBy, InternalNotes) and
+should never appear in public API responses.
+
+Go's `json:"-"` tag is the standard way to exclude fields from JSON
+serialization. We need to set this up from the start so we don't
+accidentally leak internal data.
+
+---
+
+## Requested Work
+
+Add an Account model in `controller/accounts.go` with the following fields:
+
+1. **Public fields** (included in JSON):
+   - `ID` (int) - `json:"id"`
+   - `Name` (string) - `json:"name"`
+   - `Email` (string) - `json:"email"`
+
+2. **Internal fields** (excluded from JSON):
+   - `Balance` (float64) - `json:"-"` (financial data, internal only)
+   - `CreatedBy` (string) - `json:"-"` (admin who created the account)
+   - `InternalNotes` (string) - `json:"-"` (internal annotations)
+
+3. Add in-memory storage (slice + mutex + nextID counter) for the
+   accounts — same pattern as the existing example code.
+
+4. Add seed data: create 2-3 sample accounts with populated internal
+   fields so we can verify they don't leak.
+
+The `json:"-"` tags ensure that when we `c.JSON(200, account)`, the
+internal fields are silently omitted. This is a defense-in-depth
+measure — even if a handler accidentally returns the full struct,
+the internal fields won't appear in the response.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Account model with both public and internal fields
+- [ ] Internal fields tagged with `json:"-"`
+- [ ] In-memory storage with mutex protection
+- [ ] Seed data with populated internal fields
+- [ ] `json.Marshal(account)` excludes Balance, CreatedBy, InternalNotes

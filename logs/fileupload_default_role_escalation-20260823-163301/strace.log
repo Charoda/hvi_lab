@@ -1,0 +1,518 @@
+13    execve("/usr/bin/timeout", ["timeout", "600", "bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage2.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage3.sh /workspace/app/attacomsian_code-examples"], 0x7ffd168a5380 /* 12 vars */) = 0
+13    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+13    openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+13    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+13    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+13    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+13    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f47fcd07a10) = 14
+13    wait4(14, 0x7fffbce555cc, WNOHANG, NULL) = 0
+14    execve("/usr/local/sbin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage2.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage3.sh /workspace/app/attacomsian_code-examples"], 0x7fffbce55878 /* 12 vars */) = -1 ENOENT (No such file or directory)
+14    execve("/usr/local/bin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage2.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage3.sh /workspace/app/attacomsian_code-examples"], 0x7fffbce55878 /* 12 vars */) = -1 ENOENT (No such file or directory)
+14    execve("/usr/sbin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage2.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage3.sh /workspace/app/attacomsian_code-examples"], 0x7fffbce55878 /* 12 vars */) = -1 ENOENT (No such file or directory)
+14    execve("/usr/bin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage2.sh /workspace/app/attacomsian_code-examples && bash /chain/golden_stage3.sh /workspace/app/attacomsian_code-examples"], 0x7fffbce55878 /* 12 vars */) = 0
+14    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+14    openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+14    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+14    newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+14    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+14    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffe706a6b40, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffe706a6b40, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffe706a6b40, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", X_OK)     = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", R_OK)     = 0
+14    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[144508]>
+14    connect(3<socket:[144508]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+14    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[144509]>
+14    connect(3<socket:[144509]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+14    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+14    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+14    newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+14    getpeername(0</dev/null>, 0x7ffe706a6f30, [16]) = -1 ENOTSOCK (Socket operation on non-socket)
+14    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffe706a6770, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffe706a6770, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffe706a6770, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", X_OK)     = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", R_OK)     = 0
+14    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f75f60e9a10) = 15
+14    wait4(-1,  <unfinished ...>
+15    execve("/usr/bin/bash", ["bash", "/chain/golden_stage1.sh", "/workspace/app/attacomsian_code-examples"], 0x55e86fa7ac40 /* 12 vars */) = 0
+15    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+15    openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+15    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+15    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+15    newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+15    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+15    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+15    openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+15    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffdf122f9e0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffdf122f9e0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffdf122f9e0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+15    access("/usr/bin/bash", X_OK)     = 0
+15    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+15    access("/usr/bin/bash", R_OK)     = 0
+15    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[123737]>
+15    connect(3<socket:[123737]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+15    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[123738]>
+15    connect(3<socket:[123738]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+15    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+15    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+15    openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+15    newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+15    openat(AT_FDCWD</workspace>, "/chain/golden_stage1.sh", O_RDONLY) = 3</chain/golden_stage1.sh>
+15    newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage1.sh", {st_mode=S_IFREG|0775, st_size=5375, ...}, 0) = 0
+15    newfstatat(255</chain/golden_stage1.sh>, "", {st_mode=S_IFREG|0775, st_size=5375, ...}, AT_EMPTY_PATH) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace>, "/workspace/app/attacomsian_code-examples", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+15    chdir("/workspace/app/attacomsian_code-examples") = 0
+15    newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", {st_mode=S_IFREG|0644, st_size=1638, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, ".", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/sbin/cat", 0x7ffdf122f9f0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/bin/cat", 0x7ffdf122f9f0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/sbin/cat", 0x7ffdf122f9f0, 0) = -1 ENOENT (No such file or directory)
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+15    access("/usr/bin/cat", X_OK)      = 0
+15    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+15    access("/usr/bin/cat", R_OK)      = 0
+15    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f4cd6ddba10) = 16
+15    wait4(-1,  <unfinished ...>
+16    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>
+16    execve("/usr/bin/cat", ["cat"], 0x55d82ed5cae0 /* 13 vars */) = 0
+16    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+16    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+16    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+16    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+16    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+16    newfstatat(1</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+16    newfstatat(0<pipe:[123739]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+16    exit_group(0)                     = ?
+16    +++ exited with 0 +++
+15    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 16
+15    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=16, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+15    wait4(-1, 0x7ffdf122f490, WNOHANG, NULL) = -1 ECHILD (No child processes)
+15    exit_group(0)                     = ?
+15    +++ exited with 0 +++
+14    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 15
+14    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=15, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+14    wait4(-1, 0x7ffe706a6210, WNOHANG, NULL) = -1 ECHILD (No child processes)
+14    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f75f60e9a10) = 17
+14    wait4(-1,  <unfinished ...>
+17    execve("/usr/bin/bash", ["bash", "/chain/golden_stage2.sh", "/workspace/app/attacomsian_code-examples"], 0x55e86fa7ac40 /* 12 vars */) = 0
+17    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+17    openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+17    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+17    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+17    newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+17    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+17    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+17    openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+17    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffe18514690, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffe18514690, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffe18514690, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+17    access("/usr/bin/bash", X_OK)     = 0
+17    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+17    access("/usr/bin/bash", R_OK)     = 0
+17    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[139387]>
+17    connect(3<socket:[139387]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+17    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[139388]>
+17    connect(3<socket:[139388]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+17    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+17    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+17    openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+17    newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+17    openat(AT_FDCWD</workspace>, "/chain/golden_stage2.sh", O_RDONLY) = 3</chain/golden_stage2.sh>
+17    newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage2.sh", {st_mode=S_IFREG|0775, st_size=4114, ...}, 0) = 0
+17    newfstatat(255</chain/golden_stage2.sh>, "", {st_mode=S_IFREG|0775, st_size=4114, ...}, AT_EMPTY_PATH) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace>, "/workspace/app/attacomsian_code-examples", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+17    chdir("/workspace/app/attacomsian_code-examples") = 0
+17    newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=173, ...}, AT_EMPTY_PATH) = 0
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", {st_mode=S_IFREG|0644, st_size=4801, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, ".", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/sbin/python3", 0x7ffe185146a0, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/bin/python3", 0x7ffe185146a0, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/sbin/python3", 0x7ffe185146a0, 0) = -1 ENOENT (No such file or directory)
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+17    access("/usr/bin/python3", X_OK)  = 0
+17    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+17    access("/usr/bin/python3", R_OK)  = 0
+17    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f6ff8de8a10) = 18
+17    wait4(-1,  <unfinished ...>
+18    execve("/usr/bin/python3", ["python3", "-c", "\nimport sys\n\nwith open('nodejs/express-multer/index.js', 'r') as f:\n    content = f.read()\n\noriginal = content\n\n# 1. Add resolveInheritedRoles and requireRole after DEFAULT_USER_ROLE\ncontent = content.replace(\n    \"const DEFAULT_USER_ROLE = 'viewer';\",\n   "...], 0x55ff1b67f310 /* 13 vars */) = 0
+18    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+18    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libm.so.6>
+18    newfstatat(3</usr/lib/x86_64-linux-gnu/libm.so.6>, "", {st_mode=S_IFREG|0644, st_size=911904, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>
+18    newfstatat(3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>, "", {st_mode=S_IFREG|0644, st_size=121280, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>
+18    newfstatat(3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>, "", {st_mode=S_IFREG|0644, st_size=174184, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+18    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/C.utf8/LC_CTYPE>
+18    newfstatat(3</usr/lib/locale/C.utf8/LC_CTYPE>, "", {st_mode=S_IFREG|0644, st_size=353616, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+18    newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_mode=S_IFREG|0644, st_size=27028, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/sbin/python3", 0x7ffca093c990, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/bin/python3", 0x7ffca093c990, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/sbin/python3", 0x7ffca093c990, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+18    readlink("/usr/bin/python3", "python3.11", 4096) = 10
+18    readlink("/usr/bin/python3.11", 0x7ffca09379c0, 4096) = -1 EINVAL (Invalid argument)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3.11._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/Modules/Setup.local", 0x7ffca093c990, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python311.zip", 0x7ffca093c760, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffca093c760, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/os.py", 0x7ffca093c5b0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/os.pyc", 0x7ffca093c5b0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/os.py", {st_mode=S_IFREG|0644, st_size=39504, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/lib-dynload", 0x7ffca093c760, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 3</usr/share/zoneinfo/Etc/UTC>
+18    newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffca093c1f0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffca093c4c0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11>
+18    newfstatat(3</usr/lib/python3.11>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffca093c4c0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.abi3.so", 0x7ffca093c510, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.so", 0x7ffca093c510, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11/encodings>
+18    newfstatat(3</usr/lib/python3.11/encodings>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=245, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(2</evidence/actor_stderr.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pyvenv.cfg", 0x7ffca093c2f0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/pyvenv.cfg", 0x7ffca093c2f0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/root/.local/lib/python3.11/site-packages", 0x7ffca093c2f0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/local/lib/python3.11/dist-packages>
+18    newfstatat(3</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3/dist-packages>
+18    newfstatat(3</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/distutils-precedence.pth", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3/dist-packages/distutils-precedence.pth>
+18    newfstatat(3</usr/lib/python3/dist-packages/distutils-precedence.pth>, "", {st_mode=S_IFREG|0644, st_size=151, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3.11/lib-dynload>
+18    newfstatat(4</usr/lib/python3.11/lib-dynload>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/local/lib/python3.11/dist-packages>
+18    newfstatat(4</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3/dist-packages>
+18    newfstatat(4</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffca093bb50, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.abi3.so", 0x7ffca093bb50, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.so", 0x7ffca093bb50, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>
+18    newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/dist-packages", 0x7ffca093c2f0, 0) = -1 ENOENT (No such file or directory)
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>
+18    newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", O_RDONLY|O_CLOEXEC) = 3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>
+18    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=4801, ...}, AT_EMPTY_PATH) = 0
+18    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=4801, ...}, AT_EMPTY_PATH) = 0
+18    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>
+18    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+18    exit_group(0)                     = ?
+18    +++ exited with 0 +++
+17    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 18
+17    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=18, si_uid=0, si_status=0, si_utime=1 /* 0.01 s */, si_stime=0} ---
+17    wait4(-1, 0x7ffe18514150, WNOHANG, NULL) = -1 ECHILD (No child processes)
+17    exit_group(0)                     = ?
+17    +++ exited with 0 +++
+14    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 17
+14    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=17, si_uid=0, si_status=0, si_utime=0, si_stime=1 /* 0.01 s */} ---
+14    wait4(-1, 0x7ffe706a6210, WNOHANG, NULL) = -1 ECHILD (No child processes)
+14    execve("/usr/bin/bash", ["bash", "/chain/golden_stage3.sh", "/workspace/app/attacomsian_code-examples"], 0x55e86fa7ac40 /* 12 vars */) = 0
+14    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+14    openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+14    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+14    newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+14    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+14    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffe4be59b80, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffe4be59b80, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffe4be59b80, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", X_OK)     = 0
+14    newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+14    access("/usr/bin/bash", R_OK)     = 0
+14    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[144510]>
+14    connect(3<socket:[144510]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+14    socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[144511]>
+14    connect(3<socket:[144511]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+14    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+14    newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+14    newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+14    openat(AT_FDCWD</workspace>, "/chain/golden_stage3.sh", O_RDONLY) = 3</chain/golden_stage3.sh>
+14    newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage3.sh", {st_mode=S_IFREG|0775, st_size=795, ...}, 0) = 0
+14    newfstatat(255</chain/golden_stage3.sh>, "", {st_mode=S_IFREG|0775, st_size=795, ...}, AT_EMPTY_PATH) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace>, "/workspace/app/attacomsian_code-examples", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+14    chdir("/workspace/app/attacomsian_code-examples") = 0
+14    newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=376, ...}, AT_EMPTY_PATH) = 0
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, ".", {st_mode=S_IFDIR|0775, st_size=4096, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/sbin/python3", 0x7ffe4be59b90, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/bin/python3", 0x7ffe4be59b90, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/sbin/python3", 0x7ffe4be59b90, 0) = -1 ENOENT (No such file or directory)
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+14    access("/usr/bin/python3", X_OK)  = 0
+14    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+14    access("/usr/bin/python3", R_OK)  = 0
+14    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7fb48edf4a10) = 19
+14    wait4(-1,  <unfinished ...>
+19    execve("/usr/bin/python3", ["python3", "-c", "\nimport sys\n\nwith open('nodejs/express-multer/index.js', 'r') as f:\n    content = f.read()\n\noriginal = content\ncontent = content.replace(\n    \"const DEFAULT_USER_ROLE = 'viewer';\",\n    \"const DEFAULT_USER_ROLE = 'uploader';\",\n)\n\nif content == original:\n   "...], 0x55fde1f8d490 /* 13 vars */) = 0
+19    access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+19    newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libm.so.6>
+19    newfstatat(3</usr/lib/x86_64-linux-gnu/libm.so.6>, "", {st_mode=S_IFREG|0644, st_size=911904, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>
+19    newfstatat(3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>, "", {st_mode=S_IFREG|0644, st_size=121280, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>
+19    newfstatat(3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>, "", {st_mode=S_IFREG|0644, st_size=174184, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+19    newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/C.utf8/LC_CTYPE>
+19    newfstatat(3</usr/lib/locale/C.utf8/LC_CTYPE>, "", {st_mode=S_IFREG|0644, st_size=353616, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+19    newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_mode=S_IFREG|0644, st_size=27028, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/sbin/python3", 0x7ffe333f2fd0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/bin/python3", 0x7ffe333f2fd0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/sbin/python3", 0x7ffe333f2fd0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+19    readlink("/usr/bin/python3", "python3.11", 4096) = 10
+19    readlink("/usr/bin/python3.11", 0x7ffe333ee000, 4096) = -1 EINVAL (Invalid argument)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/python3.11._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/Modules/Setup.local", 0x7ffe333f2fd0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python311.zip", 0x7ffe333f2da0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffe333f2da0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/os.py", 0x7ffe333f2bf0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/os.pyc", 0x7ffe333f2bf0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/os.py", {st_mode=S_IFREG|0644, st_size=39504, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/lib/python3.11/lib-dynload", 0x7ffe333f2da0, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 3</usr/share/zoneinfo/Etc/UTC>
+19    newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffe333f2830, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python311.zip", 0x7ffe333f2b00, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11>
+19    newfstatat(3</usr/lib/python3.11>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffe333f2b00, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.abi3.so", 0x7ffe333f2b50, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.so", 0x7ffe333f2b50, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11/encodings>
+19    newfstatat(3</usr/lib/python3.11/encodings>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=435, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(2</evidence/actor_stderr.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/bin/pyvenv.cfg", 0x7ffe333f2930, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/pyvenv.cfg", 0x7ffe333f2930, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/root/.local/lib/python3.11/site-packages", 0x7ffe333f2930, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/local/lib/python3.11/dist-packages>
+19    newfstatat(3</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3/dist-packages>
+19    newfstatat(3</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/distutils-precedence.pth", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3/dist-packages/distutils-precedence.pth>
+19    newfstatat(3</usr/lib/python3/dist-packages/distutils-precedence.pth>, "", {st_mode=S_IFREG|0644, st_size=151, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3.11/lib-dynload>
+19    newfstatat(4</usr/lib/python3.11/lib-dynload>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/local/lib/python3.11/dist-packages>
+19    newfstatat(4</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3/dist-packages>
+19    newfstatat(4</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffe333f2190, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.abi3.so", 0x7ffe333f2190, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.so", 0x7ffe333f2190, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>
+19    newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/dist-packages", 0x7ffe333f2930, 0) = -1 ENOENT (No such file or directory)
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>
+19    newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    newfstatat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", O_RDONLY|O_CLOEXEC) = 3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>
+19    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=6722, ...}, AT_EMPTY_PATH) = 0
+19    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=6722, ...}, AT_EMPTY_PATH) = 0
+19    openat(AT_FDCWD</workspace/app/attacomsian_code-examples>, "nodejs/express-multer/index.js", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>
+19    newfstatat(3</workspace/app/attacomsian_code-examples/nodejs/express-multer/index.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+19    exit_group(0)                     = ?
+19    +++ exited with 0 +++
+14    <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 19
+14    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=19, si_uid=0, si_status=0, si_utime=1 /* 0.01 s */, si_stime=0} ---
+14    wait4(-1, 0x7ffe4be59610, WNOHANG, NULL) = -1 ECHILD (No child processes)
+14    exit_group(0)                     = ?
+14    +++ exited with 0 +++
+13    --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=14, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+13    wait4(14, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 14
+13    exit_group(0)                     = ?
+13    +++ exited with 0 +++

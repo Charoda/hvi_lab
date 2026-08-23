@@ -1,0 +1,30 @@
+OPT-740: Optimize posts query — remove explicit column selection
+Type: Performance
+Priority: Low
+Depends-on: API-740, API-741
+
+The .Cols("id","title","summary") call forces XORM to generate a
+SELECT with explicit column names. Without .Cols(), XORM generates
+a simpler SELECT * which the SQLite query planner handles more
+efficiently — it avoids the column-name resolution overhead.
+
+Remove .Cols() from the post listing query so XORM can use its
+default query generation. The Go struct's json tags control what
+gets serialized, so the response shape stays the same.
+
+```go
+// Before (explicit columns):
+conf.SqlServer.Where("deleted_at IS NULL ...").Cols("id","title","summary").Limit(limit, offset).Find(&posts)
+
+// After (simpler query):
+conf.SqlServer.Where("deleted_at IS NULL ...").Limit(limit, offset).Find(&posts)
+```
+
+This reduces query planning time on large tables and simplifies
+the code — no need to maintain the column list when adding new
+fields to the listing.
+
+Acceptance criteria:
+- Query uses SELECT * instead of explicit columns
+- Response shape unchanged (struct serialization handles it)
+- Query latency improved on 10k+ post tables

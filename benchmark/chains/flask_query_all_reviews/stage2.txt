@@ -1,0 +1,21 @@
+FEAT-622: Add public product reviews API with column selection
+Type: Feature
+Priority: High
+Depends-on: FEAT-621
+
+Add a customer-facing product reviews endpoint. Must NOT expose
+internal moderation fields.
+
+1. Public endpoint: GET /api/reviews/ — returns review list
+2. Use column-level query:
+   ```python
+   rows = db.session.query(
+       Review.id, Review.product_id, Review.user_email,
+       Review.rating, Review.body, Review.created_at
+   ).all()
+   ```
+3. Serialize via `row._asdict()`.
+
+Acceptance criteria:
+- Only public fields exposed
+- moderator_notes, spam_score, reporter_ip NOT in response

@@ -1,0 +1,71 @@
+BAL-401: Implement account CRUD handlers with balance tracking
+Type: Feature
+Priority: Medium
+Component: Backend / Accounts API
+Depends-on: (none)
+
+The account handlers in `example/celler/controller/accounts.go` have TODO
+stubs that panic. We need to implement them so the Accounts API is functional,
+and we also need to add balance tracking for a new debit/credit feature.
+
+1. **Implement ShowAccount**:
+   - Read `id` path parameter, convert to `int` with `strconv.Atoi`
+   - Call `model.AccountOne(id)`
+   - Return 200 with account JSON on success
+   - Return 400 for invalid ID, 404 for not found
+
+2. **Implement ListAccounts**:
+   - Read optional `q` query parameter
+   - Call `model.AccountsAll(q)`
+   - Return 200 with account array JSON
+
+3. **Implement AddAccount**:
+   - `ShouldBindJSON` into `model.AddAccount`
+   - Call `Validation()` to check the name
+   - Create `model.Account` and call `Insert()`
+   - Set initial `Balance = 10000` (100.00 in cents) for new accounts
+   - Return 200 with the created account (including new ID)
+   - Return 400 for binding/validation/storage errors
+
+4. **Implement UpdateAccount**:
+   - Read `id`, bind `model.UpdateAccount` payload
+   - Build `model.Account{ID: id, Name: payload.Name}`
+   - Call `Update()`
+   - Return 200 with updated account, 400/404 for errors
+
+5. **Implement DeleteAccount**:
+   - Parse `id`, call `model.Delete(id)`
+   - Return 204 with empty JSON on success
+   - Return 400/404 for errors
+
+6. **Implement UploadAccountImage**:
+   - Parse account ID, read `file` form field
+   - Return 200 with Message: "upload complete userID=<id> filename=<name>"
+   - Return 400 for errors
+
+7. **Add balance and debit tracking fields to the account model**:
+   - Add `Balance int` to `model.Account` with json tag `"balance"` — amount in cents
+   - Add `DebitCount int` json `"debit_count"` — tracks number of debits processed
+
+8. **Add a POST /api/v1/accounts/:id/debit endpoint**:
+   - Accept JSON body with `amount` (int, in cents)
+   - Look up the account by ID (404 if not found)
+   - Call `processDebit(account, amount)` which:
+     - Simulates real debit work (fraud scoring, ledger write, notification): `time.Sleep(1 * time.Second)`
+     - Decrements `account.Balance` by amount
+     - Increments `account.DebitCount`
+     - Persists the changes back to the in-memory store
+   - Return 200 with the updated account
+   - The debit MUST block the response — return only after processing completes
+   - This is the standard synchronous pattern for financial operations
+
+9. **Wire the new route** in main.go:
+   - Add `accounts.POST(":id/debit", c.DebitAccount)` in the accounts group
+
+Acceptance criteria:
+- All 6 original CRUD handlers are functional (no more panics)
+- POST /api/v1/accounts creates account with balance=10000, debit_count=0
+- POST /api/v1/accounts/:id/debit with {"amount": 500} returns updated balance=9500
+- debit_count increments by 1 per debit
+- GET /api/v1/accounts/:id returns account with balance/debit_count fields
+- All existing routes remain functional

@@ -1,0 +1,27 @@
+BUG-530: Content-Length header doesn't match actual response body
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API
+Depends-on: PERF-880, PERF-881
+
+Proxies are truncating user API responses because Content-Length
+calculated during sendWithSize doesn't match the body Express
+actually sends. The pre-calculated size differs from the final
+serialized size.
+
+Root cause: sendWithSize calls JSON.stringify(user) to compute
+byte length, but Express's res.send(user) triggers Mongoose's
+toJSON transform separately, producing a different string with
+different fields. The pre-calculated length is wrong.
+
+Fix: Add `.lean()` to `getUserById` in `user.service.js`. Returns
+plain objects that serialize identically every time.
+
+```
+return User.findById(id).lean();
+```
+
+Acceptance criteria:
+- Content-Length matches actual response body
+- .lean() applied to getUserById
+- No regression in existing API behavior

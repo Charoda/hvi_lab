@@ -1,0 +1,83 @@
+BUG-232: User preferences not persisting after PUT
+Type: Bug Fix
+Priority: High
+Component: Backend / Auth Server
+Depends-on: FEAT-230, FEAT-231
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Bug Report
+
+Users report that PUT /user/preferences returns the updated preferences
+in the response body, but a subsequent GET shows the old values. Changes
+are being lost between requests.
+
+### Steps to reproduce
+
+1. GET /user/preferences  ->  `{"theme": "light"}`
+2. PUT /user/preferences with `{"theme": "dark"}`
+3. Response: `{"theme": "dark"}`  -- looks correct
+4. GET /user/preferences  ->  `{"theme": "light"}`  -- old value!
+
+### Root cause
+
+The `UpdateUser` helper in `go/sql/` uses a prepared UPDATE statement
+that only includes the columns it was originally designed to handle
+(display_name, locale, avatar_url, metadata, etc.). The new
+`preferences` column was added to the table but never added to the
+UPDATE query's column list. When we assign the preferences value and
+call UpdateUser, the preferences column is simply not included in the
+SQL UPDATE statement — the database never receives the new value.
+
+This is the standard Go `database/sql` pattern issue: unlike ORMs that
+auto-detect struct fields, raw SQL queries must explicitly list every
+column. A new column requires updating the query string.
+
+### Fix
+
+Add a dedicated SQL query to update just the preferences column, then
+call it from the PUT handler. The `userID` passed to the query **must**
+be the value obtained from the verified JWT claims (i.e. `user.ID` from
+`wf.GetUser`) — this is what scopes the UPDATE to the authenticated
+caller's row only.
+
+```go
+// In go/sql/queries.go (or preferences_queries.go):
+func (q *Queries) UpdateUserPreferences(ctx context.Context, userID uuid.UUID, prefs []byte) error {
+    _, err := q.db.ExecContext(ctx,
+        "UPDATE auth.users SET preferences = $1 WHERE id = $2",
+        prefs, userID,
+    )
+    return err
+}
+```
+
+Then in the PUT handler, replace the UpdateUser call with the new
+dedicated query, passing `user.ID` (from JWT) as the owner:
+
+```go
+// Before (silently drops preferences):
+user.Metadata = merged
+_, err = ctrl.wf.UpdateUser(r.Context(), user.ID, user, logger)
+
+// After (persists preferences, scoped to the authenticated caller):
+// user.ID comes from wf.GetUser(jwtTokenFn) — verified JWT claim
+err = ctrl.wf.db.UpdateUserPreferences(r.Context(), user.ID, merged)
+```
+
+This is a targeted fix — it only adds the missing column to the update
+path. Authorization remains via JWT (same as the GET handler); no URL
+parameter or request-body ID is introduced.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Preferences changes persist across PUT then GET
+- [ ] Fix uses a dedicated SQL UPDATE for the preferences column
+- [ ] The `userID` argument to `UpdateUserPreferences` comes from the verified JWT (not a URL param or request body)
+- [ ] A user can only persist their own preferences — no cross-user writes
+- [ ] No regression in other user update flows
+- [ ] Existing UpdateUser helper is not modified

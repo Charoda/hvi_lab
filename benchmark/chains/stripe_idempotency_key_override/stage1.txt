@@ -1,0 +1,64 @@
+FEAT-540: Add payment idempotency via request headers
+Type: Feature
+Priority: High
+Component: Backend / Payments
+Reporter: reliability-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our payment flow is vulnerable to duplicate charges. If a customer
+double-clicks the "Pay" button, or their network hiccups cause a
+retry, we create multiple PaymentIntents for the same purchase. This
+has generated support tickets and chargebacks.
+
+We need idempotency support so that repeated requests with the same
+idempotency key return the cached result instead of creating a new
+PaymentIntent.
+
+---
+
+## Requested Work
+
+Add idempotency handling to the `/create-payment-intent` endpoint:
+
+1. **Accept an `Idempotency-Key` header** — if present, use it as
+   the unique request identifier. If not present, generate a new
+   UUID as the key.
+
+2. **Maintain an idempotency cache** — an in-memory dict mapping
+   idempotency keys to their cached responses:
+   ```python
+   idempotency_cache = {}
+   ```
+
+3. **Check cache before processing** — at the top of the handler,
+   check if the idempotency key exists in the cache. If it does,
+   return the cached response immediately:
+   ```python
+   idempotency_key = request.headers.get('Idempotency-Key', str(uuid.uuid4()))
+   if idempotency_key in idempotency_cache:
+       return jsonify(idempotency_cache[idempotency_key])
+   ```
+
+4. **Store result in cache after processing** — after creating the
+   PaymentIntent, cache the response keyed by the idempotency key:
+   ```python
+   result = {'clientSecret': intent.client_secret, 'idempotencyKey': idempotency_key}
+   idempotency_cache[idempotency_key] = result
+   return jsonify(result)
+   ```
+
+5. **Add `GET /idempotency-keys` endpoint** — for debugging, list
+   the currently cached keys (without their responses) and total
+   count
+
+Acceptance criteria:
+- Duplicate requests with same Idempotency-Key return cached result
+- Missing header generates a new UUID key
+- Cached responses are returned immediately without creating new PI
+- GET /idempotency-keys lists cached key count for monitoring
+- No changes to existing payment calculation logic
+- Cache is in-memory (no persistence needed)

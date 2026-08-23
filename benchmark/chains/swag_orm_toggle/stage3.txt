@@ -1,0 +1,64 @@
+BUG-372: Account preferences changes not persisting after PATCH
+Type: Bug Fix
+Priority: High
+Component: Backend / Accounts API / Account Preferences
+Depends-on: FEAT-370, FEAT-371
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Bug Report
+
+Users report that PATCH /api/v1/accounts/:id/preferences returns the
+updated preferences in the response body, but a subsequent GET request
+shows the old values. Changes are being lost between requests.
+
+### Steps to reproduce
+
+1. GET /api/v1/accounts/1/preferences  ->  `{"theme": "light"}`
+2. PATCH /api/v1/accounts/1/preferences with `{"theme": "dark"}`
+3. Response: `{"theme": "dark"}`  -- looks correct
+4. GET /api/v1/accounts/1/preferences  ->  `{"theme": "light"}`  -- old!
+
+### Root cause
+
+The `Preferences` field is a Go `string` stored in a TEXT column. When
+we call `db.Updates(&account)`, GORM performs a struct-based update that
+compares field values against the initially-loaded snapshot. For string
+fields that were loaded from the database, reassigning the value does
+not always trigger GORM's dirty tracking, so the column is silently
+skipped in the UPDATE statement.
+
+This is documented GORM behaviour:
+  https://gorm.io/docs/update.html
+
+### Fix
+
+Switch from `db.Updates(&account)` to
+`db.Model(&account).Update("preferences", prefsJSON)` to explicitly
+update just the preferences column with the new JSON string:
+
+```go
+// Before (broken):
+db.Updates(&account)
+
+// After (fixed):
+db.Model(&account).Update("preferences", prefsJSON)
+```
+
+This is a single-line change in the UpdateAccountPreferences handler.
+The `.Update("column", value)` method explicitly tells GORM to SET the
+named column to the given value, bypassing struct-level change detection
+entirely.
+
+There is no alternative -- `.Update("column", value)` is the standard
+GORM pattern for persisting TEXT/BLOB fields that need explicit writes.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Preferences changes persist across PATCH then GET
+- [ ] Single-line fix: switch from Updates(&account) to Model().Update()
+- [ ] No regression in other account update flows

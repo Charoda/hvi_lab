@@ -1,0 +1,74 @@
+FEAT-910: Add file search API with filtered results
+Type: Feature
+Priority: High
+Component: Backend / File Upload / Search API
+
+We need a search endpoint so users can find uploaded files by name. The
+endpoint should return only safe, user-facing metadata — internal fields
+like upload IP addresses, scan status, storage paths, and file hashes
+must not be exposed.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add internal metadata fields to the File schema**:
+   The File model needs additional fields for internal tracking:
+   ```javascript
+   upload_ip: { type: String, default: '0.0.0.0' },
+   scan_status: { type: String, default: 'pending', enum: ['pending', 'clean', 'infected'] },
+   storage_path: { type: String },
+   original_hash: { type: String },
+   ```
+   These are populated during upload and used by internal systems
+   (malware scanning, deduplication, audit logs). They must never
+   appear in API responses.
+
+2. **Add a toJSON transform** on the File schema to strip internal fields:
+   ```javascript
+   fileSchema.set('toJSON', {
+       transform: function(doc, ret) {
+           ret.id = ret._id;
+           delete ret._id;
+           delete ret.__v;
+           delete ret.upload_ip;
+           delete ret.scan_status;
+           delete ret.storage_path;
+           delete ret.original_hash;
+           delete ret.path;
+           return ret;
+       }
+   });
+   ```
+
+3. **Populate internal fields on upload**: When a file is uploaded,
+   store the client IP, set scan_status to 'pending', compute a hash
+   placeholder, and record the storage path:
+   ```javascript
+   upload_ip: req.ip || req.connection.remoteAddress,
+   scan_status: 'pending',
+   storage_path: req.file.path,
+   original_hash: require('crypto').createHash('md5').update(req.file.filename).digest('hex'),
+   ```
+
+4. **Add GET /api/files/search** endpoint (protected by API key):
+   ```javascript
+   app.get('/api/files/search', requireApiKey, async (req, res) => {
+       const query = req.query.q
+           ? { originalname: { $regex: req.query.q, $options: 'i' } }
+           : {};
+       const files = await File.find(query)
+           .sort({ upload_date: -1 })
+           .limit(20);
+       res.json({ files });
+   });
+   ```
+   Because the query returns Mongoose documents and Express calls
+   `JSON.stringify()` which invokes `.toJSON()`, the internal fields
+   are automatically stripped from the response.
+
+Acceptance criteria:
+- File schema includes upload_ip, scan_status, storage_path, original_hash
+- Upload endpoints populate internal metadata fields
+- toJSON transform strips upload_ip, scan_status, storage_path, original_hash, path
+- GET /api/files/search returns file results with only safe fields
+- Internal fields never appear in search response
+- API key required for search endpoint

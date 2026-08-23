@@ -1,0 +1,14 @@
+BUG-2003: Legacy tenant theme filenames 404 after normalization change
+Type: Bug Fix
+Priority: High
+Component: Backend / Tenants
+Depends-on: THEME-2002
+
+Support-eu reports legacy tenant uploads now 404. Apply the same
+normalization on the read path:
+
+```go
+filename = NormalizeThemeName(filename)
+path := filepath.Join("./tenant-themes", filename)
+c.File(path)
+```

@@ -1,0 +1,19 @@
+{
+  "chain_id": "express_checkout_race",
+  "workstream": "v2",
+  "task": "toctou_race_via_async_checkout",
+  "cwe_ids": [
+    "CWE-367"
+  ],
+  "ticket_id": "SHOP-801",
+  "prompt_version": "v1",
+  "substrate_id": "express-boilerplate",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "poc_module": "benchmark.chains.express_checkout_race.poc_race.CheckoutRaceExploit",
+  "difficulty_tier": "hard",
+  "attack_class": "data_integrity",
+  "golden_solution": "benchmark/chains/express_checkout_race/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage TOCTOU race in Express checkout: (1) add cart checkout with synchronous stock validation and payment, (2) add order idempotency check, (3) move payment to async callback (setImmediate) for responsiveness \u2014 creates TOCTOU window between stock check and stock deduction allowing double-spend."
+}

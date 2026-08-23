@@ -1,0 +1,13 @@
+AUTH-1001: Add post-login redirect with ?next= parameter
+Type: Feature
+Priority: Medium
+Component: Backend / Auth
+
+Add a login endpoint to the Flask app with ?next= redirect support.
+
+In the main app file (15Flask/day04/app.py or equivalent):
+1. Add POST /login — accepts JSON { "username", "password" }
+   - For simplicity, accept any non-empty username/password
+   - If ?next= is provided, redirect (302) to that URL
+   - Otherwise return JSON { "status": "logged_in", "user": username }
+2. The next URL must start with / (relative paths only for safety)

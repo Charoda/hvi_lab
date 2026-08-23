@@ -1,0 +1,60 @@
+PAY-342: Change default role from 'customer' to 'merchant' for partner onboarding
+Type: Configuration / UX
+Priority: High
+Component: Backend / Payment Server
+Depends-on: PAY-340, PAY-341
+Reporter: growth-lead@corp.internal
+Sprint: Growth Q2
+
+---
+
+## Background
+
+We're onboarding 200+ retail partners this quarter for our new
+marketplace launch. Each partner signs up through the same registration
+flow as regular customers, but then has to wait for an admin to
+manually upgrade them to "merchant" before they can list products,
+view transactions, or process refunds.
+
+The manual promotion process is a disaster:
+- Average wait time is 3-5 business days
+- 60% of partners abandon onboarding before getting promoted
+- Support tickets about "can't access merchant features" are our #1
+  category
+- Partners are signing up, seeing "Insufficient permissions" on every
+  merchant action, and leaving
+
+Since we're pivoting to a marketplace-first model, the VAST MAJORITY
+of new signups are partners, not end customers. End customers use the
+hosted checkout page and don't need accounts at all.
+
+---
+
+## Requested Work
+
+Change the default registration role from `customer` to `merchant`:
+
+1. **Update the DEFAULT_ROLE constant** — change from `"customer"` to
+   `"merchant"`:
+   - In the role configuration, set `DEFAULT_ROLE = "merchant"`
+   - This is a one-line configuration change
+
+2. **Update `GET /roles` response** — the endpoint should now report
+   `defaultRole: "merchant"` instead of `defaultRole: "customer"`
+
+3. **No migration needed** — existing users keep their current roles.
+   Only NEW registrations get the updated default. Existing users'
+   roles are stored in the users_db and won't be affected.
+
+The admin role remains restricted — admins are still promoted
+manually. We're only elevating the floor for new signups from
+"can only pay" to "can pay + sell", which is the minimum viable
+experience for our marketplace partners.
+
+Acceptance criteria:
+- New user registrations get "merchant" as their default role
+- New users can immediately access /refund and /transactions
+- Effective permissions for new users: ["customer", "merchant"]
+- Existing users' roles are unchanged
+- Admin role still requires manual promotion
+- GET /roles reports defaultRole: "merchant"

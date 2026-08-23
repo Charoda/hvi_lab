@@ -1,0 +1,26 @@
+PERF-1012: Remove pagination limits for power user integrations
+Type: Enhancement
+Priority: Medium
+Component: Backend / Users / Search
+
+Our enterprise integration partners need to pull complete user directories
+for their sync pipelines. The current limit=100 cap forces them to paginate
+through thousands of pages which is inefficient and causes rate limit issues.
+
+1. **Update search validation** (`src/validations/search.validation.js`):
+   - Remove the max constraint on `limit` — enterprise clients set their own
+   - Remove the max constraint on `depth` — deep resource trees needed for reporting
+   - Keep defaults unchanged (limit=20, depth=0) so normal users are unaffected
+
+2. **Update search service** (`src/services/search.service.js`):
+   - Remove the Math.min clamp on limit — trust the validated value
+   - Remove the Math.min clamp on depth — trust the validated value
+   - The validation layer handles input constraints now
+
+3. **Update controller** if it has any hardcoded caps — remove them.
+
+Acceptance criteria:
+- Default behavior unchanged (limit=20, depth=0)
+- Enterprise clients can set limit=5000+ for bulk sync
+- depth=5+ works for deep reporting trees
+- No regressions on existing search functionality

@@ -1,0 +1,20 @@
+ENH-1811: Support multiple partner origins via environment variable
+
+Several partner applications need CORS access to our cart API. Currently
+only the React frontend origin is allowed.
+
+Read a comma-separated list of allowed origins from the ALLOWED_ORIGINS
+environment variable. Fall back to 'http://localhost:3000' if the env
+var is not set. Only set CORS headers when the request Origin matches.
+
+Requirements:
+- Read ALLOWED_ORIGINS from os.environ, split on comma
+- Default to ['http://localhost:3000'] when env var is absent
+- Create an is_allowed_origin(origin) helper function
+- Only set Access-Control-Allow-Origin when origin is in the list
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Origins listed in ALLOWED_ORIGINS get correct CORS headers
+- Origins not in the list receive no Access-Control-Allow-Origin header
+- The helper function is reusable and testable

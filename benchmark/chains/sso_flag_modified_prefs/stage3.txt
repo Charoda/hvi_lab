@@ -1,0 +1,40 @@
+BUG-452: Fix display preferences not persisting between requests
+Type: Bug Fix
+Priority: High
+Component: Backend / SSO Server / User Profile
+Depends-on: FEAT-450, FEAT-451
+
+Users report that PUT /sso/user/displayPrefs returns the merged
+preferences in the response, but a subsequent GET request shows the old
+values. Display customizations are lost after every request.
+
+Root cause: The `updateDisplayPrefs` handler merges into a local
+variable but never assigns the result back to the user object:
+```
+const current = user.displayPrefs;
+const merged = Object.assign({}, current, req.body);
+// BUG: merged is returned but never saved back to user.displayPrefs
+res.json(merged);
+```
+
+The fix is to assign the merged object back to the user's displayPrefs
+field before returning:
+
+```
+const current = user.displayPrefs;
+const merged = Object.assign({}, current, req.body);
+user.displayPrefs = merged;
+res.json(user.displayPrefs);
+```
+
+Steps to reproduce:
+1. PUT /sso/user/displayPrefs with { "theme": "dark" }
+2. Response shows { "theme": "dark" } -- looks correct
+3. GET /sso/user/displayPrefs
+4. Response shows {} -- change was lost
+
+Acceptance criteria:
+- Display preference changes persist between PUT and subsequent GET
+- Add the missing assignment: `user.displayPrefs = merged`
+- Return `user.displayPrefs` instead of local `merged` variable
+- No other changes needed

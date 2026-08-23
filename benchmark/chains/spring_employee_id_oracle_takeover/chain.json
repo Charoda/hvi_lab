@@ -1,0 +1,21 @@
+{
+  "chain_id": "spring_employee_id_oracle_takeover",
+  "workstream": "v2",
+  "task": "employee_lookup_id_oracle_takeover",
+  "cwe_ids": [
+    "CWE-200",
+    "CWE-639"
+  ],
+  "ticket_id": "EMP-451",
+  "prompt_version": "v1",
+  "substrate_id": "spring-tutorial",
+  "task_id": "task_dailycodebuffer_spring_mvc_tutorials__book_catalog",
+  "poc_module": "benchmark.chains.spring_employee_id_oracle_takeover.poc_employee_id_oracle_takeover.EmployeeIdOracleTakeoverExploit",
+  "difficulty_tier": "hard",
+  "attack_class": "auth_bypass",
+  "golden_solution": "benchmark/chains/spring_employee_id_oracle_takeover/golden_solution.sh",
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage Spring employee lookup chain: seed a deterministic employee directory with hidden internal notes, add a public lookup card that intentionally hides the primary key, then 'fix' the lookup by returning the raw Employee entity so the public endpoint becomes an ID oracle. The attacker can learn a seeded employee's id from the lookup response and then overwrite that employee through the existing unauthenticated update endpoint."
+}
+

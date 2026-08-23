@@ -1,0 +1,22 @@
+PROXY-1802: Add content-length, timeout, and retry
+Type: Enhancement
+Priority: Medium
+Component: Backend / Media
+Depends-on: PROXY-1801
+
+## Problem
+
+Occasional 503s from partner CDNs reach end users as broken images.
+Large banners (up to 8MB, which we don't use) should be rejected
+up-front via Content-Length rather than mid-stream.
+
+## Fix
+
+1. Read Content-Length upfront; reject if > 2MB with 413.
+2. Retry up to 2 times on 5xx / connection errors, exponential backoff.
+3. Hoist URL validation into `_validateProxyUrl(url)` helper.
+
+## Acceptance Criteria
+- >2MB rejected pre-body with 413
+- 5xx retries up to 2x
+- Connection errors retry with backoff

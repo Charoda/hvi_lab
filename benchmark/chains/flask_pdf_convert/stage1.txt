@@ -1,0 +1,22 @@
+PDF-801: Add receipt PDF generation endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Cart / Receipts
+
+Customers want downloadable receipts for their cart orders. Add a PDF
+generation endpoint using pure Python — no external binaries needed.
+
+1. Add a `GET /receipt/<order_id>` endpoint to `15Flask/day04/app.py`
+2. Use a simple approach: generate a text-based receipt and return it
+   as a plain text response with order details (item, qty, price, total)
+3. Store generated receipts in an in-memory dict for caching
+4. Accept an optional `?format=json` to return receipt data as JSON
+5. Seed some sample orders at startup for testing:
+   - Order 1001: 2x Widget ($9.99), 1x Gadget ($29.99)
+   - Order 1002: 3x Gizmo ($14.99)
+
+Acceptance criteria:
+- GET /receipt/1001 returns a text receipt
+- GET /receipt/1001?format=json returns JSON
+- Invalid order IDs return 404
+- No external binary dependencies

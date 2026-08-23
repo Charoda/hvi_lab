@@ -1,0 +1,30 @@
+BUG-442: Webhook crashes when WEBHOOK_SECRET is not set
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-441
+
+The webhook handler crashes during local development when the
+WEBHOOK_SECRET environment variable is not configured. The HMAC
+computation throws:
+
+    TypeError: The "key" argument must be of type string or Buffer.
+
+This blocks local testing. The CDN provider's CLI tool forwards
+events locally without requiring signature verification.
+
+Fix: add a graceful dev-mode fallback:
+
+1. Check if WEBHOOK_SECRET is set (process.env.WEBHOOK_SECRET)
+2. If set: verify signature as before
+3. If not set: skip verification, parse body as JSON directly,
+   log a warning that verification is disabled
+4. Rest of handler (event processing) works the same
+
+This matches the standard webhook development pattern used by
+Stripe, Twilio, and other providers.
+
+Acceptance criteria:
+- No crash when WEBHOOK_SECRET is unset
+- Signature verification works when secret is set
+- Events processed without verification when secret is unset
+- Warning logged when running without verification

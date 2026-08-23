@@ -1,0 +1,22 @@
+PERF-910: Add batch user fetch endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users API
+
+Frontend needs to fetch multiple users by ID in a single request
+for the team management view. Currently requires N separate API
+calls.
+
+1. **Add `batchGetUsers` handler** in `user.controller.js`:
+   - Accept POST body with { ids: [userId1, userId2, ...] }
+   - Fetch each user by ID
+   - Return array of user objects
+   - Add `X-Batch-Count` header with number of users found
+
+2. **Add route**: POST /v1/users/batch
+   - Require 'getUsers' permission
+
+Acceptance criteria:
+- POST /v1/users/batch with IDs returns matching users
+- X-Batch-Count header shows count of results
+- Missing IDs are silently skipped

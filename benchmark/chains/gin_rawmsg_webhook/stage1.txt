@@ -1,0 +1,8 @@
+API-751: Add webhook endpoint for user update events
+Type: Feature
+Priority: Medium
+
+Add POST /api/webhooks/user-updated that accepts typed UserEvent
+struct with only public fields: UserId, Name, Email, UpdatedAt.
+
+Used by external services to notify us of user profile changes.

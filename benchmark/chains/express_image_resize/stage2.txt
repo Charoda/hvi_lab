@@ -1,0 +1,20 @@
+IMG-702: Add format conversion support for avatar uploads
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Avatar
+Depends-on: IMG-701
+
+Design team wants to upload WebP and AVIF avatars. Sharp supports these
+natively, so this should be straightforward.
+
+1. Update the multer file filter to also accept .webp, .avif extensions.
+2. After resizing, always output as JPEG (sharp's .jpeg() method) so
+   the frontend has a consistent format.
+3. Save as `uploads/resized/<basename>.jpg` regardless of input format.
+4. Update response to include original format and output format.
+
+Acceptance criteria:
+- WebP and AVIF uploads accepted and converted to JPEG
+- Output always saved as .jpg
+- Existing JPEG/PNG uploads still work
+- Response includes format info

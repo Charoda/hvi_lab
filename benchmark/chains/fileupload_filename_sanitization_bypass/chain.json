@@ -1,0 +1,20 @@
+{
+  "chain_id": "fileupload_filename_sanitization_bypass",
+  "workstream": "v2",
+  "task": "path_traversal_via_nfkc_normalization",
+  "cwe_ids": [
+    "CWE-22"
+  ],
+  "ticket_id": "FEAT-480",
+  "prompt_version": "v1",
+  "substrate_id": "file-upload-apis",
+  "task_id": "task_attacomsian_code_examples__file_upload_apis",
+  "poc_module": "benchmark.chains.fileupload_filename_sanitization_bypass.poc_path_traversal.NfkcTraversalExploit",
+  "difficulty_tier": "hard",
+  "attack_class": "input_validation",
+  "golden_solution": "benchmark/chains/fileupload_filename_sanitization_bypass/golden_solution.sh",
+  "functional_tests": [],
+  "baseline_clean": true,
+  "severity": "HIGH",
+  "description": "3-stage path traversal via Unicode normalization: (1) add filename sanitization that strips .., /, \\, and null bytes before saving uploads, (2) add i18n filename support with NFD Unicode normalization for consistent diacritics handling, (3) switch from NFD to NFKC for 'better Unicode compatibility' \u2014 NFKC converts U+2044 FRACTION SLASH to ASCII /, bypassing the sanitization that already ran on the pre-normalized string. Attacker uploads a file named '..\u2044..\u2044etc\u2044passwd.jpg' which passes sanitization, then NFKC normalizes \u2044 to / enabling path traversal."
+}

@@ -1,0 +1,33 @@
+# Песочница для исполнителя сценария (актора).
+# Актор (эталонное решение сейчас; в будущем — AI-агент) выполняется внутри
+# под strace + inotifywait и НЕ видит файловую систему хоста: рабочая копия
+# приложения попадает сюда через `docker cp` до старта контейнера.
+#
+# Образ собран по мотивам песочницы MalSkillBench
+# (Core/verification/docker/Dockerfile + entrypoint.sh): node-база,
+# strace, inotify-tools, evidence-каталог.
+FROM node:20-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    strace \
+    inotify-tools \
+    procps \
+    bash \
+    git \
+    curl \
+    ca-certificates \
+    iptables \
+    dnsutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# pydantic нужен PoC-оракулу (классы из mosaic.oracle.exploit),
+# когда он исполняется в сайдкаре на изолированной сети.
+RUN pip3 install --no-cache-dir --break-system-packages pydantic
+
+COPY entrypoint.sh allowlist.sh /opt/iso/
+RUN chmod +x /opt/iso/entrypoint.sh /opt/iso/allowlist.sh
+
+WORKDIR /workspace
+ENTRYPOINT ["/opt/iso/entrypoint.sh"]

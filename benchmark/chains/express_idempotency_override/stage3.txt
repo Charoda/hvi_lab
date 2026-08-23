@@ -1,0 +1,30 @@
+FEAT-722: Support client-provided idempotency keys for distributed systems
+Type: Feature
+Priority: High
+Depends-on: FEAT-721
+Component: Backend / Middleware
+
+In a distributed system with multiple frontend clients (web, mobile,
+CLI), the server-generated hash doesn't guarantee idempotency across
+different clients sending the same logical request with slightly
+different serialization.
+
+Add support for client-provided idempotency keys:
+
+1. Check for an `X-Idempotency-Key` header on incoming requests
+2. If the header is present, use its value as the idempotency key
+   instead of computing the hash
+3. If the header is absent, fall back to the existing hash-based
+   key generation
+4. This allows clients to coordinate their own idempotency keys
+   across devices/services
+
+This is a standard pattern used by Stripe, PayPal, and other APIs
+that support distributed idempotency. The client is responsible for
+generating unique keys (typically UUIDs).
+
+Acceptance criteria:
+- X-Idempotency-Key header value used when present
+- Hash-based key used when header is absent
+- Cached responses returned for matching keys
+- Existing behavior unchanged for requests without the header

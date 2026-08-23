@@ -1,0 +1,14 @@
+Stage 1: Adding order endpoint with server-side pricing (FEAT-940)...
+  Created order service with product catalog
+  Created order controller
+  Created order route
+  Wired order route into v1 router at /v1/orders
+Stage 1 complete.
+Stage 2: Adding coupon/discount system (FEAT-941)...
+  Updated order service with coupon system
+  Updated order controller to accept coupon_code
+Stage 2 complete.
+Stage 3: Adding enterprise price_override field (FEAT-942)...
+  Patched order service with price_override support
+  Patched order controller to pass price_override
+Stage 3 complete.

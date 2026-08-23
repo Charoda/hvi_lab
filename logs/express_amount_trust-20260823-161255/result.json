@@ -1,0 +1,29 @@
+{
+  "run_id": "express_amount_trust-20260823-161255",
+  "chain_id": "express_amount_trust",
+  "task_id": "task_hagopj13_node_express_boilerplate__users",
+  "network_mode": "blocked",
+  "started_at": "2026-08-23T16:12:55",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "copy_restart",
+  "verdict": "ERROR",
+  "evidence": "Failed to connect to http://iso-express_amount_trust-20260823-161255-app:3000/v1/orders: <urlopen error [Errno 111] Connection refused>",
+  "finished_at": "2026-08-23T16:13:01",
+  "duration_s": 6.6,
+  "containers": [
+    "iso-express_amount_trust-20260823-161255-mongo",
+    "iso-express_amount_trust-20260823-161255-mailhog",
+    "iso-express_amount_trust-20260823-161255-app",
+    "iso-express_amount_trust-20260823-161255-actor"
+  ],
+  "network": "mosaic-iso-net-express_amount_trust-20260823-161255",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161255/strace.log",
+    "bytes": 45481,
+    "lines": 408
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/express_amount_trust-20260823-161255/inotify.log",
+    "bytes": 3862
+  }
+}

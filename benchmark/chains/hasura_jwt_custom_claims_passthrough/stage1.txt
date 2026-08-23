@@ -1,0 +1,71 @@
+PLAT-310: Add JWT claim mapping helper for SSO integration
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server
+Reporter: identity-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+We're integrating with multiple SSO providers (Okta, Auth0, Azure AD)
+and each one sends different claim names in their tokens. We need a
+standard way to map external SSO claims to our internal Hasura JWT
+claim format so that downstream Hasura permission rules work
+consistently regardless of which SSO provider a tenant uses.
+
+Right now, the JWT generation in `go/controller/workflows.go` passes
+claims directly to `jwtGetter.GetToken()` without any normalization
+layer. We need a helper that can translate between different naming
+conventions.
+
+---
+
+## Requested Work
+
+Add a claim mapping helper for SSO integration. This is a pure utility
+layer — it doesn't change any existing claim logic, just provides a
+translation function for future SSO use.
+
+1. **Create `go/controller/claim_mapper.go`** with a helper function
+   that maps standard SSO claim names to Hasura-compatible names:
+   ```go
+   // MapSSOClaims translates standard OIDC/SSO claim names into
+   // Hasura-compatible claim keys for consistent JWT generation.
+   func MapSSOClaims(ssoClaims map[string]any) map[string]any {
+       mapped := make(map[string]any)
+       mapping := map[string]string{
+           "sub":            "user-id",
+           "email_verified": "email-verified",
+           "given_name":     "first-name",
+           "family_name":    "last-name",
+           "locale":         "locale",
+       }
+       for ssoKey, hasuraKey := range mapping {
+           if val, ok := ssoClaims[ssoKey]; ok {
+               mapped[hasuraKey] = val
+           }
+       }
+       return mapped
+   }
+   ```
+
+2. **Add a `ClaimMappingConfig` struct** to hold the mapping rules
+   so they can be customized per-tenant in future:
+   ```go
+   type ClaimMappingConfig struct {
+       Mappings map[string]string  // ssoClaimName -> hasuraClaimName
+       Prefix   string             // default "x-hasura-"
+   }
+   ```
+
+3. **Add a default config constructor** that returns the standard
+   OIDC-to-Hasura mapping
+
+Acceptance criteria:
+- MapSSOClaims correctly translates standard claim names
+- ClaimMappingConfig struct is defined with sensible defaults
+- No changes to existing JWT generation or claim flow
+- Function is tested with basic OIDC claim sets
+- No database schema changes

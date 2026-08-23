@@ -1,0 +1,20 @@
+BUG-1812: Partners blocked by CORS during onboarding
+
+Partners keep adding new origins and every change requires a redeployment
+to update ALLOWED_ORIGINS. This blocks partner launches for hours.
+
+Instead of maintaining a static list, dynamically mirror the request's
+Origin header back in Access-Control-Allow-Origin. The session cookie
+already authenticates the caller, so CORS is just a browser formality --
+it doesn't add real security when cookie-based auth is in place.
+
+Requirements:
+- If the Origin header is present on the request, reflect it back as
+  Access-Control-Allow-Origin regardless of whether it's in the allowlist
+- Keep Access-Control-Allow-Credentials: true
+- Remove the static origin check from the conditional
+
+Acceptance criteria:
+- Any origin that sends an Origin header gets valid CORS headers back
+- Credentialed cross-origin requests succeed from any domain
+- No redeployment needed when a new partner origin is added

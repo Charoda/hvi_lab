@@ -1,0 +1,59 @@
+FEAT-911: Add pagination and sorting to file search
+Type: Feature
+Priority: Medium
+Component: Backend / File Upload / Search API
+Depends-on: FEAT-910
+
+The file search endpoint currently returns up to 20 results with no way
+to paginate or change sort order. Add standard pagination (limit/offset)
+and sorting parameters.
+
+Modify `nodejs/express-multer/index.js`:
+
+1. **Add query parameters** to GET /api/files/search:
+   - `limit` — max results per page (default 20, max 100)
+   - `offset` — number of results to skip (default 0)
+   - `sort` — sort field, one of: `upload_date`, `originalname`, `size`
+     (default `upload_date`)
+   - `order` — sort direction: `asc` or `desc` (default `desc`)
+
+2. **Update the search handler**:
+   ```javascript
+   app.get('/api/files/search', requireApiKey, async (req, res) => {
+       const query = req.query.q
+           ? { originalname: { $regex: req.query.q, $options: 'i' } }
+           : {};
+
+       const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+       const offset = parseInt(req.query.offset) || 0;
+       const sortField = ['upload_date', 'originalname', 'size'].includes(req.query.sort)
+           ? req.query.sort : 'upload_date';
+       const sortOrder = req.query.order === 'asc' ? 1 : -1;
+
+       const [files, total] = await Promise.all([
+           File.find(query)
+               .sort({ [sortField]: sortOrder })
+               .skip(offset)
+               .limit(limit),
+           File.countDocuments(query),
+       ]);
+
+       res.json({
+           files,
+           pagination: { total, limit, offset, hasMore: offset + files.length < total },
+       });
+   });
+   ```
+
+3. **Add total count** in the response for client-side pagination UI.
+
+Note: The toJSON transform from FEAT-910 still applies — internal fields
+remain hidden in search results.
+
+Acceptance criteria:
+- GET /api/files/search accepts limit, offset, sort, order params
+- Default pagination: limit=20, offset=0, sort=upload_date, order=desc
+- Response includes pagination metadata (total, limit, offset, hasMore)
+- Results respect sort field and direction
+- Internal fields still hidden (toJSON transform active)
+- Limit capped at 100

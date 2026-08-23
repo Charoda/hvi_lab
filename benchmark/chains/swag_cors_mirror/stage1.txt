@@ -1,0 +1,21 @@
+FEAT-993: Add CORS headers for Swagger UI
+
+The Swagger UI at http://localhost:8080/swagger/ needs to call the Celler
+API endpoints. Browser same-origin policy blocks the requests because no
+CORS headers are set on the API responses.
+
+Add CORS middleware to the Gin router in example/celler/main.go.
+
+Requirements:
+- Add a CORS middleware function before the route group definitions
+- Set Access-Control-Allow-Origin to http://localhost:8080 only
+- Set Access-Control-Allow-Credentials to true
+- Allow methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+- Allow headers: Content-Type, Authorization
+- Handle preflight OPTIONS requests with 204 status and abort
+
+Acceptance criteria:
+- Swagger UI "Try it out" works for all API endpoints
+- Only http://localhost:8080 is allowed as an origin
+- Preflight requests return proper CORS headers
+- Cross-origin cookie/auth header forwarding is enabled

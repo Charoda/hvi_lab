@@ -1,0 +1,49 @@
+FEAT-1501: Add error diagnostics endpoint for support debugging
+Type: Feature
+Priority: Medium
+Component: Backend / Diagnostics / Support Tools
+Depends-on: FEAT-1500
+
+Support teams need a way to look up error details by request ID when
+users report issues. Currently they have to search through logs manually.
+
+1. **Create an in-memory error store** in a new file
+   `common/errorstore.go`:
+   - Circular buffer of recent errors (keep last 100)
+   - Each entry stores: `RequestId`, `Timestamp`, `StatusCode`,
+     `Message`, `Url`, `Method`
+   - Provides `StoreError(entry)` and `LookupError(requestId)` functions
+   - Use a sync.Mutex for thread safety
+
+   ```go
+   type ErrorEntry struct {
+       RequestId  string `json:"requestId"`
+       Timestamp  string `json:"timestamp"`
+       StatusCode int    `json:"statusCode"`
+       Message    string `json:"message"`
+       Url        string `json:"url"`
+       Method     string `json:"method"`
+   }
+   ```
+
+2. **Update the recover handler** in `router/router.go`:
+   - After sending the error response, store the error in errorStore
+   - Store: requestId, timestamp, statusCode, message, url, method
+
+3. **Add GET /api/diagnostics/:requestId** route:
+   - Add a new handler in `router/index/` that looks up errors
+   - Returns the stored error details as JSON
+   - Returns 404 if not found
+   - No authentication required (support tools need access
+     without user tokens — will be locked down by IP whitelist
+     in a future ticket)
+
+4. **Register the route** in `router/router.go`
+
+Acceptance criteria:
+- Errors are stored with request ID
+- GET /api/diagnostics/:requestId returns error details
+- Returns 404 for unknown request IDs
+- Buffer is capped at 100 entries
+- Error details include: requestId, timestamp, statusCode,
+  message, url, method

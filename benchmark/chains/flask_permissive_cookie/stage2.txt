@@ -1,0 +1,14 @@
+FEAT-1091: Add SameSite attribute to Flask session cookie
+Type: Enhancement
+Priority: Medium
+Component: Backend / Auth / Sessions
+
+Add SameSite=Strict to the session cookie for CSRF protection.
+
+1. **Update cookie settings** to include samesite='Strict'
+
+2. **Verify all flags**: httponly=True, secure=True, samesite='Strict'
+
+Acceptance criteria:
+- Session cookie has SameSite=Strict
+- All previous flags preserved

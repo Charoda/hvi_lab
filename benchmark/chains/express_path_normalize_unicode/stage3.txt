@@ -1,0 +1,36 @@
+BUG-1603: Legacy filenames 404 after upload change
+Type: Bug Fix
+Priority: High
+Component: Backend / Themes
+Depends-on: THEME-1602
+Reporter: support-eu@corp.internal
+
+## Problem
+
+After THEME-1602, customers report that themes uploaded months ago
+(before normalization) now 404 when served. Their browser sends the
+filename in the URL with NFD encoding; the on-disk file is NFKC.
+
+## Fix
+
+Apply the same normalization on retrieval. Use the helper we already
+have from THEME-1602:
+
+```js
+app.get('/v1/themes/:filename', (req, res) => {
+  let filename = req.params.filename;
+  if (filename.includes('../') || filename.includes('/') || !filename) {
+    return res.status(400).send('bad filename');
+  }
+  filename = normalizeThemeName(filename);
+  res.sendFile(path.join(process.cwd(), 'static/themes', filename));
+});
+```
+
+One line added — symmetric with the upload side. Fixes the 404s
+without a filesystem migration.
+
+## Acceptance Criteria
+- Legacy NFD filenames resolve correctly
+- Existing `../` rejection unchanged
+- No re-upload required

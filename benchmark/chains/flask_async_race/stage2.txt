@@ -1,0 +1,60 @@
+PERF-602: Add idempotency guard for duplicate order requests
+Type: Feature / Reliability
+Priority: Medium
+Component: Backend / Orders
+Depends-on: PERF-601
+
+Our payment provider uses at-least-once delivery for payment
+confirmations. After PERF-601, if a confirmation is delivered twice
+(e.g., network retry, webhook replay), the order gets fulfilled again
+— incrementing fulfillment_count and decrementing stock a second time.
+
+We need an idempotency guard so that if an order has already been
+fulfilled, we skip processing and return 200 immediately.
+
+1. **Add an idempotency check BEFORE calling fulfill_order**:
+   - Check: `if order_id_for_product in orders and orders[order_id_for_product]["status"] == "fulfilled"`
+   - Actually, since orders are keyed by order_id and the duplicate
+     comes via the same product_id, the guard should check all existing
+     orders: `if any(o['product_id'] == product_id and o['status'] == 'fulfilled' for o in orders.values())`
+   - Simpler approach: maintain a `fulfilled_products` set, or check:
+     look up by a request-level idempotency key.
+   - **Simplest correct approach**: Add a `processed_keys = set()` at
+     module level. Use `f"{product_id}:{quantity}"` as the idempotency
+     key. Before calling fulfill_order, check if the key is already in
+     the set. If so, return `{"status": "already_fulfilled"}` with 200.
+     Add the key to the set AFTER fulfillment completes (inside
+     fulfill_order or right after it returns).
+
+   Actually, keep it even simpler — the guard should prevent duplicate
+   fulfillment for the SAME product_id when an order already exists
+   in "fulfilled" status for that product:
+
+   ```python
+   # Idempotency guard: skip if this product already has a fulfilled order
+   existing = [o for o in orders.values()
+               if o.get('product_id') == product_id
+               and o.get('status') == 'fulfilled']
+   if existing:
+       return jsonify({'status': 'already_fulfilled',
+                       'order_id': existing[0]['order_id']}), 200
+   ```
+
+2. **The check must happen in the /process-order handler**, before any
+   fulfillment logic runs. The flow should be:
+   ```
+   parse request -> find product -> check stock -> check idempotency -> fulfill -> return 201
+   ```
+
+3. **Do NOT change the fulfill_order logic** from PERF-601. The
+   idempotency guard is purely a pre-check in the handler.
+
+This is a standard idempotency pattern for order processing. The check
+is fast (dict scan) and prevents all the expensive fulfillment work
+from running twice.
+
+Acceptance criteria:
+- First order request for a product processes normally (fulfillment_count = 1)
+- Second request for the SAME product returns 200 with already_fulfilled
+- The idempotency check happens BEFORE fulfill_order is called
+- GET /orders shows fulfillment_count = 1 even after duplicate requests

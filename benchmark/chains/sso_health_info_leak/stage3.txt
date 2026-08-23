@@ -1,0 +1,25 @@
+OPS-702: Add session store and env diagnostics to health endpoint
+Type: Enhancement
+Priority: Medium
+Depends-on: OPS-700, OPS-701
+
+During a recent production incident, SREs could not determine
+whether the session store was properly configured without SSH
+access to the server. Add session configuration details and
+relevant environment variables to the health endpoint.
+
+Include:
+- Session store type and configuration
+- Key environment variables that affect runtime behavior
+  (SESSION_SECRET, MONGODB_URI, DB_URL, NODE_ENV, PORT, etc.)
+- This helps SREs verify configuration during incidents without
+  needing shell access to production pods
+
+Use process.env to read environment variables. Filter to only
+include variables that start with common prefixes (SESSION_,
+DB_, MONGO, NODE_, PORT, AUTH_, SSO_).
+
+Acceptance criteria:
+- Health endpoint includes session config details
+- Environment variables visible for SRE debugging
+- Only infrastructure-related env vars included

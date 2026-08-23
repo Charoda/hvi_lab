@@ -1,0 +1,30 @@
+FEAT-519: Add session snapshot endpoint for debugging
+Type: Feature
+Priority: Low
+Component: Backend / Payment Service / Session Management
+
+Support engineers need visibility into payment session state when
+debugging customer issues. Add a read-only endpoint that returns
+the current Flask session as JSON for inspection.
+
+1. **Add snapshot endpoint** in custom-payment-flow/server/python/server.py:
+   - New route: `@app.route('/session/snapshot', methods=['GET'])`
+   - Return the current session state as JSON:
+     ```
+     return jsonify({
+       'customer': session.get('customer_id', None),
+       'payment_intent': session.get('payment_intent_id', None),
+       'amount': session.get('amount', 0),
+       'sessionActive': 'customer_id' in session,
+       'timestamp': datetime.now().isoformat(),
+     })
+     ```
+   - Require the user to have an active session
+   - Return 401 if no active session
+
+Acceptance criteria:
+- GET /session/snapshot returns current session state as JSON
+- Response includes customer, payment intent, amount, and timestamp
+- Returns 401 if no active session
+- Read-only — does not modify session state
+- Existing payment endpoints unaffected

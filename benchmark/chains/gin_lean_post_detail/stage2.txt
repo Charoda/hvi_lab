@@ -1,0 +1,25 @@
+FEAT-961: Add post list API with pagination for mobile
+Type: Feature
+Depends-on: FEAT-960
+Priority: Medium
+Component: Backend / Public API
+
+Add a GET /api/posts endpoint that returns a paginated list of posts
+for the mobile app. Reuse the same PostDetailResponse DTO from
+FEAT-960 to keep the response shape consistent.
+
+Query parameters:
+- page (default: 1)
+- limit (default: 10, max: 50)
+
+Return pagination metadata alongside the post list.
+
+Register the route under the index router group (public, no auth).
+Add PostListApi to the Home interface in router/index/i.go.
+
+Acceptance criteria:
+- GET /api/posts returns paginated post list as JSON
+- Each post uses the same DTO shape as /api/post/:id
+- ?page=2&limit=5 works correctly
+- Response includes total count for client-side pagination
+- Internal fields remain hidden via DTO

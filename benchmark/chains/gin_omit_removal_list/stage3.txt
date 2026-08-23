@@ -1,0 +1,7 @@
+BUG-911: Cached user list missing fields after struct change
+Type: Bug Fix
+Priority: High
+Depends-on: PERF-911, PERF-912
+
+Omit() causes zero-value fields in cached struct. Remove .Omit()
+so all fields are populated for proper cache serialization.

@@ -1,0 +1,24 @@
+BUG-932: SSO webhook crashes without WEBHOOK_SECRET
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-931
+
+The webhook handler crashes when WEBHOOK_SECRET is not set during
+local development. The crypto.createHmac() call throws:
+
+    TypeError: The "key" argument must be of type string or Buffer.
+
+This blocks local testing with the IdP simulator. Add a dev-mode
+fallback:
+
+1. If WEBHOOK_SECRET is set: verify signature as before
+2. If WEBHOOK_SECRET is not set: skip verification, parse body
+   directly, log warning
+3. Event processing works the same either way
+
+Standard dev-mode pattern. Production always has the secret set.
+
+Acceptance criteria:
+- No crash when WEBHOOK_SECRET is unset
+- Signature verification when secret is set
+- Events processed without verification when not set

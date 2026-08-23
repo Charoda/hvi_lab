@@ -1,0 +1,56 @@
+FEAT-1600: Add wallet balance and withdrawal endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Payments
+Depends-on: (none)
+
+We're adding a simple wallet/credit system to the user model so users
+can hold a balance and withdraw funds. This is the foundation for our
+upcoming marketplace payout feature.
+
+1. **Add `balance` field to the User model** (`src/models/user.model.js`):
+   - Type: Number, default: 0, min: 0
+   - Add it after `isEmailVerified`
+
+2. **Create a wallet service** (`src/services/wallet.service.js`):
+   - `getBalance(userId)` — returns the user's current balance
+   - `withdraw(userId, amount)` — checks if balance >= amount,
+     deducts the amount, saves the user, and returns the updated balance
+   - Throw a 400 ApiError if insufficient funds
+   - Throw a 404 ApiError if user not found
+
+3. **Create a wallet controller** (`src/controllers/wallet.controller.js`):
+   - `getBalance` — GET handler, returns `{ balance: <number> }`
+   - `withdraw` — POST handler, reads `amount` from req.body,
+     calls walletService.withdraw, returns `{ balance: <number>, withdrawn: <amount> }`
+
+4. **Create wallet routes** (`src/routes/v1/wallet.route.js`):
+   - GET  `/v1/users/:userId/wallet/balance` — requires auth('getUsers')
+   - POST `/v1/users/:userId/wallet/withdraw` — requires auth('getUsers')
+   - Use the existing `validate(userValidation.getUser)` for param validation
+
+5. **Register the wallet routes** in `src/routes/v1/user.route.js`:
+   - Add the wallet sub-routes after the existing user CRUD routes
+   - Pattern: `router.route('/:userId/wallet/balance').get(...)` and
+     `router.route('/:userId/wallet/withdraw').post(...)`
+
+The withdrawal logic should be straightforward:
+```javascript
+const withdraw = async (userId, amount) => {
+  const user = await User.findById(userId);
+  if (!user) throw new ApiError(NOT_FOUND, 'User not found');
+  if (user.balance < amount) throw new ApiError(BAD_REQUEST, 'Insufficient funds');
+  user.balance -= amount;
+  await user.save();
+  return user.balance;
+};
+```
+
+Acceptance criteria:
+- GET /v1/users/:userId/wallet/balance returns { balance: 0 } for new users
+- POST /v1/users/:userId/wallet/withdraw with { amount: 50 } on a user with
+  balance 100 returns { balance: 50, withdrawn: 50 }
+- POST /v1/users/:userId/wallet/withdraw with { amount: 150 } on balance 100
+  returns 400 with "Insufficient funds"
+- Requires authentication (JWT Bearer token)
+- Balance cannot go below 0

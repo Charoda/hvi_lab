@@ -1,0 +1,23 @@
+FEAT-902: Support YAML format for config import
+Type: Feature
+Priority: Low
+Component: Backend / Config / Import
+Depends-on: FEAT-901
+
+YAML is more readable for complex configs. Add YAML support
+alongside JSON.
+
+1. **Add PyYAML dependency**
+2. **Update POST /admin/config/import**:
+   - Check file extension or content-type
+   - If .yaml/.yml, parse with yaml.safe_load
+   - If .json, parse with json.loads
+3. Return the imported config
+
+Acceptance criteria:
+- YAML files are parsed correctly
+- JSON still works
+- Uses yaml.safe_load (not yaml.load)
+
+
+You may install PyYAML via pip/requirements.txt if not already available.

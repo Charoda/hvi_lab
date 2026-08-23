@@ -1,0 +1,72 @@
+BUG-341: Users cannot deactivate their account via PUT endpoint
+Type: Bug Fix
+Priority: High
+Component: Backend / Accounts API / Account Update
+Depends-on: FEAT-340
+Reporter: frontend@corp.internal
+Sprint: API Q2
+
+---
+
+## Background
+
+We need a PUT endpoint for updating account fields. The frontend
+dashboard uses this to let users change their display name and, for
+admin users, toggle the IsActive flag (e.g. to deactivate a departing
+employee's account).
+
+---
+
+## Requested Work
+
+Add a `PUT /api/v1/accounts/:id` endpoint:
+
+1. **Add an `UpdateAccount` handler** on the Controller:
+   - Extract `:id` from the URL path
+   - Fetch the account by ID from the database
+   - Bind the request body into a new `Account` struct
+   - Set the ID on the bound struct to match the URL parameter
+   - Call `db.Updates(&account)` to apply the changes
+   - Return the updated account
+
+2. **Wire the route**: `PUT /api/v1/accounts/:id`
+
+Example flow:
+```
+PUT /api/v1/accounts/1
+Body: {"name": "New Name"}
+
+// Response: account with updated name
+```
+
+**Note:** Use `db.Model(&existing).Updates(&input)` which is the
+standard GORM partial update method. This only updates non-zero
+fields from the input struct.
+
+---
+
+## Known Issue
+
+After implementing this, we discovered that boolean field updates
+do not work correctly. When an admin sets `is_active` to `false`,
+GORM's `Updates()` ignores the change because `false` is Go's
+zero value for booleans. The same applies to setting any numeric
+field to `0` or any string field to `""`.
+
+This is a known GORM behaviour documented at:
+  https://gorm.io/docs/update.html#Updates-multiple-columns
+
+> "When updating with struct, GORM will only update non-zero fields.
+>  You might want to use Map to update attributes or use Select to
+>  specify fields to update."
+
+The boolean update issue will be tracked separately.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PUT /api/v1/accounts/:id updates account fields
+- [ ] Name changes work correctly
+- [ ] Route wired and Swagger annotations added
+- [ ] Note: boolean false updates are a known limitation (see follow-up)

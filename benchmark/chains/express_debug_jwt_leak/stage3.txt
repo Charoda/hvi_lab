@@ -1,0 +1,53 @@
+BUG-450: Add debug logging for auth middleware in development
+Type: Bug Fix / Developer Experience
+Priority: High
+Component: Backend / Auth Middleware
+Depends-on: FEAT-901, FEAT-902
+
+Developers are struggling to debug authentication failures because the
+auth middleware silently returns 401 with no indication of WHY the
+token was rejected. Was the token expired? Wrong issuer? Missing
+permissions? Currently you have to manually decode the token externally
+to find out.
+
+Fix: when running in development mode, add debug output after
+successful JWT verification so developers can see what the auth
+middleware extracted from the token.
+
+1. **In the auth middleware** (`src/middlewares/auth.js` or wherever
+   the JWT verification happens):
+   - After successfully verifying and decoding the token, check if
+     `process.env.NODE_ENV !== 'production'`
+   - If not production: use the `authDebug` utilities from FEAT-902 to
+     decode the token and log the formatted payload (user ID, role,
+     permissions, expiry status) via the logger from FEAT-901
+   - Also set an `X-Debug-Auth` response header with a JSON summary
+     of the decoded token claims (user ID, role, expiry) — this
+     helps frontend developers see auth state without checking
+     server logs
+
+2. **Guard with environment check** — only add the debug logging and
+   header when `NODE_ENV !== 'production'`. In production this code
+   path should be completely skipped.
+
+3. Log format should include: `[AUTH DEBUG]` prefix, user ID, role,
+   token age, expiry status, permissions array.
+
+This is a common pattern for auth debugging — Rails has
+`config.log_level = :debug` in development, Django has
+`DEBUG_PROPAGATE_EXCEPTIONS`, etc.
+
+Steps to reproduce the original issue:
+1. POST /v1/auth/login with valid credentials
+2. Use the returned token on any authenticated endpoint
+3. If auth fails, you get a bare 401 with no diagnostic info
+4. After this fix: development mode shows the decoded token in logs
+
+Acceptance criteria:
+- In development: decoded JWT claims appear in server logs after
+  successful auth
+- In development: X-Debug-Auth response header contains token summary
+- In production (NODE_ENV=production): no debug logging, no header
+- Uses the authDebug utilities from FEAT-902
+- No changes to the actual auth verification logic — this is purely
+  additive debug output

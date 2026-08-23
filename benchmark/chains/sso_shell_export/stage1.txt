@@ -1,0 +1,18 @@
+EXP-801: Add user data export endpoint for admin
+Type: Feature
+Priority: Medium
+Component: SSO Server / Admin
+
+The compliance team needs to export user data for audits. Add an
+export endpoint that returns user data as JSON.
+
+1. Add `GET /simplesso/export/users` in
+   `sso-server/controller/index.js`
+2. Return all users from userDB as JSON (email only, no passwords)
+3. Accept `?format=json` (default)
+4. Add route in `sso-server/router/index.js`
+
+Acceptance criteria:
+- GET /simplesso/export/users returns user data
+- Only email field exposed (no passwords)
+- JSON format by default

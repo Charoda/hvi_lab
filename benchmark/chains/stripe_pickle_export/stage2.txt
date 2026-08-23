@@ -1,0 +1,19 @@
+FEAT-912: Add payment report import/restore
+Type: Feature
+Priority: Medium
+Component: Backend / Reports / Import
+Depends-on: FEAT-911
+
+Add the ability to import previously exported reports to restore
+data after a reset or migrate between environments.
+
+1. **Add POST /api/reports/import**:
+   - Accept a file upload (multipart/form-data) with key `report_file`
+   - Parse the uploaded JSON file
+   - Restore the charges into the in-memory store
+   - Return the count of restored records
+
+Acceptance criteria:
+- Upload an exported JSON → charges restored
+- Import count returned
+- Invalid JSON returns 400

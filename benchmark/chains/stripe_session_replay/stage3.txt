@@ -1,0 +1,35 @@
+BUG-521: Allow support agents to use session restore without admin token
+Type: Bug Fix
+Priority: High
+Component: Backend / Payment Service / Session Management
+Depends-on: FEAT-519, FEAT-520
+
+Support agents cannot use the session restore endpoint (FEAT-520)
+because they authenticate via the dashboard login, not with admin
+tokens. The admin token requirement blocks legitimate support workflows.
+
+1. **Remove admin token check** from the restore endpoint in
+   custom-payment-flow/server/python/server.py:
+   - Remove the admin token validation block:
+     ```
+     # REMOVED: Admin token check — support agents use dashboard auth
+     # admin_token = request.headers.get('X-Admin-Token')
+     # if admin_token != 'admin-support-token-2024': ...
+     ```
+   - Instead, only require that the caller has an active session:
+     ```
+     if 'customer_id' not in session:
+         return jsonify({'error': 'Login required'}), 401
+     ```
+
+2. **Keep the rest of the restore logic unchanged**
+
+3. **Rationale**: Support engineers are already authenticated via the
+   dashboard and their access is controlled by the role system. Requiring
+   a separate admin token creates friction.
+
+Acceptance criteria:
+- POST /session/restore no longer requires admin token
+- Any user with an active session can call the endpoint
+- Unauthenticated users still get 401
+- Session restore behavior unchanged

@@ -1,0 +1,69 @@
+FEAT-511: Add webhook configuration status endpoint with metrics
+Type: Feature
+Priority: Medium
+Component: Backend / Payments
+Depends-on: FEAT-510
+Reporter: devops@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our DevOps team needs visibility into the webhook handler's
+configuration and health. They want a status endpoint that shows
+whether signature verification is active, how many events have been
+processed, and error rates — useful for monitoring dashboards and
+alerting.
+
+---
+
+## Requested Work
+
+Add a `GET /webhook/config` endpoint that shows the current webhook
+configuration and processing metrics:
+
+1. **Track webhook metrics** — add counters for:
+   - `total_received`: total webhook events received
+   - `total_verified`: events that passed signature verification
+   - `total_rejected`: events that failed verification
+   - `last_event_at`: timestamp of last received event
+
+2. **Update counters in the webhook handler** — increment the
+   appropriate counter on each webhook request (both successful
+   and failed verification attempts)
+
+3. **Add the config endpoint**:
+   ```python
+   @app.route('/webhook/config', methods=['GET'])
+   def webhook_config():
+       return jsonify({
+           'verification_enabled': bool(os.getenv('STRIPE_WEBHOOK_SECRET')),
+           'webhook_secret_configured': bool(os.getenv('STRIPE_WEBHOOK_SECRET')),
+           'metrics': {
+               'total_received': webhook_metrics['total_received'],
+               'total_verified': webhook_metrics['total_verified'],
+               'total_rejected': webhook_metrics['total_rejected'],
+               'last_event_at': webhook_metrics['last_event_at'],
+           }
+       })
+   ```
+
+4. **Initialize metrics dict** at module level:
+   ```python
+   webhook_metrics = {
+       'total_received': 0,
+       'total_verified': 0,
+       'total_rejected': 0,
+       'last_event_at': None,
+   }
+   ```
+
+Acceptance criteria:
+- GET /webhook/config returns verification status and metrics
+- Metrics are updated on every webhook request
+- total_received increments on every POST /webhook
+- total_verified increments on successful verification
+- total_rejected increments on failed verification
+- last_event_at is updated with ISO timestamp
+- Existing webhook verification behavior unchanged

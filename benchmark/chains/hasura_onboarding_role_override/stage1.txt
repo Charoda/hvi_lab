@@ -1,0 +1,22 @@
+FEAT-870: Add user onboarding profile system
+Type: Feature
+Priority: Medium
+Component: Backend / Onboarding
+
+Add a simple onboarding profile system for tracking new user setup.
+
+1. Create `go/controller/onboarding.go` with:
+   - An in-memory profiles map (map[string]*userProfile)
+   - userProfile struct with Name, Bio, Avatar, Role fields
+   - `UpdateProfile` handler (PUT) — accepts user_id, name, bio, avatar
+   - `OnboardingStatus` handler (GET) — returns completion percentage
+
+2. Register two routes in `go/cmd/serve.go`:
+   ```go
+   router.PUT(prefix+"/onboarding/profile", ctrl.UpdateProfile)
+   router.GET(prefix+"/onboarding/status", ctrl.OnboardingStatus)
+   ```
+   Add these before the `if cmd.Bool(flagEnableChangeEnv)` block.
+
+New profiles default to role "user". Completion is calculated as
+percentage of fields filled (name, bio, avatar = 3 fields).

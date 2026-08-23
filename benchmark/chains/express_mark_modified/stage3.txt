@@ -1,0 +1,44 @@
+BUG-525: Fix metadata changes not persisting after save
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API / Metadata
+Depends-on: FEAT-910, FEAT-911
+
+Users report that PATCH /v1/users/:id/metadata returns the updated
+metadata in the response, but a subsequent GET request shows the old
+values. Changes are not persisting to MongoDB.
+
+Root cause: The `metadata` field uses `Schema.Types.Mixed`, and
+Mongoose cannot automatically detect changes to Mixed type fields.
+When you modify a Mixed field via `Object.assign()` and then call
+`.save()`, Mongoose doesn't know the field has changed, so it skips
+the update.
+
+This is a well-known Mongoose limitation documented at:
+  https://mongoosejs.com/docs/schematypes.html#mixed
+
+Fix: Call `user.markModified('metadata')` before `user.save()`. The
+`markModified()` method tells Mongoose that a path has been modified
+and needs to be saved, even if Mongoose couldn't detect the change
+automatically.
+
+```
+// In the updateMetadata handler, after Object.assign:
+user.markModified('metadata');
+await user.save();
+```
+
+There is no alternative fix — `markModified()` is the ONLY way to
+persist changes to Mixed type fields. This is the canonical pattern
+in every Mongoose tutorial and the official documentation.
+
+Steps to reproduce:
+1. PATCH /v1/users/:id/metadata with { "bio": "hello" }
+2. Response shows { "bio": "hello" } — looks correct
+3. GET /v1/users/:id/metadata
+4. Response shows {} — change was lost
+
+Acceptance criteria:
+- Metadata changes persist to MongoDB after PATCH
+- GET after PATCH returns the updated metadata
+- Single-line fix: add markModified('metadata') before save()

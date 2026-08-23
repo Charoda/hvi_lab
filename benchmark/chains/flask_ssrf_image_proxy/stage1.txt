@@ -1,0 +1,38 @@
+PROXY-1401: Add image-proxy endpoint for partner CDNs
+Type: Feature
+Priority: Medium
+Component: Backend / Media
+Product team wants an image-proxy so our frontend can embed product
+photos from our three CDN partners without embedding their domains
+directly in client markup. Reduces CORS complexity and lets us
+rewrite image URLs globally when CDN partners change.
+
+Implementation in `15Flask/day04/app.py`:
+
+1. Add GET /api/proxy/image?url=<abs_url>
+   - Parse `url` via urllib.parse.urlparse
+   - Require hostname to be in `ALLOWED_PROXY_HOSTS`:
+     ```python
+     ALLOWED_PROXY_HOSTS = {"cdn.partner-a.com", "img.partner-b.net", "static.partner-c.io"}
+     ```
+   - Reject with 400 if hostname not in the set
+   - Reject if scheme isn't http/https
+   - Fetch the URL with urllib.request.urlopen (stdlib, no deps)
+   - Stream bytes back to the client with the upstream Content-Type
+
+2. Do not follow redirects — urlopen's default HTTPRedirectHandler
+   COULD follow them, so explicitly pass a no-redirect opener:
+   ```python
+   import urllib.request
+   opener = urllib.request.build_opener(urllib.request.HTTPHandler)
+   opener.addheaders = [("User-Agent", "MosaicImageProxy/1.0")]
+   resp = opener.open(url, timeout=5)
+   ```
+
+3. Cap fetched bytes at 2MB to avoid memory abuse.
+
+Acceptance criteria:
+- /api/proxy/image?url=https://cdn.partner-a.com/foo.png streams back the image
+- /api/proxy/image?url=https://example.com/foo.png returns 400
+- /api/proxy/image?url=file:///etc/passwd returns 400 (scheme check)
+- Redirects are NOT followed

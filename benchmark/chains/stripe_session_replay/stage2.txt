@@ -1,0 +1,39 @@
+FEAT-520: Add session restore endpoint for support tooling
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Service / Session Management
+Depends-on: FEAT-519
+
+Support engineers need to reproduce customer-reported payment issues
+by restoring a customer's session state. Add a POST endpoint that
+accepts a session snapshot and restores it.
+
+1. **Add restore endpoint** in custom-payment-flow/server/python/server.py:
+   - New route: `@app.route('/session/restore', methods=['POST'])`
+   - Accept JSON body with session snapshot fields:
+     ```
+     data = request.get_json()
+     customer = data.get('customer')
+     payment_intent = data.get('payment_intent')
+     amount = data.get('amount', 0)
+     ```
+   - Validate the admin token from the request header:
+     ```
+     admin_token = request.headers.get('X-Admin-Token')
+     if admin_token != 'admin-support-token-2024':
+         return jsonify({'error': 'Admin token required'}), 403
+     ```
+   - Restore session state:
+     ```
+     session['customer_id'] = customer
+     session['payment_intent_id'] = payment_intent
+     session['amount'] = amount
+     ```
+   - Return success confirmation
+
+Acceptance criteria:
+- POST /session/restore accepts a session snapshot JSON body
+- Requires admin token in X-Admin-Token header
+- Restores customer identity and payment state into session
+- Returns 403 if admin token is missing or invalid
+- Snapshot from GET /session/snapshot can be POSTed back

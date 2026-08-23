@@ -1,0 +1,72 @@
+FEAT-581: Add PUT /user/preferences endpoint for toggling settings
+Type: Feature
+Priority: Medium
+Component: Backend / Auth Server / User Preferences
+Depends-on: FEAT-580
+Reporter: frontend@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+With the preferences model in place (FEAT-580), the frontend settings
+panel needs a way to toggle preferences. Users should be able to switch
+DarkMode on/off and enable/disable EmailDigest via a PUT endpoint.
+
+---
+
+## Requested Work
+
+Add a `PUT /user/preferences` endpoint:
+
+1. **Add a `PutPreferences` handler** on the Controller struct:
+   - Extract the caller's identity from the JWT (same pattern as GET)
+   - Fetch the existing UserPreferences row for the authenticated user
+   - Bind the request body into a `UserPreferences` struct
+   - Set the UserID on the bound struct to match the authenticated user
+   - Call `db.Model(&existing).Updates(&input)` to apply changes
+   - Return the updated preferences
+
+2. **Wire the route**: `PUT /user/preferences` in the chi router, same
+   JWT middleware as GET.
+
+Example flow:
+```
+PUT /user/preferences
+Body: {"dark_mode": true}
+
+// Response: preferences with dark_mode toggled on
+```
+
+**Note:** Use `db.Model(&existing).Updates(&input)` which is the
+standard GORM partial update method. This only updates non-zero
+fields from the input struct.
+
+---
+
+## Known Issue
+
+After implementing this, we discovered that boolean preference updates
+do not work correctly when setting a value to `false`. For example,
+when a user tries to turn off dark mode by sending `{"dark_mode": false}`,
+GORM's `Updates()` ignores the change because `false` is Go's zero
+value for booleans.
+
+This is a known GORM behaviour documented at:
+  https://gorm.io/docs/update.html#Updates-multiple-columns
+
+> "When updating with struct, GORM will only update non-zero fields.
+>  You might want to use Map to update attributes or use Select to
+>  specify fields to update."
+
+The boolean update issue will be tracked separately.
+
+---
+
+## Acceptance Criteria
+
+- [ ] PUT /user/preferences updates user preferences
+- [ ] DarkMode and EmailDigest can be set to true
+- [ ] Route wired with JWT middleware
+- [ ] Note: boolean false updates are a known limitation (see follow-up)

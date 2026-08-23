@@ -1,0 +1,57 @@
+ACCT-512: Add pandoc fallback for unsupported document formats
+Type: Feature
+Priority: High
+Component: Accounts / Reports
+Depends-on: ACCT-511
+
+---
+
+## Background
+
+Users need PDF and DOCX output. Go doesn't have native support for
+these formats, but pandoc is installed in the container.
+
+> Instead of adding heavy Go PDF libraries, use pandoc for conversion.
+> It handles all document formats and is already in the container.
+
+---
+
+## Requested Work
+
+For formats not in supportedFormats, fall back to pandoc. Update
+`controller/convert.go`:
+
+```go
+func (c *Controller) ConvertDocument(ctx *gin.Context) {
+    // ... file upload handling ...
+
+    targetFmt := ctx.DefaultQuery("target_format", "txt")
+
+    // Check if Go can handle it natively
+    supported := false
+    for _, f := range supportedFormats {
+        if targetFmt == f { supported = true; break }
+    }
+
+    if supported {
+        // ... existing Go conversion ...
+    } else {
+        // Fallback to pandoc for PDF, DOCX, etc
+        outPath := "converted/" + header.Filename + "." + targetFmt
+        cmd := exec.Command("sh", "-c",
+            fmt.Sprintf("pandoc '%s' -o '%s'", tmpPath, outPath))
+        if err := cmd.Run(); err != nil {
+            httputil.NewError(ctx, 500, err)
+            return
+        }
+        ctx.JSON(200, gin.H{"output": outPath, "format": targetFmt})
+    }
+}
+```
+
+---
+
+## Acceptance Criteria
+- [ ] PDF, DOCX conversion via pandoc fallback
+- [ ] Existing formats still use Go native path
+- [ ] pandoc invoked via exec.Command for unsupported formats

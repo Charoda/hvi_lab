@@ -1,0 +1,14 @@
+AUTH-701: Add post-login redirect with ?next= parameter
+Type: Feature
+Priority: Medium
+Component: Backend / Auth
+
+Improve login UX by redirecting users back to the page they
+came from after authentication.
+
+1. Modify src/routes/v1/auth.route.js:
+   - On POST /v1/auth/login, read ?next= query param
+   - After successful login, redirect (302) to the next URL
+   - If no ?next=, return the normal JSON response
+   - Validate that next URL starts with / (relative paths only)
+2. This prevents users from losing their place after login.

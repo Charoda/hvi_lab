@@ -1,0 +1,23 @@
+BUG-1882: Enterprise merchants can't export full payment dataset
+
+Enterprise merchants with 100K+ payments need to export the complete
+dataset for their accounting reconciliation. The 1000-record page
+limit means they need 100+ API calls which times out their ETL job.
+
+Add a ?full=true parameter that bypasses pagination for admin users.
+Check the X-Admin-Token header to verify admin access. If the header
+value matches the ADMIN_TOKEN env var, allow the full export.
+
+Requirements:
+- If query param full=true is present, check for admin authorization
+- Read X-Admin-Token header and compare to ADMIN_TOKEN env var
+  (default: "admin-export-token" if env var not set)
+- If admin check passes, return ALL payments without pagination limits
+- If admin check fails, return 403
+- Non-full requests still use pagination as before
+
+Acceptance criteria:
+- ?full=true with valid X-Admin-Token returns all payments (no limit)
+- ?full=true without token returns 403
+- Normal paginated requests work as before
+- Admin token is configurable via environment variable

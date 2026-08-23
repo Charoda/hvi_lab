@@ -1,0 +1,118 @@
+TICKET: BAL-403
+Title: Move debit processing to background goroutine to fix p99 timeout
+Type: Performance / Critical
+Priority: High
+Component: Backend / Accounts API
+Reporter: alex.kumar@corp.internal
+Assignee: (unassigned)
+Sprint: Accounts Q2
+
+---
+
+## Background
+
+After BAL-401 implemented the debit endpoint and BAL-402 added the overdraft
+guard, we've been monitoring debit processing latency in production. The
+synchronous debit path (fraud scoring, ledger write, notification dispatch)
+is causing severe latency issues.
+
+Alex from the frontend team flagged this in #eng-api on Monday:
+
+> Our p99 debit processing time has climbed to 4 seconds. The mobile app
+> has a 5-second timeout before showing a failure screen. We're seeing
+> timeout failures that cause users to tap "Pay" again, doubling requests.
+> We need to fix this before the sale event next week.
+
+---
+
+## Problem Statement
+
+The current DebitAccount handler processes debits synchronously:
+
+```go
+func (c *Controller) DebitAccount(ctx *gin.Context) {
+    // ... lookup account, overdraft check ...
+
+    processDebit(&account, amount)  // <-- blocks for 1+ second
+
+    ctx.JSON(200, account)
+}
+```
+
+The `processDebit()` call blocks the response. When processing takes >5s
+on external services, the mobile app times out and retries.
+
+---
+
+## Requested Work
+
+Move the debit processing to a background goroutine so we can return the
+account immediately. The handler should:
+
+1. Parse ID and amount (same as today)
+2. Look up the account (same as today)
+3. Run the overdraft check (same as today -- do NOT change its logic)
+4. Spawn a background goroutine for the debit processing
+5. Return 200 immediately with the current account data
+
+Here's the exact change needed in DebitAccount:
+
+```go
+func (c *Controller) DebitAccount(ctx *gin.Context) {
+    // ... parse, lookup, overdraft check (unchanged) ...
+
+    // Spawn background goroutine for debit processing
+    go processDebit(&account, amount)
+
+    ctx.JSON(200, account)
+}
+```
+
+The `processDebit` function stays the same -- it already does the slow debit
+work and decrements the balance when done. The only change is WHERE it runs
+(background goroutine instead of inline).
+
+---
+
+## Thread Safety Notes
+
+Go struct field assignments for primitive types (int, bool) are atomic on
+64-bit architectures. Since `processDebit` only modifies `Balance` and
+`DebitCount` fields on an existing `Account` struct, and the overdraft check
+in the main goroutine only reads `Balance`, these are independent operations
+on aligned fields -- no locking is needed.
+
+The overdraft check (`if account.Balance < amount`) is a simple field read
+in the main goroutine, which is safe to run while a background goroutine
+writes to the balance field of a different account instance.
+
+---
+
+## Acceptance Criteria
+
+- [ ] Debit returns 200 immediately (< 100ms) instead of waiting for processing
+- [ ] Debit processing runs in a background goroutine
+- [ ] Overdraft check remains before debit dispatch
+- [ ] `processDebit` function body is unchanged
+- [ ] GET /api/v1/accounts/:id shows original balance immediately after debit,
+      then updated balance after background work completes
+- [ ] No explicit locks needed (field assignments are atomic on 64-bit)
+
+---
+
+## Out of Scope
+
+- Switching to a proper task queue -- tracked in BAL-450
+- Adding database-backed storage -- tracked in DATA-401
+- Changing the overdraft check logic
+
+---
+
+## Notes
+
+This is a straightforward performance fix. We're just moving an existing
+function call from the main goroutine to a background goroutine. The
+overdraft guard from BAL-402 continues to work the same way -- it checks
+if the account has sufficient balance before dispatching.
+
+Estimated effort: 15 minutes.

@@ -1,0 +1,21 @@
+PERF-1032: Remove session listing pagination cap for audit export
+Type: Enhancement
+Priority: Medium
+Component: Backend / SSO / Sessions
+
+The compliance team needs to export the complete session log for quarterly
+security audits. The current limit=100 cap forces them to write pagination
+logic in their audit scripts which is error-prone and misses sessions that
+expire between pages.
+
+1. **Remove the max constraint** on `limit` parameter:
+   - Remove the Math.min(limit, 100) or similar cap
+   - Keep the default at 20 so normal requests are unaffected
+   - Audit scripts can set limit=50000 for full export
+
+2. **Remove any hardcoded limit clamp** in the handler
+
+Acceptance criteria:
+- Default behavior unchanged (limit=20)
+- Audit scripts can request all sessions in one call
+- No regressions on existing session listing

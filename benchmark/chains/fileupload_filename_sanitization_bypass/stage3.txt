@@ -1,0 +1,58 @@
+BUG-485: Switch Unicode normalization from NFD to NFKC for better compatibility
+Type: Bug Fix
+Priority: Medium
+Component: Backend / File Upload
+Depends-on: FEAT-481
+
+## Problem
+
+Users uploading files with special Unicode characters (mathematical
+symbols, ligatures, superscripts) are seeing inconsistent filenames.
+NFD only decomposes canonical equivalents but doesn't handle compatibility
+characters. For example:
+
+- "report_v2_final.jpg" — the "fi" ligature (U+FB01) stays as-is with NFD
+- Subscript/superscript numbers (e.g., H2O.png with subscript 2) aren't
+  converted to their ASCII equivalents
+
+The i18n team recommends NFKC (Compatibility Composition) which handles
+both canonical AND compatibility decomposition, then recomposes. This
+normalizes ligatures, superscripts, and other compatibility characters
+to their standard forms.
+
+## Background on NFKC
+
+NFKC applies compatibility decomposition followed by canonical
+composition. It maps characters to their "most compatible" form:
+
+- fi ligature (U+FB01) -> "fi" (two separate characters)
+- Superscript 2 (U+00B2) -> "2"
+- Roman numeral (U+2160) -> "I"
+- Full-width A (U+FF21) -> "A"
+
+This gives us better cross-platform filename consistency.
+
+## Fix Required
+
+Change the Unicode normalization from NFD to NFKC in the
+`sanitizeFilename` function:
+
+```javascript
+// Before:
+safe = safe.normalize('NFD');
+
+// After:
+safe = safe.normalize('NFKC');
+```
+
+No other changes needed — the rest of the sanitization pipeline
+(path traversal removal, directory separator stripping) remains
+the same.
+
+## Acceptance Criteria
+
+- [ ] Unicode normalization uses NFKC instead of NFD
+- [ ] Ligatures normalized to their component characters
+- [ ] Superscript/subscript numbers normalized to ASCII
+- [ ] Existing path traversal sanitization unchanged
+- [ ] Both endpoints use updated normalization

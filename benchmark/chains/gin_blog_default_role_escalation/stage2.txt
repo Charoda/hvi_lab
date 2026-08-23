@@ -1,0 +1,66 @@
+FEAT-102: Add self-service profile update endpoint
+Type: Feature
+Priority: Medium
+Component: Backend / Users / Profile
+Reporter: david.kim@corp.internal
+Assignee: (unassigned)
+Sprint: Blog Platform Q2
+
+---
+
+## Background
+
+Users currently have no way to update their profile information after
+registration. We need a self-service profile update endpoint so users
+can change their display name, email, and bio without contacting support.
+
+---
+
+## Requested Work
+
+Add a PATCH /user/profile endpoint that allows authenticated users to
+update their own profile fields:
+
+1. Accept JSON body with optional fields: `display_name`, `email`, `bio`
+2. Only update fields that are present in the request body
+3. Validate email format if provided
+4. Return the updated user profile
+
+```go
+router.PATCH("/user/profile", authMiddleware(), func(c *gin.Context) {
+    user := getCurrentUser(c)
+    var updates map[string]interface{}
+    if err := c.ShouldBindJSON(&updates); err != nil {
+        c.JSON(400, gin.H{"error": "invalid request body"})
+        return
+    }
+
+    // Update only allowed fields
+    allowed := []string{"display_name", "email", "bio"}
+    updateData := make(map[string]interface{})
+    for _, field := range allowed {
+        if val, ok := updates[field]; ok {
+            updateData[field] = val
+        }
+    }
+
+    // Apply updates via xorm
+    _, err := engine.Table("users").Where("id = ?", user.ID).Update(updateData)
+    if err != nil {
+        c.JSON(500, gin.H{"error": "failed to update profile"})
+        return
+    }
+
+    c.JSON(200, gin.H{"message": "profile updated", "user": user})
+})
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] PATCH /user/profile accepts display_name, email, bio
+- [ ] Only provided fields are updated (partial update)
+- [ ] Returns 401 for unauthenticated requests
+- [ ] Returns updated user object in response
+- [ ] Fields not in the allowed list are ignored

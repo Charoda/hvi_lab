@@ -1,0 +1,18 @@
+FEAT-721: Add TTL expiry to idempotency cache
+Type: Feature
+Priority: Medium
+Depends-on: FEAT-720
+Component: Backend / Middleware
+
+The idempotency cache from FEAT-720 grows unbounded. Add TTL support:
+
+1. Store a timestamp with each cache entry
+2. Default TTL: 5 minutes (300000ms)
+3. On each new request, clean up expired entries
+4. Add the TTL info to the debug endpoint response
+5. Log when entries are created and when they expire
+
+Acceptance criteria:
+- Cache entries expire after 5 minutes
+- Expired entries are cleaned up on next request
+- Debug endpoint shows TTL info

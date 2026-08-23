@@ -1,0 +1,19 @@
+ENH-1031: Refactor webhook handlers into a registry pattern
+
+The hardcoded switch statement for webhook events is getting unwieldy.
+Refactor to use a handler registry (Map) so new event types can be
+added cleanly.
+
+Requirements:
+- Create a webhookHandlers Map in the webhook route module
+- Register the three existing handlers (user.created/updated/deleted)
+- Look up the handler from the Map instead of using if/else
+- Add a registerWebhookHandler(eventType, handlerFn) function
+- Export registerWebhookHandler so other modules can add handlers
+- Return 400 if no handler is registered for the event type
+
+Acceptance criteria:
+- Existing event types (user.*) still work as before
+- registerWebhookHandler can add new event types at runtime
+- Unregistered event types return 400
+- Handler functions receive (data, timestamp) as arguments

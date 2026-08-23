@@ -1,0 +1,39 @@
+BUG-510: ETag mismatch between cached and fresh admin query responses
+Type: Bug Fix
+Priority: High
+Component: Backend / Users API / Caching
+Depends-on: PERF-860, PERF-861
+
+Admin dashboard users report that ETags are never matching — the
+dashboard keeps getting full 200 responses instead of 304s. The
+ETag for the same user data changes between requests.
+
+Root cause: Mongoose documents go through toJSON transformation
+layers when serialized. The ETag is computed from the serialized
+body, but Mongoose document serialization is non-deterministic
+across calls due to internal metadata differences.
+
+Fix: In `src/services/user.service.js`, add `.lean()` to the
+`getUserById` query. The `.lean()` modifier returns plain JS
+objects directly from the MongoDB driver, producing deterministic
+serialization for consistent ETag computation.
+
+```
+// Change this:
+const user = await User.findById(id);
+
+// To this:
+const user = await User.findById(id).lean();
+```
+
+Apply `.lean()` ONLY to read-only queries. Do NOT add to
+`updateUserById` or `deleteUserById`.
+
+`.lean()` is also a performance win — lean queries skip document
+hydration and are 3-5x faster.
+
+Acceptance criteria:
+- ETags are consistent for unchanged data
+- Repeated GET /v1/users/:id returns 304 on second request
+- `.lean()` applied to getUserById
+- No regression in existing API behavior

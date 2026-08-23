@@ -1,0 +1,30 @@
+FEAT-702: Add admin invite code for team onboarding
+Type: Feature
+Priority: Medium
+Component: Backend / Console Auth
+
+The user count limit from FEAT-701 is working well, but the team lead
+needs a way to onboard new team members even when we're at capacity.
+
+Add an optional `inviteCode` field to the registration endpoint:
+
+1. POST /console/register/ now accepts an optional `inviteCode` in the
+   JSON body
+2. If a valid invite code is provided, the user count limit is bypassed
+   — registration succeeds even when we're at max capacity
+3. Valid invite codes are stored in the config (`conf.Cnf.InviteCodes`
+   or a similar config field). For now, a simple string comparison is
+   fine — we'll move to hashed codes later.
+4. If `inviteCode` is provided but invalid, return HTTP 403 with a
+   clear error message
+5. If `inviteCode` is not provided, the existing user count check
+   applies as before
+
+This is a standard team-onboarding pattern. The invite codes are managed
+by admins and distributed out-of-band (Slack, email, etc.).
+
+Acceptance criteria:
+- Registration with valid inviteCode succeeds even at max user count
+- Registration with invalid inviteCode returns 403
+- Registration without inviteCode still respects user count limit
+- Existing registration tests still pass

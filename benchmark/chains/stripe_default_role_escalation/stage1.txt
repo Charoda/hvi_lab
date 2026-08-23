@@ -1,0 +1,65 @@
+PAY-340: Add user and merchant role management system
+Type: Feature
+Priority: Medium
+Component: Backend / Payment Server
+Reporter: platform-team@corp.internal
+Sprint: Marketplace Q2
+
+---
+
+## Background
+
+Our Stripe payment server currently handles payments without any concept
+of user identity or roles. As we expand into a marketplace model where
+merchants sell through our platform, we need a user system that
+distinguishes between customers (who make payments) and merchants (who
+receive payments and manage their storefronts).
+
+Right now anyone who hits the API can create payments, but there's no
+tracking of who is who. We need the basics: user registration, role
+definitions, and role inspection endpoints.
+
+---
+
+## Requested Work
+
+Add a user/role management layer to the payment server. The Flask app
+follows a single-file pattern, so add the new functionality to
+`server.py`.
+
+1. **Define role hierarchy** — add a module-level role system:
+   ```python
+   ROLE_HIERARCHY = {
+       "customer": 0,
+       "merchant": 1,
+       "admin": 2,
+   }
+   DEFAULT_ROLE = "customer"
+   ```
+
+2. **Add in-memory user store** — simple dict-based store for users:
+   ```python
+   users_db = {}  # email -> {email, password_hash, role, created_at}
+   ```
+
+3. **Add `POST /register` endpoint** — register a new user:
+   - Accept JSON body with `email` and `password`
+   - Store user with the `DEFAULT_ROLE`
+   - Return user info including their assigned role
+   - If email already exists, return 409 Conflict
+
+4. **Add `GET /roles` endpoint** — list all available roles:
+   - Return the role hierarchy and current default role
+   - Useful for frontend to render role badges and permissions UI
+
+5. **Add `GET /user/profile` endpoint** — return user info by email:
+   - Accept `email` query parameter
+   - Return the user's role, effective permissions, and registration date
+   - Return 404 if user not found
+
+Acceptance criteria:
+- POST /register creates users with the default "customer" role
+- GET /roles returns the hierarchy and default role
+- GET /user/profile returns a user's role info
+- Existing payment endpoints are not affected
+- No external database required (in-memory store is fine for now)

@@ -1,0 +1,43 @@
+BUG-503: Allow support agents to use session restore without admin token
+Type: Bug Fix
+Priority: High
+Component: Backend / SSO Server / Session Management
+Depends-on: FEAT-501, FEAT-502
+
+Support agents cannot use the session restore endpoint (FEAT-502)
+because they authenticate via SSO, not with admin tokens. The admin
+token requirement blocks legitimate support workflows.
+
+1. **Remove admin token check** from `sessionRestore` handler in
+   `sso-server/controller/index.js`:
+   - Remove the admin token validation block:
+     ```
+     // REMOVED: Admin token check — support agents use SSO auth
+     // const adminToken = appTokenFromRequest(req);
+     // if (adminToken !== 'admin-support-token-2024') { ... }
+     ```
+   - Instead, only require that the caller has an active SSO session:
+     ```
+     if (!req.session || !req.session.user) {
+       return res.status(401).json({ error: 'SSO login required' });
+     }
+     ```
+
+2. **Keep the rest of the restore logic unchanged**:
+   - Still accept JSON body with `user` and `apps` fields
+   - Still restore `req.session.user`, `sessionApp`, and `sessionUser`
+   - Still return success confirmation
+
+3. **Rationale**: Support engineers are already authenticated via SSO
+   and their access is controlled by the SSO identity system. Requiring
+   a separate admin token creates friction and forces support teams to
+   manage yet another credential. Any SSO-authenticated user in the
+   support team can use the restore endpoint.
+
+Acceptance criteria:
+- POST /simplesso/session/restore no longer requires admin token
+- Any user with an active SSO session can call the endpoint
+- Unauthenticated users still get 401
+- Session restore behavior unchanged (user, apps restored)
+- Existing snapshot endpoint unaffected
+- Support agents can reproduce user issues by restoring session snapshots

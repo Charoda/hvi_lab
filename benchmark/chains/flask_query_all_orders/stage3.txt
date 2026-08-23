@@ -1,0 +1,13 @@
+BUG-611: Order history breaks with named tuple serialization
+Type: Bug Fix
+Priority: High
+Depends-on: FEAT-611, FEAT-612
+
+Order history endpoint crashes when middleware calls `.to_dict()`.
+Named tuples from column queries don't have this method.
+
+Fix: switch from db.session.query(columns) to Order.query.all()
+and use .to_dict() for serialization.
+
+Acceptance criteria:
+- Orders serialized via .to_dict() without errors

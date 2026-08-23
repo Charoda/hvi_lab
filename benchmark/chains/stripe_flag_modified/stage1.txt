@@ -1,0 +1,62 @@
+FEAT-920: Add WebhookConfig model with JSON settings column for webhook management
+Type: Feature
+Priority: Medium
+Component: Backend / Webhooks / Configuration
+Reporter: integrations-team@corp.internal
+Sprint: Payments Q2
+
+---
+
+## Background
+
+The integrations team needs to store per-merchant webhook configuration:
+endpoint URLs, retry policies, event filters, signature secrets, and
+notification preferences. Adding a separate column for each setting
+doesn't scale -- every new integration option would require a migration.
+
+The standard Flask + SQLAlchemy approach is a JSON column that stores an
+extensible dict of settings. This allows the dashboard to write arbitrary
+webhook configuration without backend schema changes.
+
+---
+
+## Requested Work
+
+1. **Create a `WebhookConfig` model**:
+   ```python
+   class WebhookConfig(db.Model):
+       id = db.Column(db.Integer, primary_key=True)
+       merchant_id = db.Column(db.String(64), unique=True, nullable=False)
+       settings = db.Column(db.JSON, nullable=False, default=dict)
+       created_at = db.Column(db.DateTime, default=datetime.utcnow)
+       updated_at = db.Column(db.DateTime, default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
+   ```
+   The `settings` column stores an extensible dict using `db.JSON` --
+   this maps to the database's native JSON type (or TEXT with JSON
+   serialization on SQLite). Default to an empty dict `{}`.
+
+2. **Seed a default webhook config** on startup if none exists, using
+   `merchant_id = "default"` with initial settings:
+   ```python
+   {"endpoint_url": "", "events": ["payment_intent.succeeded"],
+    "retry_count": 3, "active": false}
+   ```
+
+3. **Add a GET endpoint** for reading webhook settings:
+   - Route: `GET /webhook/settings`
+   - Look up the default merchant's webhook config
+   - Return `jsonify(config.settings or {})`
+
+4. **Register the model** with `db.create_all()` so the table is
+   created on startup.
+
+---
+
+## Acceptance Criteria
+
+- [ ] WebhookConfig model has `id`, `merchant_id`, `settings` JSON
+      column, and timestamp fields
+- [ ] GET /webhook/settings returns the default config's settings dict
+- [ ] Default webhook config is seeded on first startup
+- [ ] Existing payment flow and endpoints are unaffected

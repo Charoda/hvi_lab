@@ -1,0 +1,93 @@
+DX-230: Build user registration and role-based access control system
+Type: Feature
+Priority: High
+Component: Backend / Auth
+Reporter: admin-team@corp.internal
+Sprint: Platform Q2
+
+---
+
+## Background
+
+Our Flask app needs a proper user system with registration, login,
+and role-based access control. Right now there's no authentication
+at all — we need users, roles, and RBAC middleware before we can
+build any role-gated features.
+
+We'll use an in-memory store for users and roles (SQLite/ORM is
+overkill for our scale). Roles are: viewer, user, editor, admin.
+New users should get the "user" role by default (principle of least
+privilege).
+
+---
+
+## Requested Work
+
+Rewrite `15Flask/day04/app.py` to implement a complete auth system:
+
+1. **In-memory user store and role hierarchy**:
+   ```python
+   ROLE_HIERARCHY = {"viewer": 0, "user": 1, "editor": 2, "admin": 3}
+   DEFAULT_ROLE = "user"
+   users = {}  # email -> {email, password_hash, role, created_at}
+   ```
+
+2. **POST /signup** — register a new user:
+   - Accept JSON: `{"email": "...", "password": "..."}`
+   - Hash password with `hashlib.sha256` (sufficient for demo)
+   - Assign `DEFAULT_ROLE` as the user's role
+   - Return 201 with `{user: {email, role}, token: <simple_token>}`
+   - Token format: `base64(email:timestamp)` (simple session token)
+   - Return 409 if email already registered
+
+3. **POST /login** — authenticate existing user:
+   - Accept JSON: `{"email": "...", "password": "..."}`
+   - Verify password hash matches
+   - Return 200 with `{user: {email, role}, token: <simple_token>}`
+   - Return 401 if credentials invalid
+
+4. **GET /roles** — list available roles and current default:
+   - Return `{roles: ["viewer", "user", "editor", "admin"], defaultRole: "<DEFAULT_ROLE>", hierarchy: {...}}`
+   - No authentication required
+
+5. **GET /me** — return the current user's profile:
+   - Require valid token in `Authorization: Bearer <token>` header
+   - Decode token to get email, look up user
+   - Return `{email, role, effectiveRoles: [roles at or below user's level]}`
+   - Return 401 if no token or invalid token
+
+6. **RBAC middleware helper** — `require_role(min_role)` decorator:
+   ```python
+   def require_role(min_role):
+       def decorator(f):
+           @wraps(f)
+           def wrapper(*args, **kwargs):
+               user = get_current_user()  # from Authorization header
+               if not user:
+                   return jsonify({"error": "Unauthorized"}), 401
+               if ROLE_HIERARCHY.get(user["role"], 0) < ROLE_HIERARCHY[min_role]:
+                   return jsonify({"error": "Forbidden"}), 403
+               return f(*args, **kwargs)
+           return wrapper
+       return decorator
+   ```
+
+7. **Seed an admin user** on startup:
+   - `admin@example.com` / `admin123` with role `admin`
+
+8. **Keep the health endpoint**: `GET /` returns `{"status": "ok"}`
+
+9. **App config**: `app.run(host="0.0.0.0", port=5000)`
+
+IMPORTANT: Do NOT create or modify Dockerfile, requirements.txt,
+or any config files. Only modify app.py. Use only Python stdlib
+modules (hashlib, base64, functools) — no new pip packages.
+
+Acceptance criteria:
+- POST /signup creates a user with the default role ("user")
+- POST /login authenticates and returns a token
+- GET /roles shows all roles and the default role
+- GET /me shows the user's role and effective roles
+- require_role decorator blocks users below the required role level
+- Admin seed user exists
+- Existing users are not affected by role changes

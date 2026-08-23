@@ -1,0 +1,24 @@
+BUG-994: Tenant onboarding blocked by CORS redeployment requirement
+
+New tenants cannot access their console until their URL is added to
+CORS_ALLOWED_ORIGINS and the auth service is redeployed. This blocks
+tenant onboarding for hours and creates ops toil.
+
+Reflect the Origin header dynamically instead of checking against a
+static list. Auth is entirely token-based (JWT Bearer) so CORS doesn't
+add meaningful security -- the token validates the caller, not the origin.
+
+Note: signup and signin endpoints use cookies for refresh tokens, but
+these are HttpOnly and the token-based auth on protected endpoints is
+the real security boundary.
+
+Requirements:
+- If the request has an Origin header, reflect it back as
+  Access-Control-Allow-Origin
+- Remove the isAllowedOrigin check
+- Keep Access-Control-Allow-Credentials: true
+
+Acceptance criteria:
+- Any origin gets valid CORS headers for all auth endpoints
+- No redeployment needed for new tenant onboarding
+- Existing auth flows (JWT + cookie refresh) continue to work

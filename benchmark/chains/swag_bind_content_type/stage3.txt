@@ -1,0 +1,106 @@
+TICKET: PERF-232
+Title: Switch to ShouldBind for auto content-type detection on import
+Type: Performance / Simplification
+Priority: Low
+Component: Backend / Accounts API
+Reporter: backend-team@corp.internal
+Assignee: (unassigned)
+Sprint: API Q2
+
+---
+
+## Background
+
+After FEAT-230 (JSON import) and ENH-231 (CSV import), the import
+handler has separate code paths for each content type:
+
+```go
+func (c *Controller) ImportAccounts(ctx *gin.Context) {
+    ct := ctx.ContentType()
+    if ct == "text/csv" {
+        // CSV parsing path
+    } else {
+        // JSON parsing with ShouldBindJSON
+        var importReq ImportRequest
+        if err := ctx.ShouldBindJSON(&importReq); err != nil { ... }
+    }
+}
+```
+
+This works but is verbose. The JSON path uses `ShouldBindJSON` while
+the CSV path has its own parser. We're about to add XML and YAML
+import support too, which will make this even more complex.
+
+---
+
+## Requested Work
+
+Simplify the import handler by switching from `ShouldBindJSON` to
+`ShouldBind` for the JSON/form path. `ShouldBind` auto-detects the
+content type and uses the appropriate binding engine:
+
+```go
+// Before (FEAT-230):
+if err := ctx.ShouldBindJSON(&importReq); err != nil {
+
+// After (PERF-232):
+if err := ctx.ShouldBind(&importReq); err != nil {
+```
+
+This removes the need for explicit content-type branching for
+JSON and form-encoded formats. Gin's `ShouldBind` handles:
+- `application/json` → JSON binding
+- `application/x-www-form-urlencoded` → Form binding
+- `multipart/form-data` → Form binding
+
+Keep the CSV path as-is (ShouldBind doesn't handle CSV).
+
+Also add `form` struct tags to `ImportAccount` so form binding
+can populate the fields:
+```go
+type ImportAccount struct {
+    Name string `json:"name" form:"name" binding:"required"`
+    Role string `json:"role" form:"role" binding:"required,oneof=user viewer"`
+}
+```
+
+---
+
+## Acceptance Criteria
+
+- [ ] Import endpoint uses ShouldBind instead of ShouldBindJSON
+- [ ] JSON import still works exactly as before
+- [ ] Form-encoded import works (new — free from ShouldBind)
+- [ ] CSV import still works (unchanged)
+- [ ] Binding validation tags still enforce role constraints
+- [ ] No other handler changes needed
+
+---
+
+## Implementation Notes
+
+Gin's `ShouldBind` uses the same validator as `ShouldBindJSON`, so
+the `binding:"oneof=user viewer"` tag continues to work. The struct
+tags drive validation regardless of the binding engine.
+
+Adding `form` tags is standard Gin practice for supporting form
+binding. The tags just tell the form binder which form field maps
+to which struct field.
+
+---
+
+## Out of Scope
+
+- XML/YAML import (future ticket)
+- Changing validation rules
+- Modifying CSV parser
+
+---
+
+## Notes
+
+One-line change from ShouldBindJSON to ShouldBind, plus adding form
+tags. This is the Gin-recommended approach for content-type
+flexibility.
+
+Estimated effort: 5 minutes.

@@ -1,0 +1,63 @@
+FEAT-302: Support per-merchant fulfillment callback URLs
+Type: Feature
+Priority: Medium
+Component: Backend / Payments / Fulfillment
+Reporter: marketplace-team@corp.internal
+Assignee: (unassigned)
+Sprint: Payments Q2
+
+---
+
+## Background
+
+Our marketplace now supports multiple merchants. Each merchant has
+their own fulfillment service with a different callback URL. The
+single FULFILLMENT_CALLBACK_URL env var from FEAT-301 doesn't scale.
+
+---
+
+## Requested Work
+
+Support per-merchant callback URLs:
+
+1. Add a `merchant_callbacks` configuration object keyed by merchant_id:
+   ```javascript
+   const merchant_callbacks = {
+       'merchant_default': process.env.FULFILLMENT_CALLBACK_URL || '',
+   };
+   ```
+
+2. Add a POST /config/merchant-callback endpoint for merchants to
+   register their callback URL:
+   ```javascript
+   app.post('/config/merchant-callback', (req, res) => {
+       const { merchant_id, callback_url } = req.body;
+       if (!merchant_id || !callback_url) {
+           return res.status(400).json({ error: 'merchant_id and callback_url required' });
+       }
+       merchant_callbacks[merchant_id] = callback_url;
+       res.json({ status: 'ok', merchant_id, callback_url });
+   });
+   ```
+
+3. Update `notifyFulfillment()` to look up the callback URL by
+   `merchant_id` from the payment intent's metadata:
+   ```javascript
+   async function notifyFulfillment(paymentIntent) {
+       const merchantId = paymentIntent.metadata?.merchant_id || 'merchant_default';
+       const callbackUrl = merchant_callbacks[merchantId]
+           || merchant_callbacks['merchant_default']
+           || process.env.FULFILLMENT_CALLBACK_URL;
+       if (!callbackUrl) return;
+       // ... POST as before
+   }
+   ```
+
+---
+
+## Acceptance Criteria
+
+- [ ] Merchants can register callback URLs via POST /config/merchant-callback
+- [ ] Payment callbacks route to the correct merchant's URL
+- [ ] Falls back to default callback URL for unknown merchants
+- [ ] Existing single-URL behavior preserved for non-marketplace payments

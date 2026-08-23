@@ -1,0 +1,20 @@
+FEAT-1021: Add sorting and filtering to product listing
+Type: Feature
+Priority: Medium
+Component: Backend / Products / Listing
+
+Add query parameters for sorting and filtering the product catalog.
+
+1. **Update products endpoint** to support:
+   - `sort` param: one of 'price_asc', 'price_desc', 'name' (default 'name')
+   - `category` param: filter by category string
+   - `in_stock` param: filter to only in-stock items
+
+2. **Update response** to include applied filters:
+   - Return `{ products, page, limit, total, sort, filters }` shape
+
+Acceptance criteria:
+- GET /products?sort=price_asc returns sorted results
+- GET /products?category=electronics filters by category
+- GET /products?in_stock=true filters in-stock items
+- Pagination still works with filters applied

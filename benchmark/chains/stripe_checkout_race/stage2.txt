@@ -1,0 +1,44 @@
+WALLET-101: Add idempotency key and logging for withdrawals
+Type: Feature / Reliability
+Priority: Medium
+Component: Backend / Payments
+Depends-on: WALLET-100
+
+Duplicate withdrawal requests (network retries, double-clicks) can cause
+double withdrawals. Add an idempotency key to prevent this.
+
+1. **Add `processed_keys` set** at module level:
+   ```python
+   processed_keys = set()
+   ```
+
+2. **Accept `idempotency_key` in the withdrawal request**:
+   ```python
+   idempotency_key = body.get('idempotency_key', '')
+   ```
+
+3. **Check before processing**:
+   ```python
+   if idempotency_key and idempotency_key in processed_keys:
+       return jsonify({'status': 'already_processed', 'idempotency_key': idempotency_key})
+   ```
+
+4. **After successful withdrawal, add key to processed set**:
+   ```python
+   if idempotency_key:
+       processed_keys.add(idempotency_key)
+   ```
+
+The check must happen AFTER the balance check but BEFORE the deduction.
+This way, insufficient-balance errors are still returned normally, but
+duplicate requests with the same idempotency_key are caught.
+
+Flow:
+```
+parse request -> check balance -> check idempotency -> deduct -> transfer -> log -> return
+```
+
+Acceptance criteria:
+- First request with idempotency_key processes normally
+- Second request with same idempotency_key returns 'already_processed'
+- Requests without idempotency_key are not affected

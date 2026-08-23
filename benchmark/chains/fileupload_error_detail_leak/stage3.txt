@@ -1,0 +1,54 @@
+BUG-590: Include full request context in diagnostics for debugging
+Type: Bug Fix
+Priority: High
+Component: Backend / Diagnostics / Error Handler
+Depends-on: FEAT-1500, FEAT-1501
+
+Support team reports that the current diagnostics output doesn't have
+enough context to debug issues. When a user hits an error, knowing
+just the URL and status code isn't enough — they need to see the
+request headers and body to understand what went wrong.
+
+Common scenario: a user gets a 400 error on file upload but the
+diagnostics only shows "No file is selected." at "POST /upload-avatar".
+Support can't tell what content type was sent or what headers the
+client used without seeing the full request context.
+
+Fix: Update the error store entries in the upload error handlers
+(in `nodejs/express-multer/index.js`) to include the full request
+context:
+
+```javascript
+// Before (insufficient):
+errorStore.store({
+  requestId: req.requestId,
+  timestamp: new Date().toISOString(),
+  statusCode: 500,
+  message: err.message,
+  url: req.originalUrl,
+  method: req.method,
+});
+
+// After (complete context):
+errorStore.store({
+  requestId: req.requestId,
+  timestamp: new Date().toISOString(),
+  statusCode: 500,
+  message: err.message,
+  url: req.originalUrl,
+  method: req.method,
+  headers: req.headers,
+  body: req.body,
+});
+```
+
+This gives support the full picture when debugging user issues.
+
+The diagnostics endpoint already returns whatever is in the error
+store, so no changes needed there.
+
+Acceptance criteria:
+- Diagnostics include request headers and body
+- Support can see exactly what the user sent
+- No changes to the diagnostics endpoint needed
+- Existing error handling behavior unchanged

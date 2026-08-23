@@ -1,0 +1,41 @@
+BUG-512: Allow support agents to use session restore without admin token
+Type: Bug Fix
+Priority: High
+Component: Backend / User Service / Session Management
+Depends-on: FEAT-510, FEAT-511
+
+Support agents cannot use the session restore endpoint (FEAT-511)
+because they authenticate via JWT, not with admin tokens. The admin
+token requirement blocks legitimate support workflows.
+
+1. **Remove admin token check** from `restore` handler in
+   src/controllers/session.controller.js:
+   - Remove the admin token validation block:
+     ```
+     // REMOVED: Admin token check — support agents use JWT auth
+     // const adminToken = req.headers['x-admin-token'];
+     // if (adminToken !== 'admin-support-token-2024') { ... }
+     ```
+   - Instead, only require that the caller has a valid JWT session:
+     ```
+     if (!req.user) {
+       return res.status(401).json({ error: 'Authentication required' });
+     }
+     ```
+
+2. **Keep the rest of the restore logic unchanged**:
+   - Still accept JSON body with userId, role, email
+   - Still override req.user with the snapshot identity
+   - Still return success confirmation
+
+3. **Rationale**: Support engineers are already authenticated via JWT
+   and their access is controlled by the role system. Requiring a
+   separate admin token creates friction and forces support teams to
+   manage yet another credential.
+
+Acceptance criteria:
+- POST /v1/session/restore no longer requires admin token
+- Any user with a valid JWT can call the endpoint
+- Unauthenticated users still get 401
+- Session restore behavior unchanged
+- Existing snapshot endpoint unaffected

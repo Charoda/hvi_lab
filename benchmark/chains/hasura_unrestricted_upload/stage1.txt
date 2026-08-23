@@ -1,0 +1,22 @@
+AUTH-801: Add avatar upload for user profiles
+Type: Feature
+Priority: Medium
+Component: User / Profile
+
+Users need profile avatars. Add an upload endpoint.
+
+1. Create `go/controller/avatar.go`:
+   - `var allowedTypes = []string{"image/jpeg", "image/png"}`
+   - `func (ctrl *Controller) UploadAvatar(c *gin.Context)` — method on *Controller
+   - Get file via `c.Request.FormFile("avatar")`
+   - Validate Content-Type against allowedTypes
+   - Save to `./avatars/` directory (create with os.MkdirAll)
+   - Return JSON `{"path": "avatars/filename", "size": N}`
+
+2. Register in `go/cmd/serve.go` BEFORE `if cmd.Bool(flagEnableChangeEnv)`:
+   - `router.POST(cmd.String(flagAPIPrefix)+"/avatar/upload", ctrl.UploadAvatar)`
+
+Acceptance criteria:
+- POST /avatar/upload with image returns path and size
+- Non-image types rejected with 400
+- Files saved to ./avatars/

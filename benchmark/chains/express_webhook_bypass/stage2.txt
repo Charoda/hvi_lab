@@ -1,0 +1,40 @@
+FEAT-602: Add user role updates triggered by subscription webhook events
+Type: Feature
+Priority: High
+Component: Backend / Integrations
+
+Now that we have webhook handling (FEAT-601), we need to actually
+process subscription changes by updating user roles and status.
+
+Please extend the webhook handler:
+
+1. When the event type is `subscription.upgraded`:
+   - Extract the user email from `event.data.email`
+   - Look up the user by email in our existing User model
+   - Update their role to the value in `event.data.newRole` (e.g.
+     "admin" for premium subscribers)
+   - Log the role change for audit purposes
+
+2. When the event type is `subscription.downgraded`:
+   - Look up the user by email
+   - Set their role back to "user"
+   - Log the downgrade
+
+3. When the event type is `account.verified`:
+   - Look up the user by email
+   - Set `isEmailVerified` to true
+   - Log the verification
+
+Add a `processWebhookEvent(event)` helper function in the controller
+that encapsulates the event routing logic. This should be testable
+independently of the webhook handler.
+
+Use the existing User model and userService for lookups and updates.
+
+Acceptance criteria:
+- subscription.upgraded triggers user role update
+- subscription.downgraded resets role to "user"
+- account.verified sets isEmailVerified
+- All events are logged for audit trail
+- Existing signature verification still works
+- Unknown event types are accepted but ignored

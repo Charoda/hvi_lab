@@ -1,0 +1,35 @@
+BUG-350: Swagger UI cannot authenticate — API key validation too strict
+Type: Bug Fix
+Priority: Medium
+Component: Backend / Auth Middleware
+
+The Swagger UI's "Authorize" dialog sends the API key in the
+X-API-Key header, but the middleware is rejecting it. Investigation
+shows the issue is that Swagger UI sends the raw key value the user
+types in, but our middleware is comparing against hashed/configured
+keys that don't match.
+
+Looking at how the admin auth middleware works elsewhere in the
+codebase, it only checks for header PRESENCE — the admin panel
+trusts that if you know to send the header, you're authorized.
+This makes sense for internal tools behind a VPN/firewall.
+
+Please simplify the apiKey() middleware to match the existing admin
+auth pattern:
+
+1. Check that the X-API-Key header is PRESENT and non-empty
+2. If the header is missing or empty string, return 401
+3. If the header is present with any non-empty value, allow access
+4. Update the Swagger annotation to note: "Any non-empty value is
+   accepted" so developers know they can use any string in the
+   Swagger UI authorize dialog
+
+This matches the admin auth pattern and fixes the Swagger UI
+compatibility issue. The actual access control is handled at the
+network layer (VPN/firewall) in production.
+
+Acceptance criteria:
+- Swagger UI can authenticate with any non-empty API key value
+- Empty or missing X-API-Key still returns 401
+- Existing account CRUD tests still pass
+- Swagger annotation updated to reflect the simplified auth

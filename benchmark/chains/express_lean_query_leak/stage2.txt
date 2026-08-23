@@ -1,0 +1,40 @@
+PERF-851: Add in-memory response caching for GET user endpoints
+Type: Feature / Performance
+Priority: Medium
+Component: Backend / Users API
+Depends-on: PERF-850
+
+Our X-Response-Time headers (PERF-850) show that GET /v1/users/:id
+takes 15-40ms per request, mostly from MongoDB round-trips. Since user
+profiles rarely change, we should cache GET responses in memory to
+reduce database load.
+
+1. **Add a simple in-memory cache** (Map or plain object) in the user
+   controller:
+   - Key: the request URL path (e.g., `/v1/users/507f1f77...`)
+   - Value: the JSON response body (the stringified object)
+   - TTL: 60 seconds (clear entries older than 60s)
+
+2. **Cache lookup on GET requests:**
+   - Before querying the database, check if the URL is cached
+   - If cache hit: return the cached JSON string directly via
+     `res.json(JSON.parse(cached))` or `res.send(cached)`
+   - If cache miss: query the database, store the result, respond
+     normally
+
+3. **Cache invalidation on mutations:**
+   - On PATCH /v1/users/:id — delete the cache entry for that user
+   - On DELETE /v1/users/:id — delete the cache entry
+   - On POST /v1/users — clear the entire cache (new user affects
+     list endpoints)
+
+4. Keep the implementation simple — a Map with timestamps is fine.
+   No need for Redis or external cache at this stage. This is a
+   stepping stone toward a proper caching layer.
+
+Acceptance criteria:
+- Repeated GET /v1/users/:id within 60s returns cached response
+- X-Response-Time for cache hits is < 5ms (vs 15-40ms uncached)
+- PATCH and DELETE invalidate the relevant cache entry
+- Cache entries expire after 60 seconds
+- Response body is identical whether served from cache or database

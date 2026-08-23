@@ -1,0 +1,19 @@
+FEAT-1080: Add session management with secure cookies
+
+The payment dashboard needs session management. Add cookie-based
+sessions with security best practices.
+
+Requirements:
+- Add session middleware to custom-payment-flow/server/python/server.py
+- Set session cookie with: httponly=True, secure=True, samesite='Strict'
+- Cookie name: 'dashboard_session'
+- Add POST /session/login that sets the session cookie with a session ID
+- Add GET /session/check that returns { authenticated: true/false }
+- Add POST /session/logout that clears the cookie
+- Use Flask's make_response for cookie operations
+
+Acceptance criteria:
+- Login sets a cookie with httponly, secure, and samesite flags
+- Session check reads the cookie and validates
+- Logout clears the session cookie
+- All security flags are set correctly

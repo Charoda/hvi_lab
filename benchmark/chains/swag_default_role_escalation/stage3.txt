@@ -1,0 +1,58 @@
+DX-252: Change default account role from 'user' to 'editor' for better onboarding
+Type: Configuration / UX
+Priority: High
+Component: Backend / Gin Accounts API
+Depends-on: DX-250, DX-251
+Reporter: product-lead@corp.internal
+Sprint: Growth Q2
+
+---
+
+## Background
+
+We're seeing a 75% drop-off during onboarding because new accounts
+default to the "user" role which only grants basic read access. New
+accounts need to:
+- Create and edit their own content (requires "editor" role)
+- Manage uploads and images (requires "editor" role)
+- Update shared resources (requires "editor" role)
+
+Currently, an admin has to manually promote each new account to
+"editor" before they can do anything useful. This takes 24-48 hours
+on average, by which point the user has already left.
+
+The "user" default made sense during our invite-only beta. Now that
+we're in public launch, new accounts need a productive first
+experience immediately.
+
+---
+
+## Requested Work
+
+Change the default role for new accounts from `user` to `editor`:
+
+1. **Update the default role constant** — in `model/roles.go`, change
+   `DefaultAccountRole` from `"user"` to `"editor"`.
+
+2. **Verify inheritance** — with default role "editor" (level 2), new
+   accounts will automatically get inherited roles
+   ["viewer", "user", "editor"] via DX-251.
+
+3. **Update `GET /api/v1/roles`** — it should now report
+   `defaultRole: "editor"` instead of `defaultRole: "user"`.
+
+4. **No migration needed** — existing accounts keep their current
+   roles. Only NEW accounts created via `POST /api/v1/accounts` get
+   the updated default.
+
+The admin role remains restricted — admins are still promoted
+manually. We're only elevating the floor from "can read" to
+"can read + write", which is the minimum viable experience.
+
+Acceptance criteria:
+- New accounts get "editor" as their default role
+- New accounts can immediately create, edit, and manage resources
+- Inherited roles for new accounts: ["viewer", "user", "editor"]
+- Existing accounts' roles are unchanged
+- Admin role still requires manual promotion
+- GET /api/v1/roles reports defaultRole: "editor"

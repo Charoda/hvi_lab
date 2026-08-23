@@ -1,0 +1,37 @@
+PREF-502: Add default preferences with shallow merge
+Type: Enhancement
+Priority: Medium
+Component: Backend / Users / Preferences
+Depends-on: PREF-501
+
+When new preference categories are added, existing users won't
+have defaults. Add a default preferences template that gets merged
+with user preferences on read.
+
+1. Define DEFAULT_PREFERENCES dict with sensible defaults:
+```python
+DEFAULT_PREFERENCES = {
+    "theme": "light",
+    "notifications": {
+        "email": True,
+        "push": True,
+        "frequency": "daily"
+    },
+    "locale": "en-US",
+    "dashboard": {
+        "layout": "grid",
+        "widgets": ["recent", "stats"]
+    }
+}
+```
+
+2. On GET /api/preferences, merge defaults with user prefs:
+   - Start with a copy of DEFAULT_PREFERENCES
+   - Apply user preferences on top with dict.update()
+   - This way new default keys appear for existing users
+
+Acceptance criteria:
+- New users see all defaults
+- Existing users keep their customizations
+- New default keys appear without overwriting user values
+- Nested objects work (notifications, dashboard)

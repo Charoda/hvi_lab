@@ -1,0 +1,814 @@
+115   execve("/usr/bin/timeout", ["timeout", "600", "bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage2.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage3.sh /workspace/app/hagopj13_node-express-boilerplate"], 0x7fffddd8fcc0 /* 12 vars */) = 0
+115   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+115   openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+115   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+115   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+115   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+115   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f0f5c7b8a10) = 116
+115   wait4(116, 0x7ffca81722cc, WNOHANG, NULL) = 0
+116   execve("/usr/local/sbin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage2.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage3.sh /workspace/app/hagopj13_node-express-boilerplate"], 0x7ffca8172578 /* 12 vars */) = -1 ENOENT (No such file or directory)
+116   execve("/usr/local/bin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage2.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage3.sh /workspace/app/hagopj13_node-express-boilerplate"], 0x7ffca8172578 /* 12 vars */) = -1 ENOENT (No such file or directory)
+116   execve("/usr/sbin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage2.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage3.sh /workspace/app/hagopj13_node-express-boilerplate"], 0x7ffca8172578 /* 12 vars */) = -1 ENOENT (No such file or directory)
+116   execve("/usr/bin/bash", ["bash", "-c", "bash /chain/golden_stage1.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage2.sh /workspace/app/hagopj13_node-express-boilerplate && bash /chain/golden_stage3.sh /workspace/app/hagopj13_node-express-boilerplate"], 0x7ffca8172578 /* 12 vars */) = 0
+116   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+116   openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+116   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+116   newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+116   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+116   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7fff9895a590, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7fff9895a590, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7fff9895a590, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", X_OK)     = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", R_OK)     = 0
+116   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[153761]>
+116   connect(3<socket:[153761]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+116   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[153762]>
+116   connect(3<socket:[153762]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+116   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+116   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+116   newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+116   getpeername(0</dev/null>, 0x7fff9895a980, [16]) = -1 ENOTSOCK (Socket operation on non-socket)
+116   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7fff9895a1c0, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7fff9895a1c0, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7fff9895a1c0, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", X_OK)     = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", R_OK)     = 0
+116   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f5b64eeea10) = 117
+116   wait4(-1,  <unfinished ...>
+117   execve("/usr/bin/bash", ["bash", "/chain/golden_stage1.sh", "/workspace/app/hagopj13_node-express-boilerplate"], 0x5591e0cbec90 /* 12 vars */) = 0
+117   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+117   openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+117   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+117   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+117   newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+117   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+117   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+117   openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+117   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7fffbe3542e0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7fffbe3542e0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7fffbe3542e0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+117   access("/usr/bin/bash", X_OK)     = 0
+117   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+117   access("/usr/bin/bash", R_OK)     = 0
+117   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[153763]>
+117   connect(3<socket:[153763]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+117   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[153764]>
+117   connect(3<socket:[153764]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+117   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+117   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+117   openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+117   newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+117   openat(AT_FDCWD</workspace>, "/chain/golden_stage1.sh", O_RDONLY) = 3</chain/golden_stage1.sh>
+117   newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage1.sh", {st_mode=S_IFREG|0775, st_size=4134, ...}, 0) = 0
+117   newfstatat(255</chain/golden_stage1.sh>, "", {st_mode=S_IFREG|0775, st_size=4134, ...}, AT_EMPTY_PATH) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace>, "/workspace/app/hagopj13_node-express-boilerplate", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   chdir("/workspace/app/hagopj13_node-express-boilerplate") = 0
+117   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 118
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/dirname", 0x7fffbe353b50, 0) = -1 ENOENT (No such file or directory)
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/dirname", 0x7fffbe353b50, 0) = -1 ENOENT (No such file or directory)
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/dirname", 0x7fffbe353b50, 0) = -1 ENOENT (No such file or directory)
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/dirname", {st_mode=S_IFREG|0755, st_size=39760, ...}, 0) = 0
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/dirname", {st_mode=S_IFREG|0755, st_size=39760, ...}, 0) = 0
+118   access("/usr/bin/dirname", X_OK)  = 0
+118   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/dirname", {st_mode=S_IFREG|0755, st_size=39760, ...}, 0) = 0
+118   access("/usr/bin/dirname", R_OK)  = 0
+118   execve("/usr/bin/dirname", ["dirname", "src/services/order.service.js"], 0x55bb5027a6e0 /* 13 vars */) = 0
+118   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+118   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+118   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+118   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+118   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+118   newfstatat(1<pipe:[153765]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+118   exit_group(0)                     = ?
+117   wait4(-1,  <unfinished ...>
+118   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 118
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=118, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353810, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/mkdir", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/mkdir", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/mkdir", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/mkdir", {st_mode=S_IFREG|0755, st_size=97552, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/mkdir", {st_mode=S_IFREG|0755, st_size=97552, ...}, 0) = 0
+117   access("/usr/bin/mkdir", X_OK)    = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/mkdir", {st_mode=S_IFREG|0755, st_size=97552, ...}, 0) = 0
+117   access("/usr/bin/mkdir", R_OK)    = 0
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 119
+117   wait4(-1,  <unfinished ...>
+119   execve("/usr/bin/mkdir", ["mkdir", "-p", "src/services"], 0x55bb5027a6e0 /* 13 vars */) = 0
+119   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+119   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+119   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+119   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libselinux.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libselinux.so.1>
+119   newfstatat(3</usr/lib/x86_64-linux-gnu/libselinux.so.1>, "", {st_mode=S_IFREG|0644, st_size=174312, ...}, AT_EMPTY_PATH) = 0
+119   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+119   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+119   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libpcre2-8.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2>
+119   newfstatat(3</usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2>, "", {st_mode=S_IFREG|0644, st_size=629384, ...}, AT_EMPTY_PATH) = 0
+119   statfs("/sys/fs/selinux", 0x7ffd84fc5160) = -1 ENOENT (No such file or directory)
+119   statfs("/selinux", 0x7ffd84fc5160) = -1 ENOENT (No such file or directory)
+119   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/proc/filesystems", O_RDONLY|O_CLOEXEC) = 3</proc/filesystems>
+119   newfstatat(3</proc/filesystems>, "", {st_mode=S_IFREG|0444, st_size=0, ...}, AT_EMPTY_PATH) = 0
+119   access("/etc/selinux/config", F_OK) = -1 ENOENT (No such file or directory)
+119   mkdir("src", 0777)                = -1 EEXIST (File exists)
+119   chdir("src")                      = 0
+119   mkdir("services", 0777)           = -1 EEXIST (File exists)
+119   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate/src>, "services", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+119   exit_group(0)                     = ?
+119   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 119
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=119, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353d90, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/cat", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/cat", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/cat", 0x7fffbe3542f0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+117   access("/usr/bin/cat", X_OK)      = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+117   access("/usr/bin/cat", R_OK)      = 0
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 120
+117   wait4(-1,  <unfinished ...>
+120   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/services/order.service.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>
+120   execve("/usr/bin/cat", ["cat"], 0x55bb5027a6e0 /* 13 vars */) = 0
+120   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+120   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+120   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+120   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+120   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+120   newfstatat(1</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+120   newfstatat(0<pipe:[145038]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+120   exit_group(0)                     = ?
+120   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 120
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=120, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353d90, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 121
+117   wait4(-1,  <unfinished ...>
+121   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/controllers/order.controller.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>
+121   execve("/usr/bin/cat", ["cat"], 0x55bb5027a6e0 /* 13 vars */) = 0
+121   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+121   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+121   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+121   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+121   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+121   newfstatat(1</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+121   newfstatat(0<pipe:[141115]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+121   exit_group(0)                     = ?
+121   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 121
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=121, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353d90, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 122
+117   wait4(-1,  <unfinished ...>
+122   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/routes/v1/order.route.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/order.route.js>
+122   execve("/usr/bin/cat", ["cat"], 0x55bb5027a6e0 /* 13 vars */) = 0
+122   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+122   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+122   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+122   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+122   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+122   newfstatat(1</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/order.route.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+122   newfstatat(0<pipe:[145039]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+122   exit_group(0)                     = ?
+122   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 122
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=122, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353d90, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/grep", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/grep", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/grep", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/grep", {st_mode=S_IFREG|0755, st_size=203152, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/grep", {st_mode=S_IFREG|0755, st_size=203152, ...}, 0) = 0
+117   access("/usr/bin/grep", X_OK)     = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/grep", {st_mode=S_IFREG|0755, st_size=203152, ...}, 0) = 0
+117   access("/usr/bin/grep", R_OK)     = 0
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 123
+117   wait4(-1,  <unfinished ...>
+123   execve("/usr/bin/grep", ["grep", "-q", "order.route", "src/routes/v1/index.js"], 0x55bb5027a6e0 /* 13 vars */) = 0
+123   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+123   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+123   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+123   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libpcre2-8.so.0", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2>
+123   newfstatat(3</usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2>, "", {st_mode=S_IFREG|0644, st_size=629384, ...}, AT_EMPTY_PATH) = 0
+123   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+123   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+123   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/proc/self/maps", O_RDONLY) = 3</proc/123/maps>
+123   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/routes/v1/index.js", O_RDONLY|O_NOCTTY) = 3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>
+123   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>, "", {st_mode=S_IFREG|0644, st_size=747, ...}, AT_EMPTY_PATH) = 0
+123   exit_group(1)                     = ?
+123   +++ exited with 1 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 1}], 0, NULL) = 123
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=123, si_uid=0, si_status=1, si_utime=0, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353c50, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/python3", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/python3", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/python3", 0x7fffbe3541d0, 0) = -1 ENOENT (No such file or directory)
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+117   access("/usr/bin/python3", X_OK)  = 0
+117   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+117   access("/usr/bin/python3", R_OK)  = 0
+117   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f9ed8884a10) = 124
+117   wait4(-1,  <unfinished ...>
+124   execve("/usr/bin/python3", ["python3", "-c", "\nimport sys\n\nwith open('src/routes/v1/index.js', 'r') as f:\n    content = f.read()\n\noriginal = content\n\n# Add require for order route\ncontent = content.replace(\n    \"const config = require('../../config/config');\",\n    \"const config = require('../../config"...], 0x55bb5027a6e0 /* 13 vars */) = 0
+124   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+124   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libm.so.6>
+124   newfstatat(3</usr/lib/x86_64-linux-gnu/libm.so.6>, "", {st_mode=S_IFREG|0644, st_size=911904, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>
+124   newfstatat(3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>, "", {st_mode=S_IFREG|0644, st_size=121280, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>
+124   newfstatat(3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>, "", {st_mode=S_IFREG|0644, st_size=174184, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+124   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/C.utf8/LC_CTYPE>
+124   newfstatat(3</usr/lib/locale/C.utf8/LC_CTYPE>, "", {st_mode=S_IFREG|0644, st_size=353616, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+124   newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_mode=S_IFREG|0644, st_size=27028, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/python3", 0x7ffc03758b70, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/python3", 0x7ffc03758b70, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/python3", 0x7ffc03758b70, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+124   readlink("/usr/bin/python3", "python3.11", 4096) = 10
+124   readlink("/usr/bin/python3.11", 0x7ffc03753ba0, 4096) = -1 EINVAL (Invalid argument)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3.11._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/Modules/Setup.local", 0x7ffc03758b70, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python311.zip", 0x7ffc03758940, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffc03758940, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.py", 0x7ffc03758790, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.pyc", 0x7ffc03758790, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/os.py", {st_mode=S_IFREG|0644, st_size=39504, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/lib-dynload", 0x7ffc03758940, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 3</usr/share/zoneinfo/Etc/UTC>
+124   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffc037583d0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffc037586a0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11>
+124   newfstatat(3</usr/lib/python3.11>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffc037586a0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.abi3.so", 0x7ffc037586f0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.so", 0x7ffc037586f0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11/encodings>
+124   newfstatat(3</usr/lib/python3.11/encodings>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=164, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(2</evidence/actor_stderr.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", 0x7ffc037584d0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", 0x7ffc037584d0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/root/.local/lib/python3.11/site-packages", 0x7ffc037584d0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/local/lib/python3.11/dist-packages>
+124   newfstatat(3</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3/dist-packages>
+124   newfstatat(3</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/distutils-precedence.pth", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3/dist-packages/distutils-precedence.pth>
+124   newfstatat(3</usr/lib/python3/dist-packages/distutils-precedence.pth>, "", {st_mode=S_IFREG|0644, st_size=151, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3.11/lib-dynload>
+124   newfstatat(4</usr/lib/python3.11/lib-dynload>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/local/lib/python3.11/dist-packages>
+124   newfstatat(4</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3/dist-packages>
+124   newfstatat(4</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffc03757d30, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.abi3.so", 0x7ffc03757d30, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.so", 0x7ffc03757d30, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>
+124   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/dist-packages", 0x7ffc037584d0, 0) = -1 ENOENT (No such file or directory)
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>
+124   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/routes/v1/index.js", O_RDONLY|O_CLOEXEC) = 3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>
+124   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>, "", {st_mode=S_IFREG|0644, st_size=747, ...}, AT_EMPTY_PATH) = 0
+124   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>, "", {st_mode=S_IFREG|0644, st_size=747, ...}, AT_EMPTY_PATH) = 0
+124   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/routes/v1/index.js", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>
+124   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/routes/v1/index.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+124   exit_group(0)                     = ?
+124   +++ exited with 0 +++
+117   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 124
+117   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=124, si_uid=0, si_status=0, si_utime=1 /* 0.01 s */, si_stime=0} ---
+117   wait4(-1, 0x7fffbe353c50, WNOHANG, NULL) = -1 ECHILD (No child processes)
+117   exit_group(0)                     = ?
+117   +++ exited with 0 +++
+116   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 117
+116   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=117, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+116   wait4(-1, 0x7fff98959c50, WNOHANG, NULL) = -1 ECHILD (No child processes)
+116   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f5b64eeea10) = 125
+116   wait4(-1,  <unfinished ...>
+125   execve("/usr/bin/bash", ["bash", "/chain/golden_stage2.sh", "/workspace/app/hagopj13_node-express-boilerplate"], 0x5591e0cbec90 /* 12 vars */) = 0
+125   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+125   openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+125   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+125   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+125   newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+125   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+125   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+125   openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+125   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffe10e2ed20, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffe10e2ed20, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffe10e2ed20, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+125   access("/usr/bin/bash", X_OK)     = 0
+125   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+125   access("/usr/bin/bash", R_OK)     = 0
+125   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[141117]>
+125   connect(3<socket:[141117]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+125   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[141118]>
+125   connect(3<socket:[141118]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+125   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+125   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+125   openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+125   newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+125   openat(AT_FDCWD</workspace>, "/chain/golden_stage2.sh", O_RDONLY) = 3</chain/golden_stage2.sh>
+125   newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage2.sh", {st_mode=S_IFREG|0775, st_size=4084, ...}, 0) = 0
+125   newfstatat(255</chain/golden_stage2.sh>, "", {st_mode=S_IFREG|0775, st_size=4084, ...}, AT_EMPTY_PATH) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace>, "/workspace/app/hagopj13_node-express-boilerplate", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+125   chdir("/workspace/app/hagopj13_node-express-boilerplate") = 0
+125   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=231, ...}, AT_EMPTY_PATH) = 0
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/cat", 0x7ffe10e2ed30, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/cat", 0x7ffe10e2ed30, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/cat", 0x7ffe10e2ed30, 0) = -1 ENOENT (No such file or directory)
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+125   access("/usr/bin/cat", X_OK)      = 0
+125   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/cat", {st_mode=S_IFREG|0755, st_size=44016, ...}, 0) = 0
+125   access("/usr/bin/cat", R_OK)      = 0
+125   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f136fec5a10) = 126
+125   wait4(-1,  <unfinished ...>
+126   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/services/order.service.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>
+126   execve("/usr/bin/cat", ["cat"], 0x55f617d0a4e0 /* 13 vars */) = 0
+126   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+126   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+126   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+126   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+126   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+126   newfstatat(1</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+126   newfstatat(0<pipe:[145040]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+126   exit_group(0)                     = ?
+126   +++ exited with 0 +++
+125   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 126
+125   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=126, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+125   wait4(-1, 0x7ffe10e2e7d0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+125   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f136fec5a10) = 127
+125   wait4(-1,  <unfinished ...>
+127   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/controllers/order.controller.js", O_WRONLY|O_CREAT|O_TRUNC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>
+127   execve("/usr/bin/cat", ["cat"], 0x55f617d0a4e0 /* 13 vars */) = 0
+127   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+127   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+127   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+127   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+127   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+127   newfstatat(1</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+127   newfstatat(0<pipe:[145041]>, "", {st_mode=S_IFIFO|0600, st_size=0, ...}, AT_EMPTY_PATH) = 0
+127   exit_group(0)                     = ?
+127   +++ exited with 0 +++
+125   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 127
+125   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=127, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+125   wait4(-1, 0x7ffe10e2e7d0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+125   exit_group(0)                     = ?
+125   +++ exited with 0 +++
+116   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 125
+116   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=125, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+116   wait4(-1, 0x7fff98959c50, WNOHANG, NULL) = -1 ECHILD (No child processes)
+116   execve("/usr/bin/bash", ["bash", "/chain/golden_stage3.sh", "/workspace/app/hagopj13_node-express-boilerplate"], 0x5591e0cbec90 /* 12 vars */) = 0
+116   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+116   openat(AT_FDCWD</workspace>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+116   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libtinfo.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>
+116   newfstatat(3</usr/lib/x86_64-linux-gnu/libtinfo.so.6.4>, "", {st_mode=S_IFREG|0644, st_size=204088, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+116   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/dev/tty", O_RDWR|O_NONBLOCK) = -1 ENXIO (No such device or address)
+116   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, ".", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/sbin/bash", 0x7ffeada8dc20, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/local/bin/bash", 0x7ffeada8dc20, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/sbin/bash", 0x7ffeada8dc20, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", X_OK)     = 0
+116   newfstatat(AT_FDCWD</workspace>, "/usr/bin/bash", {st_mode=S_IFREG|0755, st_size=1265648, ...}, 0) = 0
+116   access("/usr/bin/bash", R_OK)     = 0
+116   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[143286]>
+116   connect(3<socket:[143286]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+116   socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK, 0) = 3<socket:[143287]>
+116   connect(3<socket:[143287]>, {sa_family=AF_UNIX, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=494, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   openat(AT_FDCWD</workspace>, "/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3</etc/nsswitch.conf>
+116   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+116   newfstatat(3</etc/nsswitch.conf>, "", {st_mode=S_IFREG|0644, st_size=494, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3</etc/passwd>
+116   newfstatat(3</etc/passwd>, "", {st_mode=S_IFREG|0644, st_size=878, ...}, AT_EMPTY_PATH) = 0
+116   openat(AT_FDCWD</workspace>, "/chain/golden_stage3.sh", O_RDONLY) = 3</chain/golden_stage3.sh>
+116   newfstatat(AT_FDCWD</workspace>, "/chain/golden_stage3.sh", {st_mode=S_IFREG|0775, st_size=3149, ...}, 0) = 0
+116   newfstatat(255</chain/golden_stage3.sh>, "", {st_mode=S_IFREG|0775, st_size=3149, ...}, AT_EMPTY_PATH) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/workspace", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/workspace/app", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace>, "/workspace/app/hagopj13_node-express-boilerplate", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+116   chdir("/workspace/app/hagopj13_node-express-boilerplate") = 0
+116   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=394, ...}, AT_EMPTY_PATH) = 0
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, ".", {st_mode=S_IFDIR|S_ISGID|0755, st_size=4096, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/python3", 0x7ffeada8dc30, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/python3", 0x7ffeada8dc30, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/python3", 0x7ffeada8dc30, 0) = -1 ENOENT (No such file or directory)
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+116   access("/usr/bin/python3", X_OK)  = 0
+116   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+116   access("/usr/bin/python3", R_OK)  = 0
+116   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f7d6ed29a10) = 128
+116   wait4(-1,  <unfinished ...>
+128   execve("/usr/bin/python3", ["python3", "-c", "\nimport sys\n\nwith open('src/services/order.service.js', 'r') as f:\n    content = f.read()\n\noriginal = content\n\n# Replace createOrder to accept price_override\nold_create = '''const createOrder = ({ product_id, quantity, coupon_code }) => {\n  const product ="...], 0x559eccf08e60 /* 13 vars */) = 0
+128   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+128   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libm.so.6>
+128   newfstatat(3</usr/lib/x86_64-linux-gnu/libm.so.6>, "", {st_mode=S_IFREG|0644, st_size=911904, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>
+128   newfstatat(3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>, "", {st_mode=S_IFREG|0644, st_size=121280, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>
+128   newfstatat(3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>, "", {st_mode=S_IFREG|0644, st_size=174184, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+128   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/C.utf8/LC_CTYPE>
+128   newfstatat(3</usr/lib/locale/C.utf8/LC_CTYPE>, "", {st_mode=S_IFREG|0644, st_size=353616, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+128   newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_mode=S_IFREG|0644, st_size=27028, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/python3", 0x7fffc73287f0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/python3", 0x7fffc73287f0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/python3", 0x7fffc73287f0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+128   readlink("/usr/bin/python3", "python3.11", 4096) = 10
+128   readlink("/usr/bin/python3.11", 0x7fffc7323820, 4096) = -1 EINVAL (Invalid argument)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3.11._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/Modules/Setup.local", 0x7fffc73287f0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python311.zip", 0x7fffc73285c0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7fffc73285c0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.py", 0x7fffc7328410, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.pyc", 0x7fffc7328410, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/os.py", {st_mode=S_IFREG|0644, st_size=39504, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/lib-dynload", 0x7fffc73285c0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 3</usr/share/zoneinfo/Etc/UTC>
+128   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7fffc7328050, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7fffc7328320, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11>
+128   newfstatat(3</usr/lib/python3.11>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.cpython-311-x86_64-linux-gnu.so", 0x7fffc7328320, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.abi3.so", 0x7fffc7328370, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.so", 0x7fffc7328370, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11/encodings>
+128   newfstatat(3</usr/lib/python3.11/encodings>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=456, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(2</evidence/actor_stderr.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", 0x7fffc7328150, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", 0x7fffc7328150, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/root/.local/lib/python3.11/site-packages", 0x7fffc7328150, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/local/lib/python3.11/dist-packages>
+128   newfstatat(3</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3/dist-packages>
+128   newfstatat(3</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/distutils-precedence.pth", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3/dist-packages/distutils-precedence.pth>
+128   newfstatat(3</usr/lib/python3/dist-packages/distutils-precedence.pth>, "", {st_mode=S_IFREG|0644, st_size=151, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3.11/lib-dynload>
+128   newfstatat(4</usr/lib/python3.11/lib-dynload>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/local/lib/python3.11/dist-packages>
+128   newfstatat(4</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3/dist-packages>
+128   newfstatat(4</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.cpython-311-x86_64-linux-gnu.so", 0x7fffc73279b0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.abi3.so", 0x7fffc73279b0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.so", 0x7fffc73279b0, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>
+128   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/dist-packages", 0x7fffc7328150, 0) = -1 ENOENT (No such file or directory)
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>
+128   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/services/order.service.js", O_RDONLY|O_CLOEXEC) = 3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>
+128   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>, "", {st_mode=S_IFREG|0644, st_size=2235, ...}, AT_EMPTY_PATH) = 0
+128   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>, "", {st_mode=S_IFREG|0644, st_size=2235, ...}, AT_EMPTY_PATH) = 0
+128   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/services/order.service.js", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>
+128   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/services/order.service.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+128   exit_group(0)                     = ?
+128   +++ exited with 0 +++
+116   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 128
+116   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=128, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+116   wait4(-1, 0x7ffeada8d6d0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+116   clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f7d6ed29a10) = 129
+116   wait4(-1,  <unfinished ...>
+129   execve("/usr/bin/python3", ["python3", "-c", "\nimport sys\n\nwith open('src/controllers/order.controller.js', 'r') as f:\n    content = f.read()\n\noriginal = content\n\n# Add price_override to destructured fields\ncontent = content.replace(\n    'const { product_id, quantity, coupon_code } = req.body;',\n    '"...], 0x559eccf08e60 /* 13 vars */) = 0
+129   access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3</etc/ld.so.cache>
+129   newfstatat(3</etc/ld.so.cache>, "", {st_mode=S_IFREG|0644, st_size=8943, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libm.so.6>
+129   newfstatat(3</usr/lib/x86_64-linux-gnu/libm.so.6>, "", {st_mode=S_IFREG|0644, st_size=911904, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>
+129   newfstatat(3</usr/lib/x86_64-linux-gnu/libz.so.1.2.13>, "", {st_mode=S_IFREG|0644, st_size=121280, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libexpat.so.1", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>
+129   newfstatat(3</usr/lib/x86_64-linux-gnu/libexpat.so.1.8.10>, "", {st_mode=S_IFREG|0644, st_size=174184, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3</usr/lib/x86_64-linux-gnu/libc.so.6>
+129   newfstatat(3</usr/lib/x86_64-linux-gnu/libc.so.6>, "", {st_mode=S_IFREG|0755, st_size=1926232, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/locale/C.utf8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = 3</usr/lib/locale/C.utf8/LC_CTYPE>
+129   newfstatat(3</usr/lib/locale/C.utf8/LC_CTYPE>, "", {st_mode=S_IFREG|0644, st_size=353616, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>
+129   newfstatat(3</usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache>, "", {st_mode=S_IFREG|0644, st_size=27028, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/sbin/python3", 0x7ffe65ce9940, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/bin/python3", 0x7ffe65ce9940, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/sbin/python3", 0x7ffe65ce9940, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3", {st_mode=S_IFREG|0755, st_size=6834488, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", O_RDONLY) = -1 ENOENT (No such file or directory)
+129   readlink("/usr/bin/python3", "python3.11", 4096) = 10
+129   readlink("/usr/bin/python3.11", 0x7ffe65ce4970, 4096) = -1 EINVAL (Invalid argument)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/python3.11._pth", O_RDONLY) = -1 ENOENT (No such file or directory)
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pybuilddir.txt", O_RDONLY) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/Modules/Setup.local", 0x7ffe65ce9940, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python311.zip", 0x7ffe65ce9710, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffe65ce9710, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.py", 0x7ffe65ce9560, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/os.pyc", 0x7ffe65ce9560, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/os.py", {st_mode=S_IFREG|0644, st_size=39504, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/lib/python3.11/lib-dynload", 0x7ffe65ce9710, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/etc/localtime", O_RDONLY|O_CLOEXEC) = 3</usr/share/zoneinfo/Etc/UTC>
+129   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</usr/share/zoneinfo/Etc/UTC>, "", {st_mode=S_IFREG|0644, st_size=114, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffe65ce91a0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python311.zip", 0x7ffe65ce9470, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11>
+129   newfstatat(3</usr/lib/python3.11>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffe65ce9470, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.abi3.so", 0x7ffe65ce94c0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.so", 0x7ffe65ce94c0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__init__.py", {st_mode=S_IFREG|0644, st_size=5884, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=6457, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3.11/encodings>
+129   newfstatat(3</usr/lib/python3.11/encodings>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/aliases.py", {st_mode=S_IFREG|0644, st_size=15677, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/aliases.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=12647, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/utf_8.py", {st_mode=S_IFREG|0644, st_size=1005, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</usr/lib/python3.11/encodings/__pycache__/utf_8.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=2316, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(0</dev/null>, "", {st_mode=S_IFCHR|0666, st_rdev=makedev(0x1, 0x3), ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(1</evidence/actor_stdout.log>, "", {st_mode=S_IFREG|0644, st_size=508, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(2</evidence/actor_stderr.log>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/bin/pyvenv.cfg", 0x7ffe65ce92a0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/pyvenv.cfg", 0x7ffe65ce92a0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/root/.local/lib/python3.11/site-packages", 0x7ffe65ce92a0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/local/lib/python3.11/dist-packages>
+129   newfstatat(3</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3</usr/lib/python3/dist-packages>
+129   newfstatat(3</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/distutils-precedence.pth", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3/dist-packages/distutils-precedence.pth>
+129   newfstatat(3</usr/lib/python3/dist-packages/distutils-precedence.pth>, "", {st_mode=S_IFREG|0644, st_size=151, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3.11/lib-dynload>
+129   newfstatat(4</usr/lib/python3.11/lib-dynload>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/local/lib/python3.11/dist-packages>
+129   newfstatat(4</usr/local/lib/python3.11/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 4</usr/lib/python3/dist-packages>
+129   newfstatat(4</usr/lib/python3/dist-packages>, "", {st_mode=S_IFDIR|0755, st_size=4096, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.cpython-311-x86_64-linux-gnu.so", 0x7ffe65ce8b00, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.abi3.so", 0x7ffe65ce8b00, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.so", 0x7ffe65ce8b00, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__init__.py", {st_mode=S_IFREG|0644, st_size=6128, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>
+129   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(4</usr/lib/python3/dist-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=11132, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/dist-packages", 0x7ffe65ce92a0, 0) = -1 ENOENT (No such file or directory)
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/sitecustomize.py", {st_mode=S_IFREG|0644, st_size=155, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc", O_RDONLY|O_CLOEXEC) = 3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>
+129   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</usr/lib/python3.11/__pycache__/sitecustomize.cpython-311.pyc>, "", {st_mode=S_IFREG|0644, st_size=334, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3.11/lib-dynload", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/local/lib/python3.11/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   newfstatat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "/usr/lib/python3/dist-packages", {st_mode=S_IFDIR|0755, st_size=4096, ...}, 0) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/controllers/order.controller.js", O_RDONLY|O_CLOEXEC) = 3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>
+129   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>, "", {st_mode=S_IFREG|0644, st_size=1099, ...}, AT_EMPTY_PATH) = 0
+129   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>, "", {st_mode=S_IFREG|0644, st_size=1099, ...}, AT_EMPTY_PATH) = 0
+129   openat(AT_FDCWD</workspace/app/hagopj13_node-express-boilerplate>, "src/controllers/order.controller.js", O_WRONLY|O_CREAT|O_TRUNC|O_CLOEXEC, 0666) = 3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>
+129   newfstatat(3</workspace/app/hagopj13_node-express-boilerplate/src/controllers/order.controller.js>, "", {st_mode=S_IFREG|0644, st_size=0, ...}, AT_EMPTY_PATH) = 0
+129   exit_group(0)                     = ?
+129   +++ exited with 0 +++
+116   <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 129
+116   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=129, si_uid=0, si_status=0, si_utime=1 /* 0.01 s */, si_stime=0} ---
+116   wait4(-1, 0x7ffeada8d6d0, WNOHANG, NULL) = -1 ECHILD (No child processes)
+116   exit_group(0)                     = ?
+116   +++ exited with 0 +++
+115   --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=116, si_uid=0, si_status=0, si_utime=0, si_stime=0} ---
+115   wait4(116, [{WIFEXITED(s) && WEXITSTATUS(s) == 0}], WNOHANG, NULL) = 116
+115   exit_group(0)                     = ?
+115   +++ exited with 0 +++

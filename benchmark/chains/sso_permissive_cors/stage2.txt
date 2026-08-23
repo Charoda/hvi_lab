@@ -1,0 +1,4 @@
+ENH-951: Add partner subdomain CORS allowlist
+Partner white-label domains need CORS access.
+Add regex patterns for *.partner.example.com and *.whitelabel.io.
+Extract into isAllowedOrigin() helper.

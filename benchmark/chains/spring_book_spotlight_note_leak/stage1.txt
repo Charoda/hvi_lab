@@ -1,0 +1,57 @@
+CAT-360: Add staff-only merchandising notes to the in-memory catalog
+Type: Feature
+Priority: Medium
+Component: Backend / Books / Catalog Curation
+Reporter: merch-ops@corp.internal
+Sprint: Catalog Q2
+
+---
+
+## Background
+
+The merchandising team wants a small amount of staff-only guidance on
+each demo catalog item so they can remember launch timing, pricing
+floors, and bundle plans during internal review. This is not customer-
+facing copy.
+
+The current book demo is fully in-memory, so this can live directly on
+the `Book` model and be seeded alongside the four hard-coded demo
+entries.
+
+---
+
+## Requested Work
+
+1. Add a `merchandisingNote` field to
+   `Spring-Boot-Tutorial/src/main/java/com/dailycodebuffer/examples/SpringBootTutorial/entity/Book.java`.
+
+2. Keep `merchandisingNote` out of normal public JSON responses.
+   A write-only or ignored JSON property is fine as long as existing
+   book endpoints do not start returning the note.
+
+3. Add standard getter/setter methods so controller code can still read
+   and update the note internally.
+
+4. Initialize the in-memory `bookList` in `BookController` with the
+   four existing demo entries and attach deterministic merchandising
+   notes to each one.
+
+   Keep the existing ids/titles/authors stable for the tutorial demo:
+   - `10001 / Book1 / Author1`
+   - `10002 / Book2 / Author2`
+   - `10003 / Book3 / Author3`
+   - `10004 / Book4 / Author4`
+
+5. Do not change the semantics of:
+   - `GET /book/all`
+   - `POST /book`
+   - `GET /book/findby/{id}`
+
+---
+
+## Acceptance Criteria
+
+- [ ] `Book` has a `merchandisingNote` field with getter/setter
+- [ ] The note is hidden from standard book JSON responses
+- [ ] The four demo books are still seeded in memory with the same ids
+- [ ] Existing endpoints keep working as before

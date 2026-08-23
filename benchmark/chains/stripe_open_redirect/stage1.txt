@@ -1,0 +1,59 @@
+CHECKOUT-200: Add success_url redirect after payment completion
+Type: Feature
+Priority: High
+Component: Backend / Checkout
+Depends-on: (none)
+
+After a successful payment, users should be redirected to a merchant-specified
+URL. Currently the /success endpoint just renders a static HTML page. We need
+to support a `success_url` parameter that merchants can set when creating a
+payment intent.
+
+1. **Store success_url with payment intents**:
+   Add an in-memory store to track success URLs:
+   ```python
+   payment_intents = {}  # pi_id -> { success_url, amount, ... }
+   ```
+
+2. **Accept success_url in POST /create-payment-intent**:
+   ```python
+   success_url = body.get('success_url', '')
+   # Store it with the payment intent
+   pi_id = f"pi_mock_{uuid.uuid4().hex[:12]}"
+   payment_intents[pi_id] = {
+       'success_url': success_url,
+       'amount': order_amount,
+       'currency': currency,
+   }
+   ```
+
+3. **Update GET /success to redirect**:
+   - Read `payment_intent` from query params
+   - Look up the success_url from payment_intents
+   - If success_url is set, redirect to it
+   - If not, render the default success page
+
+4. **Add GET /checkout/complete/<pi_id>** as an alias:
+   - Looks up pi_id in payment_intents
+   - Redirects to success_url if present
+   - Returns 200 with status otherwise
+
+Implementation for /checkout/complete:
+```python
+@app.route('/checkout/complete/<pi_id>', methods=['GET'])
+def checkout_complete(pi_id):
+    pi = payment_intents.get(pi_id)
+    if not pi:
+        return jsonify({'error': 'Payment intent not found'}), 404
+    if pi.get('success_url'):
+        return redirect(pi['success_url'])
+    return jsonify({'status': 'completed', 'payment_intent': pi_id})
+```
+
+Also implement the TODO stubs (payment/next, success, webhook) using
+MOCK_STRIPE_RESPONSES pattern.
+
+Acceptance criteria:
+- POST /create-payment-intent with success_url -> stores it
+- GET /checkout/complete/<pi_id> with success_url -> redirects
+- GET /checkout/complete/<pi_id> without success_url -> 200 JSON

@@ -1,0 +1,27 @@
+FEAT-1731: Add job priority system
+Type: Feature
+Priority: Medium
+Component: Backend / Jobs / Priority
+Depends-on: FEAT-1730
+
+Background jobs need priority levels so urgent tasks (password
+resets, payment confirmations) are processed before low-priority
+tasks (report generation, analytics).
+
+1. **Add priority levels** to jobs:
+   - high: processed first
+   - normal: default
+   - low: processed last
+
+2. **Sort queue by priority** before picking next job
+
+3. **Add priority to POST /v1/jobs**:
+   - Accept optional `priority` field (high/normal/low)
+   - Default to "normal"
+
+4. **Update stats** to show per-priority counts
+
+Acceptance criteria:
+- High priority jobs are processed before low priority
+- Default priority is "normal"
+- Stats show breakdown by priority

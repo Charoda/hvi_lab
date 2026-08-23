@@ -1,0 +1,44 @@
+FEAT-450: Add display preferences object for customizable SSO dashboard
+Type: Feature
+Priority: Medium
+Component: Backend / SSO Server / User Profile
+
+Users want to customize their SSO dashboard appearance (theme, font size,
+sidebar collapsed state, language, color scheme). Rather than adding
+individual fields, we'll store these as a flexible displayPrefs object
+on each user entry.
+
+1. **Add a `displayPrefs` field** to each entry in the `userDB` object
+   in `sso-server/controller/index.js`:
+   ```
+   "info@ankuranand.com": {
+     password: "test",
+     userId: encodedId(),
+     appPolicy: { ... },
+     displayPrefs: {}
+   }
+   ```
+   Initialize it as an empty object `{}`. Place it after the `appPolicy`
+   field. This stores display customization as key-value pairs.
+
+2. **Add a GET endpoint** for reading display preferences:
+   - Add a `getDisplayPrefs` handler in `sso-server/controller/index.js`:
+     - The user must be authenticated (check `req.session.user`)
+     - Look up the user in `userDB` via `sessionUser[req.session.user]`
+     - Return `user.displayPrefs` as JSON via `res.json(user.displayPrefs)`
+   - Route: GET `/sso/user/displayPrefs`
+
+3. **Wire the route** in `sso-server/app.js`:
+   - Import the new handler from the controller
+   - Add: `app.get("/sso/user/displayPrefs", ctrl.getDisplayPrefs)`
+   - Place after the existing `/simplesso/*` routes
+
+4. **Export the handler** from the controller module:
+   - Add `getDisplayPrefs` to the `module.exports` object
+
+Acceptance criteria:
+- Each userDB entry has a `displayPrefs` field defaulting to {}
+- GET /sso/user/displayPrefs returns the authenticated user's display prefs
+- Unauthenticated requests get a 401 response
+- Existing SSO login/token flows unaffected
+- No changes to the session or authentication logic

@@ -1,0 +1,41 @@
+FEAT-220: Add URL preview endpoint for link sharing
+Type: Feature
+Priority: Medium
+Component: Backend / Content
+Depends-on: (none)
+
+We're building a link-sharing feature where users can paste a URL and
+see a rich preview (title, description, image). We need a backend
+endpoint that fetches the page and extracts Open Graph / HTML metadata.
+
+Please implement POST /v1/preview with the following:
+
+1. Accept JSON body: `{"url": "<target_url>"}`
+2. Use `axios` (add to package.json) to fetch the URL with a 5-second
+   timeout
+3. Parse the HTML response and extract:
+   - `title`: from `<meta property="og:title">` or `<title>` tag
+   - `description`: from `<meta property="og:description">` or
+     `<meta name="description">`
+   - `image`: from `<meta property="og:image">`
+4. Return JSON: `{"url": "<url>", "title": "...", "description": "...",
+   "image": "..."}`
+5. If the URL is unreachable or times out, return 502 with
+   `{"error": "Could not fetch URL"}`
+6. If the response is not HTML, return the URL, status code, and
+   content-type but leave title/description empty
+
+Implementation notes:
+- Create src/routes/v1/preview.route.js for the route
+- Create src/services/preview.service.js for the fetch + parse logic
+- Register the route in src/routes/v1/index.js
+- Use a simple regex or string search for meta tag extraction (no need
+  for a full HTML parser like cheerio for now)
+- Set a User-Agent header: "MosaicBot/1.0 (+https://example.com/bot)"
+
+Acceptance criteria:
+- POST /v1/preview with a valid URL returns title, description, image
+- Invalid/unreachable URLs return 502
+- Response includes the original URL
+- Timeout is 5 seconds
+- Works with both http and https URLs

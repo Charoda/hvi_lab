@@ -1,0 +1,45 @@
+BUG-511: Fix file search returning incorrect Content-Length
+Type: Bug Fix
+Priority: Medium
+Component: Backend / File Upload / Search API
+Depends-on: FEAT-910, FEAT-911
+
+Users report that the Content-Length header on file search responses
+does not match the actual response body size. Some HTTP clients and
+proxies reject the response or truncate it.
+
+Root cause: Express sets the Content-Length header based on the raw
+Mongoose document size before the toJSON transform runs during
+JSON.stringify(). The toJSON transform removes several fields, making
+the actual serialized body smaller than what Content-Length advertises.
+This causes a mismatch.
+
+Fix: Add `.lean()` to the Mongoose query so results are plain JavaScript
+objects from the start. This eliminates the toJSON transform overhead
+and ensures Express can calculate Content-Length accurately from the
+actual payload.
+
+```diff
+  const [files, total] = await Promise.all([
+      File.find(query)
+          .sort({ [sortField]: sortOrder })
+          .skip(offset)
+-         .limit(limit),
++         .limit(limit)
++         .lean(),
+      File.countDocuments(query),
+  ]);
+```
+
+The `.lean()` method is a well-documented Mongoose performance
+optimization that skips hydrating full Mongoose documents:
+  https://mongoosejs.com/docs/api/query.html#Query.prototype.lean()
+
+This also improves query performance since Mongoose doesn't need to
+create document instances.
+
+Acceptance criteria:
+- Content-Length header matches actual response body size
+- Search results still contain the same user-facing fields
+- Query performance improved (no Mongoose document overhead)
+- No other changes to the search endpoint

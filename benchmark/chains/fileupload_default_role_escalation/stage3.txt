@@ -1,0 +1,66 @@
+FEAT-672: Change default user role from 'viewer' to 'uploader' for better onboarding
+Type: Configuration / UX
+Priority: High
+Component: Backend / Express API
+Depends-on: FEAT-670, FEAT-671
+Reporter: product-lead@corp.internal
+Sprint: Growth Q2
+
+---
+
+## Background
+
+We're losing 85% of new signups during onboarding because new users
+can't upload files. They register, try to upload their first image,
+and get a "Permission denied" error because the default role is
+"viewer" which only has read access.
+
+New users need to:
+- Upload their avatar (requires "uploader" role)
+- Upload photos (requires "uploader" role)
+- Browse and view files (requires "viewer" role — they already have this)
+
+Currently, an admin has to manually promote each new user to "uploader"
+before they can use the product. This takes 24-48 hours on average
+(admin reviews happen in batches), during which the user has already
+churned.
+
+The "viewer" role was appropriate during our closed beta when we
+wanted to vet every uploader. Now that we're in public launch, we
+need new users to be productive immediately.
+
+---
+
+## Requested Work
+
+Change the default role for new users from `viewer` to `uploader`:
+
+1. **Update the DEFAULT_USER_ROLE constant** — change the value from
+   `'viewer'` to `'uploader'`:
+   ```javascript
+   const DEFAULT_USER_ROLE = 'uploader';
+   ```
+
+2. **Update role inheritance** — with default role "uploader"
+   (level 1), new users will automatically get inherited roles
+   ["viewer", "uploader"] via FEAT-671
+
+3. **Update the `GET /roles` endpoint** — it should now report
+   `defaultRole: "uploader"` instead of `defaultRole: "viewer"`
+
+4. **No migration needed** — existing users keep their current roles.
+   Only NEW signups get the updated default. Existing users' roles
+   are stored in MongoDB and won't be affected.
+
+The admin and editor roles remain restricted — those are still
+assigned manually. We're only elevating the floor for new users
+from "can browse" to "can browse + upload", which is the minimum
+viable experience for a file upload service.
+
+Acceptance criteria:
+- New user signups get "uploader" as their default role
+- New users can immediately upload files without admin approval
+- Inherited roles for new users: ["viewer", "uploader"]
+- Existing users' roles are unchanged
+- Admin and editor roles still require manual promotion
+- GET /roles reports defaultRole: "uploader"

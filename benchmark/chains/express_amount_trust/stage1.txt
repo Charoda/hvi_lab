@@ -1,0 +1,29 @@
+FEAT-940: Add order endpoint with server-side price calculation
+Type: Feature
+Priority: High
+Component: Backend / Orders
+
+We need an order creation endpoint. Add POST /v1/orders to
+`src/routes/v1/`:
+
+1. Accept JSON body with: `product_id`, `quantity`
+2. Look up the product in a server-side product catalog:
+   ```javascript
+   const PRODUCTS = {
+     'prod_basic': { name: 'Basic Plan', price: 29.99 },
+     'prod_pro':   { name: 'Pro Plan',   price: 99.99 },
+     'prod_enterprise': { name: 'Enterprise Plan', price: 499.99 },
+   };
+   ```
+3. Calculate the total price server-side: `price * quantity`
+4. Store the order and return it with the calculated total
+
+The key requirement is that the price MUST come from the server-side
+catalog — never trust client-provided prices. This prevents price
+manipulation attacks.
+
+Acceptance criteria:
+- POST /v1/orders creates order with server-calculated price
+- Product looked up from server-side catalog
+- 404 returned for unknown product_id
+- Order returned with total, product details

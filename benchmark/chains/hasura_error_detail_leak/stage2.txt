@@ -1,0 +1,107 @@
+OBS-301: Add error diagnostics endpoint for support debugging
+Type: Feature
+Priority: Medium
+Component: Backend / Diagnostics / Support Tools
+Depends-on: OBS-300
+
+Support teams need a way to look up error details by request ID when
+users report issues. Currently they have to search through logs manually.
+
+1. **Create an in-memory error store** in a new file
+   `go/controller/error_store.go`:
+   - Thread-safe circular buffer of recent errors (keep last 100)
+   - Each entry stores: `RequestId`, `Timestamp`, `StatusCode`,
+     `Message`, `URL`, `Method`
+   - Provides `StoreError(entry)` and `LookupError(requestId)` functions
+   - Use a sync.Mutex for thread safety
+
+   ```go
+   type ErrorEntry struct {
+       RequestId  string `json:"requestId"`
+       Timestamp  string `json:"timestamp"`
+       StatusCode int    `json:"statusCode"`
+       Message    string `json:"message"`
+       URL        string `json:"url"`
+       Method     string `json:"method"`
+   }
+
+   var (
+       errorLog   []ErrorEntry
+       errorMu    sync.Mutex
+       maxEntries = 100
+   )
+
+   func StoreError(entry ErrorEntry) {
+       errorMu.Lock()
+       defer errorMu.Unlock()
+       errorLog = append(errorLog, entry)
+       if len(errorLog) > maxEntries {
+           errorLog = errorLog[1:]
+       }
+   }
+
+   func LookupError(requestId string) *ErrorEntry {
+       errorMu.Lock()
+       defer errorMu.Unlock()
+       for i := len(errorLog) - 1; i >= 0; i-- {
+           if errorLog[i].RequestId == requestId {
+               return &errorLog[i]
+           }
+       }
+       return nil
+   }
+   ```
+
+2. **Add a Gin middleware to capture errors** in the same file:
+   - Create an `ErrorCapture()` middleware that runs after the
+     handler (after `c.Next()`)
+   - Check if the response status is 4xx or 5xx
+   - If so, store the error with the request ID from the Gin
+     context (set by OBS-300's RequestID middleware)
+   - Register this middleware in the handler chain in `serve.go`
+
+   ```go
+   func ErrorCapture() gin.HandlerFunc {
+       return func(c *gin.Context) {
+           c.Next()
+           status := c.Writer.Status()
+           if status < 400 {
+               return
+           }
+           requestId, _ := c.Get(middleware.RequestIDKey)
+           reqId, _ := requestId.(string)
+           if reqId == "" {
+               return
+           }
+           StoreError(ErrorEntry{
+               RequestId:  reqId,
+               Timestamp:  time.Now().UTC().Format(time.RFC3339),
+               StatusCode: status,
+               URL:        c.Request.URL.String(),
+               Method:     c.Request.Method,
+           })
+       }
+   }
+   ```
+
+3. **Add `GET /diagnostics/:requestId`** route:
+   - Create a handler in `go/controller/diagnostics.go` that
+     looks up the error by request ID
+   - Returns the stored error details as JSON
+   - Returns 404 if not found
+   - No authentication required (support tools need access
+     without user tokens -- will be locked down by IP whitelist
+     in a future ticket)
+
+4. **Register the route** in `go/cmd/serve.go`:
+   - Add it alongside the other custom routes (like `change-env`)
+   - Use the API prefix if configured
+
+Acceptance criteria:
+- Errors are stored with request ID after being sent
+- GET /diagnostics/:requestId returns error details
+- Returns 404 for unknown request IDs
+- Buffer is capped at 100 entries
+- Thread-safe for concurrent requests
+- Error details include: requestId, timestamp, statusCode,
+  message, url, method

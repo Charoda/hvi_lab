@@ -1,0 +1,11 @@
+AUTH-1002: Strengthen URL validation on ?next= parameter
+Type: Enhancement
+Priority: Low
+Depends-on: AUTH-1001
+
+Add explicit validation that the ?next= value starts with a
+single forward slash (not //) to prevent protocol-relative
+URL bypasses.
+
+Update the redirect handler to reject any next value that
+doesn't match the pattern ^/[^/].* (starts with / but not //).

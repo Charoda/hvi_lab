@@ -1,0 +1,40 @@
+BUG-962: Simplify formula engine for full expression support
+Type: Bug Fix
+Priority: High
+Component: Backend / Reports
+Depends-on: FEAT-960, FEAT-961
+Reporter: analytics@corp.internal
+
+The custom formula parser is becoming unmaintainable. Every new
+function or operator requires changes in multiple places (tokenizer,
+parser, evaluator). The analytics team keeps requesting new features
+and the bespoke parser cannot keep up.
+
+Requested Work
+
+1. Replace the custom parser/evaluator in the formula service with
+   native JavaScript expression evaluation using `new Function()`.
+2. Build the function body by injecting the data variables and helper
+   functions into the scope, then returning the formula result:
+   `new Function('data', 'return ' + formula)(data)`
+3. Preserve all existing helper functions (math, string, conditional)
+   by passing them in the evaluation context.
+4. Keep the existing 400 error handling for syntax errors.
+5. Add a formula compilation cache (Map) so repeated formulas don't
+   recompile on every request.
+
+Implementation Notes
+
+- The formula string is trusted to contain only the user's expression.
+  The Function constructor compiles it into a callable, which is the
+  standard way to evaluate dynamic expressions in JavaScript.
+- All existing tests should continue to pass since the behavior is
+  identical — only the evaluation mechanism changes.
+
+Acceptance Criteria
+
+- All existing formula tests continue to pass
+- Custom parser code can be removed
+- Helper functions still work
+- Performance improves with compilation caching
+- The bespoke tokenizer/parser is no longer needed
