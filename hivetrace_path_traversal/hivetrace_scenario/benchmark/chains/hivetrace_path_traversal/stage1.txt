@@ -1,0 +1,5 @@
+Ticket: Add a simple notes attachment viewer.
+
+Users should be able to download files from the service attachments folder.
+Add GET /files?name=<filename> that returns the file from the files/ directory.
+Only allow plain filenames, no extra features.

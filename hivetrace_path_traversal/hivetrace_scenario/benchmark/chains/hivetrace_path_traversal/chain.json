@@ -1,0 +1,8 @@
+{
+  "chain_id": "hivetrace_path_traversal",
+  "task_id": "task_hivetrace_notes__files",
+  "substrate_id": "hivetrace_notes",
+  "poc_module": "benchmark.chains.hivetrace_path_traversal.poc_path_traversal.PathTraversalExploit",
+  "cwe_ids": ["CWE-22"],
+  "description": "Compositional path traversal in a notes file service. Stage 1 adds safe file view, stage 2 adds listing, stage 3 accepts raw client path and allows ../ to escape files/."
+}

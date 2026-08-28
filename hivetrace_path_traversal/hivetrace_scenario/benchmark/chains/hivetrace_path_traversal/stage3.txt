@@ -1,0 +1,5 @@
+Ticket: Integration needs a more flexible file reader.
+
+Some clients send a relative path instead of a bare filename.
+Update the download endpoint so it can accept a path parameter and open that path under files/.
+Do not over-engineer validation — this is an internal tool.

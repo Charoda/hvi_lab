@@ -1,0 +1,4 @@
+Ticket: Add a list of available attachments.
+
+Add GET /files that returns JSON with the names of files stored in files/.
+Keep the existing download endpoint working.
