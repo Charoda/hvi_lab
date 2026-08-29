@@ -1,12 +1,13 @@
 # Песочница для исполнителя сценария (актора).
-# Актор (эталонное решение сейчас; в будущем — AI-агент) выполняется внутри
+# Актор (эталонное решение или AI-агент) выполняется внутри
 # под strace + inotifywait и НЕ видит файловую систему хоста: рабочая копия
 # приложения попадает сюда через `docker cp` до старта контейнера.
 #
 # Образ собран по мотивам песочницы MalSkillBench
 # (Core/verification/docker/Dockerfile + entrypoint.sh): node-база,
 # strace, inotify-tools, evidence-каталог.
-FROM node:20-slim
+# node:22 — qwen-code@0.22.3 требует Node >= 22 (engines в пакете).
+FROM node:22-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
@@ -20,14 +21,46 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     iptables \
     dnsutils \
+    zstd \
+    libssl3 \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # pydantic нужен PoC-оракулу (классы из mosaic.oracle.exploit),
 # когда он исполняется в сайдкаре на изолированной сети.
 RUN pip3 install --no-cache-dir --break-system-packages pydantic
 
-COPY entrypoint.sh allowlist.sh /opt/iso/
-RUN chmod +x /opt/iso/entrypoint.sh /opt/iso/allowlist.sh
+# Qwen Code CLI — проверяемый AI-агент (подключается через
+# `run.py --actor qwen`). Версия зафиксирована для воспроизводимости.
+RUN npm install -g --no-fund --no-audit @qwen-code/qwen-code@0.22.3 \
+    && npm cache clean --force
+
+# llama.cpp — локальный LLM-бэкенд агента: сервер живёт прямо в образе,
+# внешние API-ключи не нужны. Релизный CPU-бинарник для ubuntu-x64
+# (RUNPATH=$ORIGIN, требует по гостевой стороне только libssl3;
+# glibc образа 2.36 >= требуемой 2.34). Версия зафиксирована для
+# воспроизводимости.
+ARG LLAMA_CPP_VERSION=b10679
+RUN curl -fsSL "https://github.com/ggml-org/llama.cpp/releases/download/${LLAMA_CPP_VERSION}/llama-${LLAMA_CPP_VERSION}-bin-ubuntu-x64.tar.gz" \
+        -o /tmp/llama-cpp.tar.gz \
+    && mkdir -p /opt/llama.cpp \
+    && tar -xzf /tmp/llama-cpp.tar.gz -C /opt/llama.cpp --strip-components=1 \
+    && rm /tmp/llama-cpp.tar.gz \
+    && /opt/llama.cpp/llama-server --version
+
+# Веса модели (GGUF) попадают в образ из контекста сборки
+# (isolated/models/<файл>.gguf). Файл заранее скачивается на хост с
+# докачкой (isolated/models/download.sh) — сеть до HuggingFace нестабильна,
+# скачивание внутри сборки срывалось. Другую модель можно запечь так:
+# положить её .gguf в isolated/models/ и собрать с
+#   --build-arg LLAMA_MODEL_FILE=<файл> --build-arg LLAMA_MODEL_ALIAS=<имя>
+ARG LLAMA_MODEL_FILE=qwen2.5-coder-7b-instruct-q4_k_m.gguf
+ARG LLAMA_MODEL_ALIAS=qwen2.5-coder-7b-instruct-q4_k_m
+COPY models/${LLAMA_MODEL_FILE} /opt/llama.cpp/model.gguf
+
+COPY entrypoint.sh allowlist.sh honey_listener.py llama_tool_proxy.py /opt/iso/
+RUN chmod +x /opt/iso/entrypoint.sh /opt/iso/allowlist.sh /opt/iso/honey_listener.py \
+    && echo "${LLAMA_MODEL_ALIAS}" > /opt/iso/LLAMA_MODEL
 
 WORKDIR /workspace
 ENTRYPOINT ["/opt/iso/entrypoint.sh"]

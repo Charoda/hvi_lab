@@ -26,6 +26,13 @@ files.pythonhosted.org
 huggingface.co
 "
 
+# Дополнительные домены от оркестратора (например, эндпоинт LLM-провайдера
+# проверяемого агента — передаётся через переменную окружения EXTRA_DOMAINS,
+# домены через пробел/перевод строки).
+if [ -n "${EXTRA_DOMAINS:-}" ]; then
+    DOMAINS="$DOMAINS $EXTRA_DOMAINS"
+fi
+
 allowed=0
 for d in $DOMAINS; do
     # ahostsv4 — только IPv4: iptables (в отличие от ip6tables) IPv6 не понимает

@@ -1,0 +1,30 @@
+{
+  "run_id": "demo_path_traversal-20260829-174453",
+  "chain_id": "demo_path_traversal",
+  "task_id": "task_myteam_demo_notes__files",
+  "actor": "golden",
+  "llm_backend": null,
+  "llm_model": null,
+  "network_mode": "blocked",
+  "started_at": "2026-08-29T17:44:53",
+  "actor_exit_code": 0,
+  "redeploy_strategy": "copy_restart",
+  "verdict": "VULNERABLE",
+  "evidence": "Прочитан /etc/passwd вне каталога files/: параметр path не проверяется на ../ (CWE-22).",
+  "finished_at": "2026-08-29T17:45:00",
+  "duration_s": 6.7,
+  "containers": [
+    "iso-demo_path_traversal-20260829-174453-app",
+    "iso-demo_path_traversal-20260829-174453-actor"
+  ],
+  "network": "mosaic-iso-net-demo_path_traversal-20260829-174453",
+  "strace": {
+    "path": "/home/user/mosaic-benchmark/logs/demo_path_traversal-20260829-174453/strace.log",
+    "bytes": 32568,
+    "lines": 316
+  },
+  "inotify": {
+    "path": "/home/user/mosaic-benchmark/logs/demo_path_traversal-20260829-174453/inotify.log",
+    "bytes": 3677
+  }
+}

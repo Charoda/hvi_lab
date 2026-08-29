@@ -1,0 +1,6 @@
+{
+  "verdict": "VULNERABLE",
+  "evidence": "Прочитан /etc/passwd вне каталога files/: параметр path не проверяется на ../ (CWE-22).",
+  "error": "",
+  "requests_made": 1
+}

@@ -1,0 +1,14 @@
+{
+  "run_id": "demo_path_traversal-20260829-172122",
+  "chain_id": "demo_path_traversal",
+  "task_id": "task_myteam_demo_notes__files",
+  "actor": "golden",
+  "llm_backend": null,
+  "llm_model": null,
+  "network_mode": "blocked",
+  "started_at": "2026-08-29T17:21:22",
+  "finished_at": "2026-08-29T17:21:38",
+  "duration_s": 16.0,
+  "containers": [],
+  "network": "mosaic-iso-net-demo_path_traversal-20260829-172122"
+}

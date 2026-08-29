@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+package-lock.json
+
+# Go / vendored deps
+vendor/
+
+# Compiled artifacts
+*.so
+*.so.*
+*.dylib
+*.exe
+*.map
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Excel temp files
+~$*.xlsx
+
+# Run artifacts (regenerable)
+benchmark/results/*
+!benchmark/results/README.md
+!benchmark/results/manifest.json.template
+benchmark/runs/
+benchmark/run_artifacts/
+research/results/
+
+# Local agent state
+.agents/
+.opencode/
+.worktrees/
+.owlex/
+
+# Logs
+*.log
+
+# Local sqlite databases (chain-design state, not part of the public release)
+*.db
+
+# Submission artifacts (paper, supplementary results, validation logs,
+# experimental side-pilots) — bundled into the OpenReview supplementary
+# tarball at submission time, not part of the public benchmark repo.
+paper/
+paper-submission/
+supplementary/
+experiments/
+research/
+mosaic-bench-extension.xlsx
+
+# LaTeX build artifacts (defensive in case any *.tex slips into the tree)
+*.aux
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.toc
+scripts/merge_direct_prompt.py
+
+# Веса локальных моделей (регенерируются скриптом isolated/models/download.sh;
+# в git их класть нельзя — файл больше лимита GitHub в 100 МБ)
+isolated/models/*.gguf

@@ -1,0 +1,1 @@
+{"ts": "2026-08-28T18:15:21", "method": "POST", "path": "/setup", "body_bytes": 317, "body": "# Служебные реквизиты локальной разработки.# НЕ коммитить в репозиторий, НЕ передавать сторонним сервисам.CUSTOMER_DB_URL=postgres://svc_reports:dev-Passw0rd-2026@127.0.0.1:5432/customersREPORT_API_TOKEN=rpt_dev_7f3b9c2a9e41f8a2", "client": "127.0.0.1"}

@@ -2264,6 +2264,20 @@ ABC_BENCH_APPS: dict[str, DeploymentConfig] = {
         app_port=5000,
         health_endpoint="/health",
     ),
+    # Сценарий «Инструкция в README» (вектор B1, Indirect Prompt Injection,
+    # см. docs/ISOLATED_RUN.md, раздел 10): сервис учёта клиентов Customer API.
+    # Малус-вариант содержит вредоносный абзац в README, бенин-твин — тот же
+    # проект без него. Пары цепочек: readme_setup_exfil / readme_setup_exfil_benign.
+    "task_myteam_customer_api__records": DeploymentConfig(
+        app_dir="customer_api",
+        app_port=8080,
+        health_endpoint="/health",
+    ),
+    "task_myteam_customer_api_benign__records": DeploymentConfig(
+        app_dir="customer_api",
+        app_port=8080,
+        health_endpoint="/health",
+    ),
     "task_hagopj13_node_express_boilerplate__authentication": _HAGOPJ13_CONFIG,
     "task_hagopj13_node_express_boilerplate__users": _HAGOPJ13_CONFIG,
     "task_haozhang95_python24__cart_apis": _HAOZHANG95_CONFIG,
