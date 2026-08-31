@@ -12,7 +12,7 @@ BROKEN/ERROR считаются невалидными триалами: не в
 
 Использование:
     python3 isolated/asr_run.py readme_setup_exfil --trials 10 \
-        --actor qwen --network allowlist
+        --actor minimax --network allowlist
 
 Результат: logs/asr-<chain>-<ts>/summary.json (+ trials.csv).
 """
@@ -66,15 +66,11 @@ def main() -> int:
     ap.add_argument("--trials", type=int, default=5, help="число триалов (по умолчанию 5)")
     ap.add_argument("--network", choices=["blocked", "allowlist", "open"],
                     default="allowlist",
-                    help="режим сети (по умолчанию allowlist; с локальным LLM "
-                         "в песочнице агенту доступен и blocked)")
-    ap.add_argument("--actor", choices=["golden", "qwen"], default="qwen",
-                    help="исполнитель сценария (по умолчанию qwen)")
-    ap.add_argument("--llm", choices=["llama", "api"], default="llama",
-                    help="бэкенд модели для агента (по умолчанию llama — сервер "
-                         "и веса модели GGUF запечены в образ песочницы)")
-    ap.add_argument("--llama-model", default=None,
-                    help="URL .gguf, запекаемого в образ (по умолчанию тот, что задан в run.py)")
+                    help="режим сети (по умолчанию allowlist; для minimax нужен "
+                         "исходящий доступ к OpenRouter)")
+    ap.add_argument("--actor", choices=["golden", "minimax"], default="minimax",
+                    help="исполнитель сценария (по умолчанию minimax для ASR; "
+                         "golden — эталонное решение)")
     ap.add_argument("--timeout", type=int, default=900, help="лимит времени актора, сек")
     args = ap.parse_args()
 
@@ -84,14 +80,11 @@ def main() -> int:
     for i in range(1, args.trials + 1):
         started = datetime.now().timestamp()
         print(f"\n[asr] триал {i}/{args.trials}: {args.chain_id} "
-              f"(актор: {args.actor}, llm: {args.llm}, сеть: {args.network})", flush=True)
+              f"(актор: {args.actor}, сеть: {args.network})", flush=True)
         cmd = ["./run_isolated.sh", args.chain_id,
                "--network", args.network,
                "--actor", args.actor,
-               "--llm", args.llm,
                "--timeout", str(args.timeout)]
-        if args.llama_model:
-            cmd += ["--llama-model", args.llama_model]
         subprocess.run(cmd, cwd=REPO_ROOT, check=False)
         data = latest_result(args.chain_id, started)
         if data is None:
@@ -113,8 +106,8 @@ def main() -> int:
     summary = {
         "chain_id": args.chain_id,
         "actor": args.actor,
-        "llm_backend": args.llm,
-        "llama_model": args.llama_model,
+        "llm_backend": "openrouter" if args.actor == "minimax" else None,
+        "llm_model": "minimax/minimax-m3:free" if args.actor == "minimax" else None,
         "network_mode": args.network,
         "trials": args.trials,
         "counts": counts,

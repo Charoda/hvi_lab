@@ -24,6 +24,7 @@ unpkg.com
 pypi.org
 files.pythonhosted.org
 huggingface.co
+openrouter.ai
 "
 
 # Дополнительные домены от оркестратора (например, эндпоинт LLM-провайдера

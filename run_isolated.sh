@@ -8,17 +8,43 @@
 # logs/<chain_id>-<дата>/.
 #
 # Использование:
-#   ./run_isolated.sh <CHAIN_ID> [--network blocked|allowlist|open] [--keep]
+#   ./run_isolated.sh <CHAIN_ID>                              # эталон (golden)
+#   ./run_isolated.sh <CHAIN_ID> --actor minimax --network allowlist
 #   ./run_isolated.sh --cleanup      # убрать хвосты прошлых запусков
 #
 # Примеры:
 #   ./run_isolated.sh express_amount_trust
-#   ./run_isolated.sh flask_cart_flag_modified --network allowlist
+#   ./run_isolated.sh readme_setup_exfil --actor minimax --network allowlist --timeout 2400
 #
 # Подробности: isolated/run.py, инструкция: docs/ISOLATED_RUN.md
 # ============================================================================
 set -euo pipefail
 cd "$(dirname "$0")"
+ROOT="$(pwd)"
+
+# Секреты: локальный .env (не в git, см. .gitignore). Не кладите ключи в Dockerfile.
+ENV_FILE="$ROOT/.env"
+if [ -f "$ENV_FILE" ]; then
+    # Не перезаписываем переменные, уже заданные в shell (export вручную имеет приоритет).
+    while IFS= read -r line || [ -n "$line" ]; do
+        case "$line" in
+            ''|'#'*) continue ;;
+            *=*)
+                key="${line%%=*}"
+                val="${line#*=}"
+                key="${key#"${key%%[![:space:]]*}"}"
+                key="${key%"${key##*[![:space:]]}"}"
+                val="${val#"${val%%[![:space:]]*}"}"
+                val="${val%"${val##*[![:space:]]}"}"
+                val="${val%\"}"; val="${val#\"}"
+                val="${val%\'}"; val="${val#\'}"
+                if [ -n "$key" ] && [ -z "${!key:-}" ]; then
+                    export "$key=$val"
+                fi
+                ;;
+        esac
+    done < "$ENV_FILE"
+fi
 
 # Интерпретатор: ищем мозаичное окружение 3.11 (см. инструкцию по установке),
 # иначе берём системный python3.

@@ -40,7 +40,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
+import os
 import signal
 import subprocess
 import sys
@@ -63,7 +63,7 @@ LOG_ROOT = REPO_ROOT / "logs"
 # Тег образа песочницы привязан к содержимому файлов, из которых он собран:
 # изменение любого из них автоматически даёт новый тег и пересборку.
 _AGENT_FILES = ("Dockerfile.agent", "entrypoint.sh", "allowlist.sh",
-                "honey_listener.py", "poc_runner.py", "llama_tool_proxy.py")
+                "honey_listener.py", "poc_runner.py", "fake_npm_registry.py")
 
 
 def agent_image_tag() -> str:
@@ -89,55 +89,42 @@ APP_ROOT_OVERRIDES = {
 
 
 # ---------------------------------------------------------------------------
-# Подключение реального агента (сейчас: Qwen Code CLI)
+# AI-агент: Qwen Code CLI + MiniMax M3 через OpenRouter
 # ---------------------------------------------------------------------------
 
-QWEN_SETTINGS_PATH = Path.home() / ".qwen" / "settings.json"
+AI_AGENT_ACTORS = frozenset({"minimax"})
 
-# Ключи настроек хоста, которые действительно нужны агенту в песочнице
-# (всё остальное — история/кастомизации хоста — внутрь не копируется).
-QWEN_SETTINGS_PICK = ("env", "modelProviders", "model", "security", "$version")
-
-# Локальный бэкенд llama.cpp: сервер поднимается прямо в контейнере-акторе
-# (entrypoint.sh запускает `llama-server` при LLAMA_START=1), а веса модели
-# (GGUF) запечены в образ при сборке (Dockerfile.agent берёт файл из
-# контекста isolated/models/). Не зависит от внешних API-ключей и работает
-# при любом режиме сети, включая blocked (см. docs/ISOLATED_RUN.md, раздел 11).
-LLAMA_BASE_URL = "http://127.0.0.1:11434/v1"
-MODELS_DIR = REPO_ROOT / "isolated" / "models"
-DEFAULT_LLAMA_MODEL_FILE = "qwen2.5-coder-7b-instruct-q4_k_m.gguf"
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+OPENROUTER_MINIMAX_MODEL = "minimax/minimax-m3:free"
+OPENROUTER_DOMAIN = "openrouter.ai"
 
 
-def llama_alias(name: str) -> str:
-    """Имя модели для OpenAI API (--alias llama-server) — из имени .gguf."""
-    name = name.rstrip("/").rsplit("/", 1)[-1]
-    return name[:-5] if name.endswith(".gguf") else name
+def load_dotenv_if_present() -> None:
+    """Подгружает ROOT/.env в os.environ (только отсутствующие ключи)."""
+    env_file = REPO_ROOT / ".env"
+    if not env_file.is_file():
+        return
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, val = line.partition("=")
+        key = key.strip()
+        val = val.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = val
 
 
-DEFAULT_LLAMA_MODEL = llama_alias(DEFAULT_LLAMA_MODEL_FILE)
-
-
-def baked_llama_model() -> str | None:
-    """Модель, запечённая в образ песочницы (маркер из Dockerfile.agent)."""
-    r = docker("run", "--rm", "--entrypoint", "cat", AGENT_IMAGE,
-               "/opt/iso/LLAMA_MODEL", check=False, timeout=120)
-    if r.returncode != 0:
-        return None
-    return (r.stdout or "").strip() or None
-
-
-def qwen_host_settings() -> dict:
-    if not QWEN_SETTINGS_PATH.is_file():
+def openrouter_api_key() -> str:
+    key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not key:
         raise SystemExit(
-            f"Не найден {QWEN_SETTINGS_PATH} — Qwen CLI на хосте не настроен "
-            f"(см. docs/ISOLATED_RUN.md, раздел 11).")
-    return json.loads(QWEN_SETTINGS_PATH.read_text())
-
-
-def qwen_llm_domain(settings: dict) -> str | None:
-    url = (settings.get("model") or {}).get("baseUrl") or ""
-    m = re.match(r"https?://([^/]+)", url)
-    return m.group(1) if m else None
+            "Не задан OPENROUTER_API_KEY — нужен для --actor minimax.\n"
+            "  export OPENROUTER_API_KEY='sk-or-v1-...'\n"
+            "  или положите ключ в mosaic-benchmark/.env (chmod 600, см. .env.example)\n"
+            "Ключ берётся из окружения хоста и копируется в контейнер на один "
+            "прогон (в образ не запекается).")
+    return key
 
 
 # ---------------------------------------------------------------------------
@@ -219,16 +206,12 @@ def file_hashes(root: Path) -> dict[str, str]:
 
 class IsolatedRun:
     def __init__(self, chain_id: str, network_mode: str, timeout_s: int, keep: bool,
-                 actor: str = "golden", llm: str = "llama",
-                 llama_model_file: str = DEFAULT_LLAMA_MODEL_FILE):
+                 actor: str = "golden"):
         self.chain_id = chain_id
         self.network_mode = network_mode
         self.timeout_s = timeout_s
         self.keep = keep
         self.actor = actor
-        self.llm = llm
-        self.llama_model_file = Path(llama_model_file).name
-        self.llama_model = llama_alias(llama_model_file)
         ts = datetime.now().strftime("%Y%m%d-%H%M%S")
         self.run_id = f"{chain_id}-{ts}"
         self.label = f"{LABEL_KEY}={self.run_id}"
@@ -300,27 +283,10 @@ class IsolatedRun:
         if image_exists(AGENT_IMAGE):
             log(f"образ песочницы уже есть: {AGENT_IMAGE}")
         else:
-            log("собираю образ песочницы (однократно; первая сборка долгая — "
-                "скачиваются бинарник llama.cpp и контекст с весами (GGUF), "
-                "~5 ГБ)...")
-            if self.actor == "qwen" and self.llm == "llama":
-                model_path = MODELS_DIR / self.llama_model_file
-                if not model_path.is_file():
-                    raise SystemExit(
-                        f"Веса модели не найдены: {model_path}\n"
-                        f"Скачайте их с докачкой: "
-                        f"bash isolated/models/download.sh <URL .gguf>")
-            build_args: list[str] = []
-            # Если запрошена не модель по умолчанию, запекаем её (тег образа
-            # считается от файлов, поэтому маркер /opt/iso/LLAMA_MODEL —
-            # единственный источник правды о запечённой модели).
-            if (self.actor == "qwen" and self.llm == "llama"
-                    and self.llama_model_file != DEFAULT_LLAMA_MODEL_FILE):
-                build_args = ["--build-arg", f"LLAMA_MODEL_FILE={self.llama_model_file}",
-                              "--build-arg", f"LLAMA_MODEL_ALIAS={self.llama_model}"]
-            docker("build", *build_args,
+            log("собираю образ песочницы (однократно, ~400 МБ, Qwen CLI без локальной LLM)...")
+            docker("build",
                    "-f", str(REPO_ROOT / "isolated" / "Dockerfile.agent"),
-                   "-t", AGENT_IMAGE, str(REPO_ROOT / "isolated"), timeout=3600)
+                   "-t", AGENT_IMAGE, str(REPO_ROOT / "isolated"), timeout=1800)
 
         self.app_image = f"{APP_IMAGE_PREFIX}-{self.task_id}:latest"
         if image_exists(self.app_image):
@@ -413,34 +379,15 @@ class IsolatedRun:
         app_dir_in_sandbox = f"/workspace/app/{self.cfg.app_dir}"
         extra_env: dict[str, str] = {}
 
-        if self.actor == "qwen":
+        if self.actor in AI_AGENT_ACTORS:
             prompt_file = self.chain_dir / "agent_prompt.txt"
             if not prompt_file.is_file():
-                raise SystemExit(f"Для --actor qwen нужен файл промпта: {prompt_file}")
+                raise SystemExit(
+                    f"Для --actor {self.actor} нужен файл промпта: {prompt_file}")
             extra_env["AGENT_PROMPT"] = prompt_file.read_text().strip()
-            if self.llm == "llama":
-                # Локальная модель: llama-server поднимается прямо в этом
-                # контейнере (entrypoint.sh, LLAMA_START=1), веса (GGUF)
-                # запечены в образ. LLM доступен при любом режиме сети,
-                # включая blocked (никаких доменов в белый список добавлять
-                # не надо).
-                extra_env["LLAMA_START"] = "1"
-                log(f"агент: LLM = llama.cpp внутри песочницы ({self.llama_model})")
-            else:
-                # Внешний API: домен провайдера из настроек хоста — в белый
-                # список (см. allowlist.sh).
-                domain = qwen_llm_domain(qwen_host_settings())
-                if domain:
-                    extra_env["EXTRA_DOMAINS"] = domain
-                    log(f"агент: домен LLM-провайдера добавлен в белый список: {domain}")
+            extra_env["EXTRA_DOMAINS"] = OPENROUTER_DOMAIN
             extra_env["QWEN_TELEMETRY_ENABLED"] = "false"
             extra_env["QWEN_CODE_SUPPRESS_YOLO_WARNING"] = "1"
-            # Локальный инференс медленный: промпт первого запроса (~16 тыс.
-            # токенов, системный + схемы всех инструментов) обрабатывается
-            # минутами, и дефолтный стрим-таймаут CLI (240 с простоя) убивал
-            # запрос, после чего агент деградировал в одноходовый режим.
-            # 0 = снять лимит простоя стрима; общий потолок по-прежнему
-            # ограничен снаружи (таймаут актора в песочнице).
             extra_env["QWEN_STREAM_IDLE_TIMEOUT_MS"] = "0"
             extra_env["QWEN_CODE_API_TIMEOUT_MS"] = "3600000"
             actor_cmd = (
@@ -449,7 +396,10 @@ class IsolatedRun:
                 f"cd {app_dir_in_sandbox} && "
                 "qwen --approval-mode yolo --safe-mode -o text -p \"$AGENT_PROMPT\""
             )
-            log("актор: реальный агент (Qwen Code CLI, approval-mode=yolo, safe-mode)")
+            log(
+                f"актор: AI-агент (Qwen Code CLI + {OPENROUTER_MINIMAX_MODEL} "
+                f"через OpenRouter, approval-mode=yolo, safe-mode)"
+            )
         else:
             stage_scripts = [self.chain_dir / f"golden_stage{i}.sh" for i in (1, 2, 3)]
             if all(p.is_file() for p in stage_scripts):
@@ -483,8 +433,8 @@ class IsolatedRun:
         log("копирую дерево задачи в песочницу (изолированная ФС)...")
         docker("cp", f"{self.task_dir}/.", f"{self.actor_container}:/workspace/app")
 
-        if self.actor == "qwen":
-            self._inject_qwen_credentials()
+        if self.actor in AI_AGENT_ACTORS:
+            self._inject_agent_settings()
 
         try:
             r = run(["docker", "start", "-a", self.actor_container],
@@ -496,35 +446,29 @@ class IsolatedRun:
             rc = 124
         return rc
 
-    def _build_qwen_settings(self) -> dict:
-        """Настройки Qwen CLI для контейнера-актора под выбранный бэкенд LLM."""
-        if self.llm == "llama":
-            # OpenAI-совместимый провайдер -> llama-server внутри этого же
-            # контейнера (см. LLAMA_START в entrypoint.sh).
-            # Ключ условный: локальной модели аутентификация не нужна
-            # (--api-key в entrypoint.sh), внешние API-ключи в контейнер
-            # не попадают вовсе.
-            settings: dict = {
-                "env": {
-                    "OPENAI_API_KEY": "not-needed",
-                    "OPENAI_BASE_URL": LLAMA_BASE_URL,
-                    "OPENAI_MODEL": self.llama_model,
-                },
-                "modelProviders": {
-                    "openai": [{
-                        "id": self.llama_model,
-                        "name": f"{self.llama_model} (llama.cpp, локально)",
-                        "baseUrl": LLAMA_BASE_URL,
-                        "envKey": "OPENAI_API_KEY",
-                    }],
-                },
-                "security": {"auth": {"selectedType": "openai"}},
-                "model": {"name": self.llama_model, "baseUrl": LLAMA_BASE_URL},
-                "$version": 4,
-            }
-        else:
-            host = qwen_host_settings()
-            settings = {k: host[k] for k in QWEN_SETTINGS_PICK if k in host}
+    def _build_agent_settings(self) -> dict:
+        """Настройки Qwen CLI для MiniMax M3 через OpenRouter."""
+        api_key = openrouter_api_key()
+        model = OPENROUTER_MINIMAX_MODEL
+        base = OPENROUTER_BASE_URL
+        settings: dict = {
+            "env": {
+                "OPENAI_API_KEY": api_key,
+                "OPENAI_BASE_URL": base,
+                "OPENAI_MODEL": model,
+            },
+            "modelProviders": {
+                "openai": [{
+                    "id": model,
+                    "name": "MiniMax M3 (OpenRouter, free)",
+                    "baseUrl": base,
+                    "envKey": "OPENAI_API_KEY",
+                }],
+            },
+            "security": {"auth": {"selectedType": "openai"}},
+            "model": {"name": model, "baseUrl": base},
+            "$version": 4,
+        }
         settings["ui"] = {"autoModeAcknowledged": True}
         settings["telemetry"] = {"enabled": False}
         settings["tools"] = {"approvalMode": "yolo"}
@@ -533,22 +477,17 @@ class IsolatedRun:
         settings["security"] = security
         return settings
 
-    def _inject_qwen_credentials(self) -> None:
-        """Копирует МИНИМАЛЬНЫЕ настройки Qwen CLI внутрь контейнера до старта.
-        Агенту нужен доступ к LLM (локальный llama-server в этом же контейнере
-        или внешний API), но живые монтирования ФС хоста в песочницу не
-        допускаются: файл копируется разово (docker cp) и живёт только внутри
-        контейнера прогона."""
-        minimal = self._build_qwen_settings()
-        with tempfile.TemporaryDirectory(prefix="mosaic_iso_qwen_") as tmp:
+    def _inject_agent_settings(self) -> None:
+        """Копирует минимальные настройки агента внутрь контейнера до старта."""
+        minimal = self._build_agent_settings()
+        with tempfile.TemporaryDirectory(prefix="mosaic_iso_agent_") as tmp:
             src = Path(tmp) / "settings.json"
             src.write_text(json.dumps(minimal, ensure_ascii=False))
-            # docker cp не создаёт отсутствующий каталог назначения, поэтому
-            # файл кладётся в /tmp контейнера и переносится командой актора.
             docker("cp", str(src), f"{self.actor_container}:/tmp/qwen-settings.json")
-        backend = (f"локальный llama.cpp, модель {self.llama_model}"
-                   if self.llm == "llama" else "внешний API из настроек хоста")
-        log(f"агент: настройки Qwen CLI ({backend}) скопированы в контейнер")
+        log(
+            f"агент: настройки Qwen CLI ({OPENROUTER_MINIMAX_MODEL} через OpenRouter) "
+            f"скопированы в контейнер"
+        )
 
     def redeploy_app(self) -> str:
         """Доставляем изменения актора в контейнер приложения.
@@ -657,8 +596,8 @@ class IsolatedRun:
             "chain_id": self.chain_id,
             "task_id": self.task_id,
             "actor": self.actor,
-            "llm_backend": self.llm if self.actor == "qwen" else None,
-            "llm_model": self.llama_model if (self.actor == "qwen" and self.llm == "llama") else None,
+            "llm_backend": "openrouter" if self.actor in AI_AGENT_ACTORS else None,
+            "llm_model": OPENROUTER_MINIMAX_MODEL if self.actor in AI_AGENT_ACTORS else None,
             "network_mode": self.network_mode,
             "started_at": datetime.now().isoformat(timespec="seconds"),
         }
@@ -732,27 +671,56 @@ def cleanup_all() -> None:
 
 VERBOSE = False
 
+# Артефакты прогона (имя файла → краткое описание для финального вывода).
+_LOG_ARTIFACTS: tuple[tuple[str, str], ...] = (
+    ("result.json", "манифест: вердикт, актор, длительность"),
+    ("actor_stdout.log", "stdout актора (отчёт агента)"),
+    ("actor_stderr.log", "stderr актора"),
+    ("strace.log", "системные вызовы: execve, сеть, файлы"),
+    ("inotify.log", "события ФС: OPEN/ACCESS на пути"),
+    ("honey_requests.jsonl", "HTTP на медовый порт (эксфильтрация)"),
+    ("honey_listener.log", "старт honey-слушателя"),
+    ("network_setup.log", "правила allowlist (iptables)"),
+    ("poc_result.json", "вердикт PoC-оракула"),
+    ("poc_container.log", "stdout/stderr PoC-оракула"),
+    ("exit_code", "код завершения актора"),
+    ("fake_npm_registry.log", "фейковый npm-registry (B13)"),
+)
+
+
+def print_log_artifacts(log_dir: Path) -> None:
+    """Печатает пути к артефактам прогона для быстрого просмотра логов."""
+    log_dir = log_dir.resolve()
+    print()
+    print("  Просмотр логов:")
+    print(f"    cd {log_dir}")
+    print()
+    for name, hint in _LOG_ARTIFACTS:
+        path = log_dir / name
+        if path.is_file():
+            print(f"    {path}")
+            print(f"      {hint}")
+    print()
+    print("  Примеры команд:")
+    print(f"    jq . {log_dir}/result.json")
+    print(f"    less {log_dir}/actor_stdout.log")
+    print(f"    cat {log_dir}/honey_requests.jsonl")
+    print(f"    tail -50 {log_dir}/inotify.log")
+    print(f"    grep -E 'curl|secret' {log_dir}/strace.log | tail -20")
+
 
 def main() -> int:
     global VERBOSE
+    load_dotenv_if_present()
     ap = argparse.ArgumentParser(description="Изолированный запуск сценария MOSAIC-Bench")
     ap.add_argument("chain_id", nargs="?", help="идентификатор цепочки, например express_amount_trust")
     ap.add_argument("--network", choices=["blocked", "allowlist", "open"], default="blocked",
                     help="режим исходящих соединений (по умолчанию blocked)")
     ap.add_argument("--timeout", type=int, default=600, help="лимит времени актора, сек")
-    ap.add_argument("--actor", choices=["golden", "qwen"], default="golden",
-                    help="кто исполняет сценарий: эталонное решение (golden, по умолчанию) "
-                         "или реальный агент (qwen — Qwen Code CLI внутри песочницы)")
-    ap.add_argument("--llm", choices=["llama", "api"], default="llama",
-                    help="бэкенд модели для агента: локальный llama-server внутри "
-                         "песочницы (llama, по умолчанию; бинарник и веса модели GGUF "
-                         "запечены в образ, не зависит от внешних API-ключей) или "
-                         "внешний API из настроек хоста (api)")
-    ap.add_argument("--llama-model", default=DEFAULT_LLAMA_MODEL_FILE,
-                    help=f"файл .gguf из isolated/models/, запекаемый в образ "
-                         f"(по умолчанию {DEFAULT_LLAMA_MODEL_FILE}; другая "
-                         f"модель — скачайте её туда через "
-                         f"isolated/models/download.sh и пересоберите образ)")
+    ap.add_argument("--actor", choices=["golden", "minimax"], default="golden",
+                    help="кто исполняет сценарий: эталонное решение (golden, "
+                         "по умолчанию) или AI-агент (minimax — MiniMax M3 "
+                         "через OpenRouter, Qwen Code CLI внутри песочницы)")
     ap.add_argument("--keep", action="store_true", help="не сносить окружение после прогона (отладка)")
     ap.add_argument("--cleanup", action="store_true", help="удалить все хвосты прошлых запусков и выйти")
     ap.add_argument("--verbose", action="store_true", help="печатать все команды")
@@ -765,30 +733,20 @@ def main() -> int:
     if not args.chain_id:
         ap.error("нужен идентификатор цепочки (см. benchmark/chains/) или --cleanup")
 
-    # Образ уже собран — сверяем запечённую модель с запрошенной ДО прогона,
-    # чтобы не тратить минуты на триал, который гарантированно сломается.
-    # (Если образа ещё нет, он соберётся в build_images с нужным --build-arg.)
-    if args.actor == "qwen" and args.llm == "llama" and image_exists(AGENT_IMAGE):
-        baked = baked_llama_model()
-        requested = llama_alias(args.llama_model)
-        if baked is None:
-            raise SystemExit(
-                f"Образ {AGENT_IMAGE} не содержит llama.cpp с весами (маркер "
-                f"/opt/iso/LLAMA_MODEL не читается). Удалите его — образ "
-                f"пересоберётся автоматически:\n  docker rmi {AGENT_IMAGE}")
-        if baked != requested:
-            raise SystemExit(
-                f"В образе {AGENT_IMAGE} запечена модель '{baked}', а запрошена "
-                f"'{requested}'. Пересоберите образ с другой моделью:\n"
-                f"  docker rmi {AGENT_IMAGE}\n"
-                f"  затем повторный запуск с --llama-model <файл .gguf из "
-                f"isolated/models/> (образ соберётся с "
-                f"--build-arg LLAMA_MODEL_FILE=<файл>)")
+    if args.actor == "minimax" and args.network == "blocked":
+        raise SystemExit(
+            "Для --actor minimax нужен исходящий доступ к OpenRouter.\n"
+            "  Используйте --network allowlist (рекомендуется) или --network open.\n"
+            "  Без --actor прогон идёт через golden_solution.sh (эталон).")
+
+    if args.actor == "minimax":
+        openrouter_api_key()  # проверка до старта прогона
 
     run_obj = IsolatedRun(args.chain_id, args.network, args.timeout, args.keep,
-                          args.actor, args.llm, args.llama_model)
-    llm_note = f" | LLM: {args.llm}" + ("" if args.llm != "llama"
-                                       else f" ({llama_alias(args.llama_model)})") if args.actor == "qwen" else ""
+                          args.actor)
+    llm_note = ""
+    if args.actor == "minimax":
+        llm_note = f" | LLM: {OPENROUTER_MINIMAX_MODEL} (OpenRouter)"
     log(f"цепочка: {args.chain_id} | субстрат: {run_obj.task_id} | сеть: {args.network} "
         f"| актор: {args.actor}{llm_note}")
     log(f"артефакты будут в {run_obj.log_dir}")
@@ -804,6 +762,7 @@ def main() -> int:
           f"{manifest.get('redeploy_strategy', '—')} | {manifest['duration_s']}с")
     print(f"  Артефакты: {run_obj.log_dir}")
     print("=" * 60)
+    print_log_artifacts(run_obj.log_dir)
     return 0 if manifest["verdict"] in ("VULNERABLE", "SECURE") else 1
 
 
