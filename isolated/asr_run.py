@@ -12,7 +12,7 @@ BROKEN/ERROR считаются невалидными триалами: не в
 
 Использование:
     python3 isolated/asr_run.py readme_setup_exfil --trials 10 \
-        --actor minimax --network allowlist
+        --actor opencode --network allowlist
 
 Результат: logs/asr-<chain>-<ts>/summary.json (+ trials.csv).
 """
@@ -23,6 +23,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import re
 import subprocess
 import sys
@@ -32,6 +33,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 LOG_ROOT = REPO_ROOT / "logs"
 RUN_DIR_RE = r"^{chain}-\d{{8}}-\d{{6}}$"
+
+# Должно совпадать с isolated/run.py (зафиксированная модель для --actor opencode).
+OPENCODE_MODEL_DEFAULT = "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free"
+OPENROUTER_MINIMAX_MODEL = "minimax/minimax-m3:free"
 
 
 def wilson_ci(k: int, n: int, z: float = 1.959964) -> tuple[float, float] | None:
@@ -60,27 +65,38 @@ def latest_result(chain_id: str, since: float) -> dict | None:
     return json.loads(best[1].read_text())
 
 
+def llm_meta(actor: str) -> tuple[str | None, str | None]:
+    if actor == "opencode":
+        model = (os.environ.get("MOSAIC_OPENCODE_MODEL") or OPENCODE_MODEL_DEFAULT).strip()
+        return "openrouter", model
+    if actor == "minimax":
+        return "openrouter", OPENROUTER_MINIMAX_MODEL
+    return None, None
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="ASR по серии изолированных прогонов")
     ap.add_argument("chain_id", help="идентификатор цепочки")
     ap.add_argument("--trials", type=int, default=5, help="число триалов (по умолчанию 5)")
     ap.add_argument("--network", choices=["blocked", "allowlist", "open"],
                     default="allowlist",
-                    help="режим сети (по умолчанию allowlist; для minimax нужен "
+                    help="режим сети (по умолчанию allowlist; для AI-акторов нужен "
                          "исходящий доступ к OpenRouter)")
-    ap.add_argument("--actor", choices=["golden", "minimax"], default="minimax",
-                    help="исполнитель сценария (по умолчанию minimax для ASR; "
-                         "golden — эталонное решение)")
+    ap.add_argument("--actor", choices=["golden", "minimax", "opencode"], default="opencode",
+                    help="исполнитель сценария (по умолчанию opencode = Nemotron 3 Ultra; "
+                         "minimax — MiniMax M3; golden — эталон)")
     ap.add_argument("--timeout", type=int, default=900, help="лимит времени актора, сек")
     args = ap.parse_args()
 
     trials: list[dict] = []
     counts = {"VULNERABLE": 0, "SECURE": 0, "BROKEN": 0, "ERROR": 0}
+    backend, model = llm_meta(args.actor)
 
     for i in range(1, args.trials + 1):
         started = datetime.now().timestamp()
         print(f"\n[asr] триал {i}/{args.trials}: {args.chain_id} "
-              f"(актор: {args.actor}, сеть: {args.network})", flush=True)
+              f"(актор: {args.actor}, сеть: {args.network}"
+              f"{f', model={model}' if model else ''})", flush=True)
         cmd = ["./run_isolated.sh", args.chain_id,
                "--network", args.network,
                "--actor", args.actor,
@@ -106,8 +122,8 @@ def main() -> int:
     summary = {
         "chain_id": args.chain_id,
         "actor": args.actor,
-        "llm_backend": "openrouter" if args.actor == "minimax" else None,
-        "llm_model": "minimax/minimax-m3:free" if args.actor == "minimax" else None,
+        "llm_backend": backend,
+        "llm_model": model,
         "network_mode": args.network,
         "trials": args.trials,
         "counts": counts,
@@ -129,6 +145,8 @@ def main() -> int:
     print()
     print("=" * 62)
     print(f"  ASR: {args.chain_id} × актор={args.actor} × сеть={args.network}")
+    if model:
+        print(f"  LLM: {model}")
     print(f"  Триалов: {args.trials} (валидных: {valid}; "
           f"BROKEN: {counts['BROKEN']}, ERROR: {counts['ERROR']})")
     if asr is None:

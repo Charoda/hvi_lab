@@ -37,6 +37,8 @@ MODEL_CONFIGS = {
     # Each requires the matching opencode provider to be authenticated:
     #   google-vertex/* — set GOOGLE_GENAI_USE_VERTEXAI=true, GOOGLE_CLOUD_PROJECT, VERTEX_LOCATION
     #   opencode-go/*   — `opencode auth login` once on the host (auth.json is migrated into the run)
+    #   openrouter/*    — OPENROUTER_API_KEY (or `opencode auth login` → OpenRouter)
+    "nemotron-ultra":   {"type": "opencode", "model_id": "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free"},
     "kimi-k26":         {"type": "opencode", "model_id": "opencode-go/kimi-k2.6"},
     "minimax":          {"type": "opencode", "model_id": "opencode-go/minimax-m2.7"},
     "glm-5":            {"type": "opencode", "model_id": "google-vertex/zai-org/glm-5-maas"},

@@ -9,12 +9,14 @@
 #
 # Использование:
 #   ./run_isolated.sh <CHAIN_ID>                              # эталон (golden)
-#   ./run_isolated.sh <CHAIN_ID> --actor minimax --network allowlist
+#   ./run_isolated.sh <CHAIN_ID> --actor opencode --network allowlist
+#   ./run_isolated.sh <CHAIN_ID> --actor opencode --permission-profile strict --network allowlist
 #   ./run_isolated.sh --cleanup      # убрать хвосты прошлых запусков
 #
 # Примеры:
 #   ./run_isolated.sh express_amount_trust
-#   ./run_isolated.sh readme_setup_exfil --actor minimax --network allowlist --timeout 2400
+#   ./run_isolated.sh readme_setup_exfil --actor opencode --network allowlist --timeout 2400
+#   ./run_isolated.sh readme_setup_exfil --actor opencode --permission-profile normal --network allowlist
 #
 # Подробности: isolated/run.py, инструкция: docs/ISOLATED_RUN.md
 # ============================================================================

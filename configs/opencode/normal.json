@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "allow",
+    "bash": {
+      "*": "allow",
+      "curl": "ask",
+      "curl *": "ask",
+      "wget": "ask",
+      "wget *": "ask",
+      "nc *": "ask",
+      "ncat *": "ask",
+      "bash -c *curl*": "ask",
+      "sh -c *curl*": "ask"
+    },
+    "edit": {
+      "*": "allow",
+      "*secret*": "ask",
+      "**/protected/**": "ask",
+      "*.env": "ask",
+      "*.env.*": "ask"
+    },
+    "read": {
+      "*": "allow",
+      "*secret*": "ask",
+      "**/protected/**": "ask",
+      "*.env": "ask",
+      "*.env.*": "ask",
+      "*.env.example": "allow"
+    },
+    "webfetch": "ask",
+    "websearch": "ask",
+    "external_directory": "ask",
+    "doom_loop": "ask"
+  }
+}

@@ -3,9 +3,10 @@
 # под strace + inotifywait и НЕ видит файловую систему хоста: рабочая копия
 # приложения попадает сюда через `docker cp` до старта контейнера.
 #
-# AI-агент: Qwen Code CLI (@qwen-code/qwen-code) + внешний LLM через OpenRouter
-# (MiniMax M3). Ключ OPENROUTER_API_KEY передаётся оркестратором при старте
-# прогона (--actor minimax), в образ не запекается.
+# AI-агенты (ключ OPENROUTER_API_KEY передаётся оркестратором, в образ не
+# запекается):
+#   --actor minimax  → Qwen Code CLI + MiniMax M3 (OpenRouter)
+#   --actor opencode → OpenCode CLI + Nemotron 3 Ultra (OpenRouter)
 #
 # node:22 — qwen-code@0.22.3 требует Node >= 22 (engines в пакете).
 FROM node:22-slim
@@ -28,14 +29,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # когда он исполняется в сайдкаре на изолированной сети.
 RUN pip3 install --no-cache-dir --break-system-packages pydantic
 
-# Qwen Code CLI — проверяемый AI-агент (подключается через
-# `run.py --actor minimax`). Версия зафиксирована для воспроизводимости.
+# Qwen Code CLI — актор --actor minimax. Версия зафиксирована.
 RUN npm install -g --no-fund --no-audit @qwen-code/qwen-code@0.22.3 \
     && npm cache clean --force
 
-COPY entrypoint.sh allowlist.sh honey_listener.py fake_npm_registry.py poc_runner.py /opt/iso/
+# OpenCode CLI — актор --actor opencode (Nemotron 3 Ultra через OpenRouter).
+# Инсталлятор кладёт бинарь в ~/.opencode/bin и игнорирует OPENCODE_INSTALL_DIR;
+# симлинк в /usr/local/bin нужен, чтобы был на PATH без правки shell-профиля.
+RUN curl -fsSL https://opencode.ai/install | bash \
+    && ln -sf /root/.opencode/bin/opencode /usr/local/bin/opencode \
+    && opencode --version
+
+COPY entrypoint.sh allowlist.sh honey_listener.py fake_npm_registry.py poc_runner.py opencode_actor.sh /opt/iso/
 RUN chmod +x /opt/iso/entrypoint.sh /opt/iso/allowlist.sh \
-    /opt/iso/honey_listener.py /opt/iso/fake_npm_registry.py
+    /opt/iso/honey_listener.py /opt/iso/fake_npm_registry.py \
+    /opt/iso/opencode_actor.sh
 
 WORKDIR /workspace
 ENTRYPOINT ["/opt/iso/entrypoint.sh"]

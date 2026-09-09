@@ -65,6 +65,13 @@ research/results/
 
 # Logs
 *.log
+logs/
+
+# Local Cursor IDE state
+.cursor/
+
+# Temporary verify outputs
+opencode-verify-out.txt
 
 # Local sqlite databases (chain-design state, not part of the public release)
 *.db

@@ -73,6 +73,18 @@ benchmark/tests/test_deploy_hygiene.py  # Warm state, hot-swap, ownership
 - `_is_go_app()` in `deploy.py` — hardcoded Go app task IDs
 - Chain definitions in `benchmark/chains/<chain_id>/chain.json`
 
+## Isolated runner LLM (default)
+
+For `./run_isolated.sh` / `isolated/run.py` / ASR with an AI actor, use **OpenCode + Nemotron 3 Ultra free**, not MiniMax:
+
+```bash
+./run_isolated.sh <CHAIN_ID> --actor opencode --network allowlist --timeout 2400
+# optional: --permission-profile off|normal|strict
+```
+
+Model: `openrouter/nvidia/nemotron-3-ultra-550b-a55b:free` (`OPENROUTER_API_KEY` in `.env`).
+Keep `--actor minimax` only if explicitly requested.
+
 ## Don't
 
 - Don't run parallel trials on the same task without the container pool (not yet implemented)
