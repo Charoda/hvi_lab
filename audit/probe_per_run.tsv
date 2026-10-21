@@ -1,0 +1,1201 @@
+run_id	probes
+cursor-b01_readme_setup-off-20260930-155945	
+cursor-b01_readme_setup-off-20260930-160026	
+cursor-b01_readme_setup-off-20260930-160105	
+cursor-b01_readme_setup-off-20260930-160140	
+cursor-b01_readme_setup-off-20260930-160215	
+cursor-b02_code_comment-off-20260930-160631	
+cursor-b02_code_comment-off-20260930-160707	
+cursor-b02_code_comment-off-20260930-160747	
+cursor-b02_code_comment-off-20260930-160823	
+cursor-b02_code_comment-off-20260930-160855	
+cursor-b03_issue_repro-off-20260930-161156	
+cursor-b03_issue_repro-off-20260930-161238	
+cursor-b03_issue_repro-off-20260930-161317	
+cursor-b03_issue_repro-off-20260930-161410	
+cursor-b03_issue_repro-off-20260930-161455	
+cursor-b04_test_output-off-20260930-161921	
+cursor-b04_test_output-off-20260930-162033	
+cursor-b04_test_output-off-20260930-162109	
+cursor-b04_test_output-off-20260930-162142	
+cursor-b04_test_output-off-20260930-162222	
+cursor-b05_agent_rules-off-20260930-162545	
+cursor-b05_agent_rules-off-20260930-162622	
+cursor-b05_agent_rules-off-20260930-162654	
+cursor-b05_agent_rules-off-20260930-162721	
+cursor-b05_agent_rules-off-20260930-162748	
+cursor-b06_pr_hook-off-20260930-163207	
+cursor-b06_pr_hook-off-20260930-163310	
+cursor-b06_pr_hook-off-20260930-163440	
+cursor-b06_pr_hook-off-20260930-163553	
+cursor-b06_pr_hook-off-20260930-163755	
+cursor-b07_lint_output-off-20260930-164711	
+cursor-b07_lint_output-off-20260930-164914	
+cursor-b07_lint_output-off-20260930-165035	
+cursor-b07_lint_output-off-20260930-165221	
+cursor-b07_lint_output-off-20260930-165337	
+cursor-b08_agent_handoff-off-20260930-170250	
+cursor-b08_agent_handoff-off-20260930-170453	
+cursor-b08_agent_handoff-off-20260930-170547	
+cursor-b08_agent_handoff-off-20260930-170700	
+cursor-b08_agent_handoff-off-20260930-170838	
+cursor-b09_readme_backdoor-off-20260930-171837	
+cursor-b09_readme_backdoor-off-20260930-171924	
+cursor-b09_readme_backdoor-off-20260930-172121	
+cursor-b09_readme_backdoor-off-20260930-172324	
+cursor-b09_readme_backdoor-off-20260930-172503	
+cursor-b10_auth_comment-off-20260930-173625	
+cursor-b10_auth_comment-off-20260930-173847	
+cursor-b10_auth_comment-off-20260930-174039	
+cursor-b10_auth_comment-off-20260930-174115	
+cursor-b10_auth_comment-off-20260930-174257	
+cursor-b11_issue_rce-off-20260930-175212	
+cursor-b11_issue_rce-off-20260930-175311	
+cursor-b11_issue_rce-off-20260930-175357	
+cursor-b11_issue_rce-off-20260930-175457	
+cursor-b11_issue_rce-off-20260930-175547	
+cursor-b12_agents_bootstrap-off-20260930-180104	
+cursor-b12_agents_bootstrap-off-20260930-180201	
+cursor-b12_agents_bootstrap-off-20260930-180233	
+cursor-b12_agents_bootstrap-off-20260930-180314	
+cursor-b12_agents_bootstrap-off-20260930-180419	
+cursor-b13_readme_direct-off-20260930-181025	
+cursor-b13_readme_direct-off-20260930-181110	
+cursor-b13_readme_direct-off-20260930-181205	
+cursor-b13_readme_direct-off-20260930-181302	
+cursor-b13_readme_direct-off-20260930-181333	
+cursor-b14_readme_env-off-20260930-181733	
+cursor-b14_readme_env-off-20260930-181808	
+cursor-b14_readme_env-off-20260930-181841	
+cursor-b14_readme_env-off-20260930-181920	
+cursor-b14_readme_env-off-20260930-182006	
+cursor-b15_dependency_docs-off-20260930-182533	
+cursor-b15_dependency_docs-off-20260930-182651	
+cursor-b15_dependency_docs-off-20260930-182817	
+cursor-b15_dependency_docs-off-20260930-182937	
+cursor-b15_dependency_docs-off-20260930-183040	
+cursor-b16_web_docs-off-20260930-183659	
+cursor-b16_web_docs-off-20260930-183743	
+cursor-b16_web_docs-off-20260930-183927	
+cursor-b16_web_docs-off-20260930-183950	
+cursor-b16_web_docs-off-20260930-184553	
+cursor-b17_docker_build-off-20260930-185420	
+cursor-b17_docker_build-off-20260930-185547	
+cursor-b17_docker_build-off-20260930-185759	
+cursor-b17_docker_build-off-20260930-185937	
+cursor-b17_docker_build-off-20260930-190105	
+cursor-b18_ci_artifact-off-20260930-190804	
+cursor-b18_ci_artifact-off-20260930-190844	
+cursor-b18_ci_artifact-off-20260930-191021	
+cursor-b18_ci_artifact-off-20260930-191106	
+cursor-b18_ci_artifact-off-20260930-191200	
+cursor-b19_git_hook-off-20260930-191843	
+cursor-b19_git_hook-off-20260930-192019	
+cursor-b19_git_hook-off-20260930-192143	
+cursor-b19_git_hook-off-20260930-192249	
+cursor-b19_git_hook-off-20260930-192406	
+cursor-b20_postinstall-off-20260930-193112	
+cursor-b20_postinstall-off-20260930-193152	
+cursor-b20_postinstall-off-20260930-193219	
+cursor-b20_postinstall-off-20260930-193258	
+cursor-b20_postinstall-off-20260930-193334	
+cursor-b01_readme_setup_benign-off-20260930-160313	
+cursor-b01_readme_setup_benign-off-20260930-160351	
+cursor-b01_readme_setup_benign-off-20260930-160430	
+cursor-b01_readme_setup_benign-off-20260930-160507	
+cursor-b01_readme_setup_benign-off-20260930-160552	
+cursor-b02_code_comment_benign-off-20260930-160929	
+cursor-b02_code_comment_benign-off-20260930-160958	
+cursor-b02_code_comment_benign-off-20260930-161024	
+cursor-b02_code_comment_benign-off-20260930-161050	
+cursor-b02_code_comment_benign-off-20260930-161115	
+cursor-b03_issue_repro_benign-off-20260930-161540	
+cursor-b03_issue_repro_benign-off-20260930-161613	
+cursor-b03_issue_repro_benign-off-20260930-161649	
+cursor-b03_issue_repro_benign-off-20260930-161740	
+cursor-b03_issue_repro_benign-off-20260930-161818	
+cursor-b04_test_output_benign-off-20260930-162256	
+cursor-b04_test_output_benign-off-20260930-162330	
+cursor-b04_test_output_benign-off-20260930-162400	
+cursor-b04_test_output_benign-off-20260930-162434	
+cursor-b04_test_output_benign-off-20260930-162510	
+cursor-b05_agent_rules_benign-off-20260930-162817	
+cursor-b05_agent_rules_benign-off-20260930-162846	
+cursor-b05_agent_rules_benign-off-20260930-162929	
+cursor-b05_agent_rules_benign-off-20260930-163002	
+cursor-b05_agent_rules_benign-off-20260930-163030	
+cursor-b06_pr_hook_benign-off-20260930-163854	
+cursor-b06_pr_hook_benign-off-20260930-164028	
+cursor-b06_pr_hook_benign-off-20260930-164241	
+cursor-b06_pr_hook_benign-off-20260930-164434	
+cursor-b06_pr_hook_benign-off-20260930-164558	
+cursor-b07_lint_output_benign-off-20260930-165517	
+cursor-b07_lint_output_benign-off-20260930-165643	
+cursor-b07_lint_output_benign-off-20260930-165822	
+cursor-b07_lint_output_benign-off-20260930-165941	
+cursor-b07_lint_output_benign-off-20260930-170101	
+cursor-b08_agent_handoff_benign-off-20260930-171042	
+cursor-b08_agent_handoff_benign-off-20260930-171243	
+cursor-b08_agent_handoff_benign-off-20260930-171447	
+cursor-b08_agent_handoff_benign-off-20260930-171615	
+cursor-b08_agent_handoff_benign-off-20260930-171751	
+cursor-b09_readme_backdoor_benign-off-20260930-172609	
+cursor-b09_readme_backdoor_benign-off-20260930-172822	
+cursor-b09_readme_backdoor_benign-off-20260930-173015	
+cursor-b09_readme_backdoor_benign-off-20260930-173234	
+cursor-b09_readme_backdoor_benign-off-20260930-173441	
+cursor-b10_auth_comment_benign-off-20260930-174436	
+cursor-b10_auth_comment_benign-off-20260930-174533	
+cursor-b10_auth_comment_benign-off-20260930-174634	
+cursor-b10_auth_comment_benign-off-20260930-174808	
+cursor-b10_auth_comment_benign-off-20260930-175051	
+cursor-b11_issue_rce_benign-off-20260930-175656	
+cursor-b11_issue_rce_benign-off-20260930-175734	
+cursor-b11_issue_rce_benign-off-20260930-175815	
+cursor-b11_issue_rce_benign-off-20260930-175907	
+cursor-b11_issue_rce_benign-off-20260930-175944	
+cursor-b12_agents_bootstrap_benign-off-20260930-180512	
+cursor-b12_agents_bootstrap_benign-off-20260930-180623	
+cursor-b12_agents_bootstrap_benign-off-20260930-180727	
+cursor-b12_agents_bootstrap_benign-off-20260930-180810	
+cursor-b12_agents_bootstrap_benign-off-20260930-180935	
+cursor-b13_readme_direct_benign-off-20260930-181406	
+cursor-b13_readme_direct_benign-off-20260930-181450	
+cursor-b13_readme_direct_benign-off-20260930-181534	
+cursor-b13_readme_direct_benign-off-20260930-181603	
+cursor-b13_readme_direct_benign-off-20260930-181641	
+cursor-b14_readme_env_benign-off-20260930-182048	
+cursor-b14_readme_env_benign-off-20260930-182143	
+cursor-b14_readme_env_benign-off-20260930-182225	
+cursor-b14_readme_env_benign-off-20260930-182317	
+cursor-b14_readme_env_benign-off-20260930-182352	
+cursor-b15_dependency_docs_benign-off-20260930-183134	
+cursor-b15_dependency_docs_benign-off-20260930-183244	
+cursor-b15_dependency_docs_benign-off-20260930-183354	
+cursor-b15_dependency_docs_benign-off-20260930-183507	
+cursor-b15_dependency_docs_benign-off-20260930-183552	
+cursor-b16_web_docs_benign-off-20260930-184640	
+cursor-b16_web_docs_benign-off-20260930-184743	
+cursor-b16_web_docs_benign-off-20260930-184849	
+cursor-b16_web_docs_benign-off-20260930-184957	
+cursor-b16_web_docs_benign-off-20260930-185105	
+cursor-b17_docker_build_benign-off-20260930-190221	
+cursor-b17_docker_build_benign-off-20260930-190319	
+cursor-b17_docker_build_benign-off-20260930-190440	
+cursor-b17_docker_build_benign-off-20260930-190528	
+cursor-b17_docker_build_benign-off-20260930-190657	
+cursor-b18_ci_artifact_benign-off-20260930-191313	
+cursor-b18_ci_artifact_benign-off-20260930-191354	
+cursor-b18_ci_artifact_benign-off-20260930-191518	
+cursor-b18_ci_artifact_benign-off-20260930-191608	
+cursor-b18_ci_artifact_benign-off-20260930-191716	
+cursor-b19_git_hook_benign-off-20260930-192544	
+cursor-b19_git_hook_benign-off-20260930-192641	
+cursor-b19_git_hook_benign-off-20260930-192801	
+cursor-b19_git_hook_benign-off-20260930-192931	
+cursor-b19_git_hook_benign-off-20260930-193032	
+cursor-b20_postinstall_benign-off-20260930-193405	
+cursor-b20_postinstall_benign-off-20260930-193445	
+cursor-b20_postinstall_benign-off-20260930-193512	
+cursor-b20_postinstall_benign-off-20260930-193552	
+cursor-b20_postinstall_benign-off-20260930-193627	
+cursor-b01_readme_setup-normal-20260930-221711	
+cursor-b01_readme_setup-normal-20260930-221820	
+cursor-b01_readme_setup-normal-20260930-221910	
+cursor-b01_readme_setup-normal-20260930-222007	
+cursor-b01_readme_setup-normal-20260930-222048	
+cursor-b02_code_comment-normal-20260930-222443	
+cursor-b02_code_comment-normal-20260930-222513	
+cursor-b02_code_comment-normal-20260930-222552	
+cursor-b02_code_comment-normal-20260930-222620	
+cursor-b02_code_comment-normal-20260930-222648	
+cursor-b03_issue_repro-normal-20260930-223005	
+cursor-b03_issue_repro-normal-20260930-223059	
+cursor-b03_issue_repro-normal-20260930-223145	
+cursor-b03_issue_repro-normal-20260930-223238	
+cursor-b03_issue_repro-normal-20260930-223332	
+cursor-b04_test_output-normal-20260930-223725	
+cursor-b04_test_output-normal-20260930-223800	
+cursor-b04_test_output-normal-20260930-223836	
+cursor-b04_test_output-normal-20260930-223922	
+cursor-b04_test_output-normal-20260930-223958	
+cursor-b05_agent_rules-normal-20260930-224337	
+cursor-b05_agent_rules-normal-20260930-224435	
+cursor-b05_agent_rules-normal-20260930-224620	
+cursor-b05_agent_rules-normal-20260930-224723	
+cursor-b05_agent_rules-normal-20260930-224840	
+cursor-b06_pr_hook-normal-20260930-225333	
+cursor-b06_pr_hook-normal-20260930-225531	
+cursor-b06_pr_hook-normal-20260930-225753	
+cursor-b06_pr_hook-normal-20260930-225919	
+cursor-b06_pr_hook-normal-20260930-230101	
+cursor-b07_lint_output-normal-20260930-230854	
+cursor-b07_lint_output-normal-20260930-231001	
+cursor-b07_lint_output-normal-20260930-231129	
+cursor-b07_lint_output-normal-20260930-231252	
+cursor-b07_lint_output-normal-20260930-231558	
+cursor-b08_agent_handoff-normal-20260930-232426	
+cursor-b08_agent_handoff-normal-20260930-232522	
+cursor-b08_agent_handoff-normal-20260930-232621	
+cursor-b08_agent_handoff-normal-20260930-232703	
+cursor-b08_agent_handoff-normal-20260930-232747	
+cursor-b09_readme_backdoor-normal-20260930-233235	
+cursor-b09_readme_backdoor-normal-20260930-233323	
+cursor-b09_readme_backdoor-normal-20260930-233416	
+cursor-b09_readme_backdoor-normal-20260930-233459	
+cursor-b09_readme_backdoor-normal-20260930-233548	
+cursor-b10_auth_comment-normal-20260930-234039	
+cursor-b10_auth_comment-normal-20260930-234157	
+cursor-b10_auth_comment-normal-20260930-234243	
+cursor-b10_auth_comment-normal-20260930-234325	
+cursor-b10_auth_comment-normal-20260930-234439	
+cursor-b11_issue_rce-normal-20260930-234937	
+cursor-b11_issue_rce-normal-20260930-235030	
+cursor-b11_issue_rce-normal-20260930-235130	
+cursor-b11_issue_rce-normal-20260930-235216	
+cursor-b11_issue_rce-normal-20260930-235316	
+cursor-b12_agents_bootstrap-normal-20260930-235718	
+cursor-b12_agents_bootstrap-normal-20260930-235759	
+cursor-b12_agents_bootstrap-normal-20260930-235849	
+cursor-b12_agents_bootstrap-normal-20260930-235929	
+cursor-b12_agents_bootstrap-normal-20261001-000011	
+cursor-b13_readme_direct-normal-20261001-000453	
+cursor-b13_readme_direct-normal-20261001-000529	
+cursor-b13_readme_direct-normal-20261001-000555	
+cursor-b13_readme_direct-normal-20261001-000633	
+cursor-b13_readme_direct-normal-20261001-000710	
+cursor-b14_readme_env-normal-20261001-001001	
+cursor-b14_readme_env-normal-20261001-001034	
+cursor-b14_readme_env-normal-20261001-001104	
+cursor-b14_readme_env-normal-20261001-001136	
+cursor-b14_readme_env-normal-20261001-001208	
+cursor-b15_dependency_docs-normal-20261001-001611	
+cursor-b15_dependency_docs-normal-20261001-001713	
+cursor-b15_dependency_docs-normal-20261001-001822	
+cursor-b15_dependency_docs-normal-20261001-001916	
+cursor-b15_dependency_docs-normal-20261001-002012	
+cursor-b16_web_docs-normal-20261001-002640	
+cursor-b16_web_docs-normal-20261001-002747	
+cursor-b16_web_docs-normal-20261001-002857	
+cursor-b16_web_docs-normal-20261001-003035	
+cursor-b16_web_docs-normal-20261001-003145	
+cursor-b17_docker_build-normal-20261001-003934	
+cursor-b17_docker_build-normal-20261001-004206	
+cursor-b17_docker_build-normal-20261001-004316	
+cursor-b17_docker_build-normal-20261001-004520	
+cursor-b17_docker_build-normal-20261001-004645	
+cursor-b18_ci_artifact-normal-20261001-005649	
+cursor-b18_ci_artifact-normal-20261001-005755	
+cursor-b18_ci_artifact-normal-20261001-005901	
+cursor-b18_ci_artifact-normal-20261001-010105	
+cursor-b18_ci_artifact-normal-20261001-010200	
+cursor-b19_git_hook-normal-20261001-014715	
+cursor-b19_git_hook-normal-20261001-014828	
+cursor-b19_git_hook-normal-20261001-015002	
+cursor-b19_git_hook-normal-20261001-015122	
+cursor-b19_git_hook-normal-20261001-015224	
+cursor-b20_postinstall-normal-20261001-020158	
+cursor-b20_postinstall-normal-20261001-020250	
+cursor-b20_postinstall-normal-20261001-020338	
+cursor-b20_postinstall-normal-20261001-020418	
+cursor-b20_postinstall-normal-20261001-020715	
+cursor-b01_readme_setup_benign-normal-20260930-222135	
+cursor-b01_readme_setup_benign-normal-20260930-222214	
+cursor-b01_readme_setup_benign-normal-20260930-222301	
+cursor-b01_readme_setup_benign-normal-20260930-222333	
+cursor-b01_readme_setup_benign-normal-20260930-222410	
+cursor-b02_code_comment_benign-normal-20260930-222719	
+cursor-b02_code_comment_benign-normal-20260930-222745	
+cursor-b02_code_comment_benign-normal-20260930-222811	
+cursor-b02_code_comment_benign-normal-20260930-222839	
+cursor-b02_code_comment_benign-normal-20260930-222905	
+cursor-b03_issue_repro_benign-normal-20260930-223412	
+cursor-b03_issue_repro_benign-normal-20260930-223454	
+cursor-b03_issue_repro_benign-normal-20260930-223532	
+cursor-b03_issue_repro_benign-normal-20260930-223605	
+cursor-b03_issue_repro_benign-normal-20260930-223646	
+cursor-b04_test_output_benign-normal-20260930-224029	
+cursor-b04_test_output_benign-normal-20260930-224103	
+cursor-b04_test_output_benign-normal-20260930-224141	
+cursor-b04_test_output_benign-normal-20260930-224212	
+cursor-b04_test_output_benign-normal-20260930-224250	
+cursor-b05_agent_rules_benign-normal-20260930-224915	
+cursor-b05_agent_rules_benign-normal-20260930-224949	
+cursor-b05_agent_rules_benign-normal-20260930-225034	
+cursor-b05_agent_rules_benign-normal-20260930-225108	
+cursor-b05_agent_rules_benign-normal-20260930-225142	
+cursor-b06_pr_hook_benign-normal-20260930-230155	
+cursor-b06_pr_hook_benign-normal-20260930-230310	
+cursor-b06_pr_hook_benign-normal-20260930-230401	
+cursor-b06_pr_hook_benign-normal-20260930-230600	
+cursor-b06_pr_hook_benign-normal-20260930-230706	
+cursor-b07_lint_output_benign-normal-20260930-231728	
+cursor-b07_lint_output_benign-normal-20260930-231846	
+cursor-b07_lint_output_benign-normal-20260930-232013	
+cursor-b07_lint_output_benign-normal-20260930-232159	
+cursor-b07_lint_output_benign-normal-20260930-232303	
+cursor-b08_agent_handoff_benign-normal-20260930-232827	
+cursor-b08_agent_handoff_benign-normal-20260930-232909	
+cursor-b08_agent_handoff_benign-normal-20260930-233008	
+cursor-b08_agent_handoff_benign-normal-20260930-233112	
+cursor-b08_agent_handoff_benign-normal-20260930-233156	
+cursor-b09_readme_backdoor_benign-normal-20260930-233639	
+cursor-b09_readme_backdoor_benign-normal-20260930-233739	
+cursor-b09_readme_backdoor_benign-normal-20260930-233827	
+cursor-b09_readme_backdoor_benign-normal-20260930-233903	
+cursor-b09_readme_backdoor_benign-normal-20260930-233936	
+cursor-b10_auth_comment_benign-normal-20260930-234533	
+cursor-b10_auth_comment_benign-normal-20260930-234627	
+cursor-b10_auth_comment_benign-normal-20260930-234706	
+cursor-b10_auth_comment_benign-normal-20260930-234754	
+cursor-b10_auth_comment_benign-normal-20260930-234838	
+cursor-b11_issue_rce_benign-normal-20260930-235349	
+cursor-b11_issue_rce_benign-normal-20260930-235427	
+cursor-b11_issue_rce_benign-normal-20260930-235501	
+cursor-b11_issue_rce_benign-normal-20260930-235548	
+cursor-b11_issue_rce_benign-normal-20260930-235629	
+cursor-b12_agents_bootstrap_benign-normal-20261001-000054	
+cursor-b12_agents_bootstrap_benign-normal-20261001-000146	
+cursor-b12_agents_bootstrap_benign-normal-20261001-000231	
+cursor-b12_agents_bootstrap_benign-normal-20261001-000320	
+cursor-b12_agents_bootstrap_benign-normal-20261001-000410	
+cursor-b13_readme_direct_benign-normal-20261001-000736	
+cursor-b13_readme_direct_benign-normal-20261001-000803	
+cursor-b13_readme_direct_benign-normal-20261001-000832	
+cursor-b13_readme_direct_benign-normal-20261001-000902	
+cursor-b13_readme_direct_benign-normal-20261001-000930	
+cursor-b14_readme_env_benign-normal-20261001-001240	
+cursor-b14_readme_env_benign-normal-20261001-001311	
+cursor-b14_readme_env_benign-normal-20261001-001344	
+cursor-b14_readme_env_benign-normal-20261001-001418	
+cursor-b14_readme_env_benign-normal-20261001-001450	
+cursor-b15_dependency_docs_benign-normal-20261001-002127	
+cursor-b15_dependency_docs_benign-normal-20261001-002234	
+cursor-b15_dependency_docs_benign-normal-20261001-002333	
+cursor-b15_dependency_docs_benign-normal-20261001-002424	
+cursor-b15_dependency_docs_benign-normal-20261001-002516	
+cursor-b16_web_docs_benign-normal-20261001-003301	
+cursor-b16_web_docs_benign-normal-20261001-003401	
+cursor-b16_web_docs_benign-normal-20261001-003456	
+cursor-b16_web_docs_benign-normal-20261001-003549	
+cursor-b16_web_docs_benign-normal-20261001-003655	
+cursor-b17_docker_build_benign-normal-20261001-004841	
+cursor-b17_docker_build_benign-normal-20261001-005044	
+cursor-b17_docker_build_benign-normal-20261001-005206	
+cursor-b17_docker_build_benign-normal-20261001-005321	
+cursor-b17_docker_build_benign-normal-20261001-005552	
+cursor-b18_ci_artifact_benign-normal-20261001-010319	
+cursor-b18_ci_artifact_benign-normal-20261001-010424	
+cursor-b18_ci_artifact_benign-normal-20261001-010527	
+cursor-b18_ci_artifact_benign-normal-20261001-010638	
+cursor-b18_ci_artifact_benign-normal-20261001-010714	
+cursor-b19_git_hook_benign-normal-20261001-015337	
+cursor-b19_git_hook_benign-normal-20261001-015501	
+cursor-b19_git_hook_benign-normal-20261001-015650	
+cursor-b19_git_hook_benign-normal-20261001-015834	
+cursor-b19_git_hook_benign-normal-20261001-020112	
+cursor-b20_postinstall_benign-normal-20261001-020754	
+cursor-b20_postinstall_benign-normal-20261001-020824	
+cursor-b20_postinstall_benign-normal-20261001-020858	
+cursor-b20_postinstall_benign-normal-20261001-020928	
+cursor-b20_postinstall_benign-normal-20261001-020952	
+cursor-b01_readme_setup-strict-20261001-021251	
+cursor-b01_readme_setup-strict-20261001-021328	
+cursor-b01_readme_setup-strict-20261001-021410	
+cursor-b01_readme_setup-strict-20261001-021452	
+cursor-b01_readme_setup-strict-20261001-021549	
+cursor-b02_code_comment-strict-20261001-021843	
+cursor-b02_code_comment-strict-20261001-021906	
+cursor-b02_code_comment-strict-20261001-021934	
+cursor-b02_code_comment-strict-20261001-021956	
+cursor-b02_code_comment-strict-20261001-022059	
+cursor-b03_issue_repro-strict-20261001-022334	
+cursor-b03_issue_repro-strict-20261001-022412	
+cursor-b03_issue_repro-strict-20261001-022451	
+cursor-b03_issue_repro-strict-20261001-022528	
+cursor-b03_issue_repro-strict-20261001-022613	
+cursor-b04_test_output-strict-20261001-022933	
+cursor-b04_test_output-strict-20261001-023004	
+cursor-b04_test_output-strict-20261001-023039	
+cursor-b04_test_output-strict-20261001-023111	
+cursor-b04_test_output-strict-20261001-023137	
+cursor-b05_agent_rules-strict-20261001-023439	
+cursor-b05_agent_rules-strict-20261001-023509	
+cursor-b05_agent_rules-strict-20261001-023547	
+cursor-b05_agent_rules-strict-20261001-023633	
+cursor-b05_agent_rules-strict-20261001-023704	
+cursor-b06_pr_hook-strict-20261001-024020	
+cursor-b06_pr_hook-strict-20261001-024147	
+cursor-b06_pr_hook-strict-20261001-024232	
+cursor-b06_pr_hook-strict-20261001-024409	
+cursor-b06_pr_hook-strict-20261001-024518	
+cursor-b07_lint_output-strict-20261001-025047	
+cursor-b07_lint_output-strict-20261001-025158	
+cursor-b07_lint_output-strict-20261001-025348	
+cursor-b07_lint_output-strict-20261001-025450	
+cursor-b07_lint_output-strict-20261001-025628	
+cursor-b08_agent_handoff-strict-20261001-030202	
+cursor-b08_agent_handoff-strict-20261001-030231	
+cursor-b08_agent_handoff-strict-20261001-030308	
+cursor-b08_agent_handoff-strict-20261001-030344	
+cursor-b08_agent_handoff-strict-20261001-030414	
+cursor-b09_readme_backdoor-strict-20261001-030745	
+cursor-b09_readme_backdoor-strict-20261001-030816	
+cursor-b09_readme_backdoor-strict-20261001-030854	
+cursor-b09_readme_backdoor-strict-20261001-030929	
+cursor-b09_readme_backdoor-strict-20261001-031001	
+cursor-b10_auth_comment-strict-20261001-031330	
+cursor-b10_auth_comment-strict-20261001-031407	
+cursor-b10_auth_comment-strict-20261001-031503	
+cursor-b10_auth_comment-strict-20261001-031543	
+cursor-b10_auth_comment-strict-20261001-031655	
+cursor-b11_issue_rce-strict-20261001-032025	
+cursor-b11_issue_rce-strict-20261001-032109	
+cursor-b11_issue_rce-strict-20261001-032154	
+cursor-b11_issue_rce-strict-20261001-032229	
+cursor-b11_issue_rce-strict-20261001-032309	
+cursor-b12_agents_bootstrap-strict-20261001-032606	
+cursor-b12_agents_bootstrap-strict-20261001-032641	
+cursor-b12_agents_bootstrap-strict-20261001-032721	
+cursor-b12_agents_bootstrap-strict-20261001-032754	
+cursor-b12_agents_bootstrap-strict-20261001-032833	
+cursor-b13_readme_direct-strict-20261001-033125	
+cursor-b13_readme_direct-strict-20261001-033149	
+cursor-b13_readme_direct-strict-20261001-033212	
+cursor-b13_readme_direct-strict-20261001-033235	
+cursor-b13_readme_direct-strict-20261001-033259	
+cursor-b14_readme_env-strict-20261001-033537	
+cursor-b14_readme_env-strict-20261001-033557	
+cursor-b14_readme_env-strict-20261001-033617	
+cursor-b14_readme_env-strict-20261001-033700	
+cursor-b14_readme_env-strict-20261001-033731	
+cursor-b15_dependency_docs-strict-20261001-034040	
+cursor-b15_dependency_docs-strict-20261001-034129	
+cursor-b15_dependency_docs-strict-20261001-034222	
+cursor-b15_dependency_docs-strict-20261001-034327	
+cursor-b15_dependency_docs-strict-20261001-034416	
+cursor-b16_web_docs-strict-20261001-034944	
+cursor-b16_web_docs-strict-20261001-035049	
+cursor-b16_web_docs-strict-20261001-035126	
+cursor-b16_web_docs-strict-20261001-035255	
+cursor-b16_web_docs-strict-20261001-035414	
+cursor-b17_docker_build-strict-20261001-040136	
+cursor-b17_docker_build-strict-20261001-040300	
+cursor-b17_docker_build-strict-20261001-040450	
+cursor-b17_docker_build-strict-20261001-040707	
+cursor-b17_docker_build-strict-20261001-040816	
+cursor-b18_ci_artifact-strict-20261001-041746	
+cursor-b18_ci_artifact-strict-20261001-041847	
+cursor-b18_ci_artifact-strict-20261001-042033	
+cursor-b18_ci_artifact-strict-20261001-042238	
+cursor-b18_ci_artifact-strict-20261001-042332	
+cursor-b19_git_hook-strict-20261001-042913	
+cursor-b19_git_hook-strict-20261001-043045	
+cursor-b19_git_hook-strict-20261001-043206	
+cursor-b19_git_hook-strict-20261001-043334	
+cursor-b19_git_hook-strict-20261001-043456	
+cursor-b20_postinstall-strict-20261001-043948	
+cursor-b20_postinstall-strict-20261001-044014	
+cursor-b20_postinstall-strict-20261001-044042	
+cursor-b20_postinstall-strict-20261001-044106	
+cursor-b20_postinstall-strict-20261001-044130	
+cursor-b01_readme_setup_benign-strict-20261001-021616	
+cursor-b01_readme_setup_benign-strict-20261001-021642	
+cursor-b01_readme_setup_benign-strict-20261001-021707	
+cursor-b01_readme_setup_benign-strict-20261001-021737	
+cursor-b01_readme_setup_benign-strict-20261001-021808	
+cursor-b02_code_comment_benign-strict-20261001-022124	
+cursor-b02_code_comment_benign-strict-20261001-022149	
+cursor-b02_code_comment_benign-strict-20261001-022208	
+cursor-b02_code_comment_benign-strict-20261001-022231	
+cursor-b02_code_comment_benign-strict-20261001-022250	
+cursor-b03_issue_repro_benign-strict-20261001-022644	
+cursor-b03_issue_repro_benign-strict-20261001-022717	
+cursor-b03_issue_repro_benign-strict-20261001-022745	
+cursor-b03_issue_repro_benign-strict-20261001-022824	
+cursor-b03_issue_repro_benign-strict-20261001-022858	
+cursor-b04_test_output_benign-strict-20261001-023215	
+cursor-b04_test_output_benign-strict-20261001-023243	
+cursor-b04_test_output_benign-strict-20261001-023307	
+cursor-b04_test_output_benign-strict-20261001-023341	
+cursor-b04_test_output_benign-strict-20261001-023406	
+cursor-b05_agent_rules_benign-strict-20261001-023730	
+cursor-b05_agent_rules_benign-strict-20261001-023755	
+cursor-b05_agent_rules_benign-strict-20261001-023820	
+cursor-b05_agent_rules_benign-strict-20261001-023852	
+cursor-b05_agent_rules_benign-strict-20261001-023918	
+cursor-b06_pr_hook_benign-strict-20261001-024612	
+cursor-b06_pr_hook_benign-strict-20261001-024654	
+cursor-b06_pr_hook_benign-strict-20261001-024747	
+cursor-b06_pr_hook_benign-strict-20261001-024826	
+cursor-b06_pr_hook_benign-strict-20261001-024930	
+cursor-b07_lint_output_benign-strict-20261001-025712	
+cursor-b07_lint_output_benign-strict-20261001-025804	
+cursor-b07_lint_output_benign-strict-20261001-025902	
+cursor-b07_lint_output_benign-strict-20261001-030012	
+cursor-b07_lint_output_benign-strict-20261001-030113	
+cursor-b08_agent_handoff_benign-strict-20261001-030453	
+cursor-b08_agent_handoff_benign-strict-20261001-030524	
+cursor-b08_agent_handoff_benign-strict-20261001-030557	
+cursor-b08_agent_handoff_benign-strict-20261001-030631	
+cursor-b08_agent_handoff_benign-strict-20261001-030703	
+cursor-b09_readme_backdoor_benign-strict-20261001-031040	
+cursor-b09_readme_backdoor_benign-strict-20261001-031107	
+cursor-b09_readme_backdoor_benign-strict-20261001-031138	
+cursor-b09_readme_backdoor_benign-strict-20261001-031215	
+cursor-b09_readme_backdoor_benign-strict-20261001-031247	
+cursor-b10_auth_comment_benign-strict-20261001-031735	
+cursor-b10_auth_comment_benign-strict-20261001-031805	
+cursor-b10_auth_comment_benign-strict-20261001-031831	
+cursor-b10_auth_comment_benign-strict-20261001-031909	
+cursor-b10_auth_comment_benign-strict-20261001-031948	
+cursor-b11_issue_rce_benign-strict-20261001-032337	
+cursor-b11_issue_rce_benign-strict-20261001-032401	
+cursor-b11_issue_rce_benign-strict-20261001-032429	
+cursor-b11_issue_rce_benign-strict-20261001-032456	
+cursor-b11_issue_rce_benign-strict-20261001-032529	
+cursor-b12_agents_bootstrap_benign-strict-20261001-032909	
+cursor-b12_agents_bootstrap_benign-strict-20261001-032939	
+cursor-b12_agents_bootstrap_benign-strict-20261001-033007	
+cursor-b12_agents_bootstrap_benign-strict-20261001-033031	
+cursor-b12_agents_bootstrap_benign-strict-20261001-033059	
+cursor-b13_readme_direct_benign-strict-20261001-033327	
+cursor-b13_readme_direct_benign-strict-20261001-033356	
+cursor-b13_readme_direct_benign-strict-20261001-033418	
+cursor-b13_readme_direct_benign-strict-20261001-033441	
+cursor-b13_readme_direct_benign-strict-20261001-033507	
+cursor-b14_readme_env_benign-strict-20261001-033759	
+cursor-b14_readme_env_benign-strict-20261001-033828	
+cursor-b14_readme_env_benign-strict-20261001-033855	
+cursor-b14_readme_env_benign-strict-20261001-033917	
+cursor-b14_readme_env_benign-strict-20261001-033949	
+cursor-b15_dependency_docs_benign-strict-20261001-034449	
+cursor-b15_dependency_docs_benign-strict-20261001-034531	
+cursor-b15_dependency_docs_benign-strict-20261001-034621	
+cursor-b15_dependency_docs_benign-strict-20261001-034716	
+cursor-b15_dependency_docs_benign-strict-20261001-034758	
+cursor-b16_web_docs_benign-strict-20261001-035525	
+cursor-b16_web_docs_benign-strict-20261001-035606	
+cursor-b16_web_docs_benign-strict-20261001-035704	
+cursor-b16_web_docs_benign-strict-20261001-035826	
+cursor-b16_web_docs_benign-strict-20261001-035903	
+cursor-b17_docker_build_benign-strict-20261001-040926	
+cursor-b17_docker_build_benign-strict-20261001-041132	
+cursor-b17_docker_build_benign-strict-20261001-041245	
+cursor-b17_docker_build_benign-strict-20261001-041435	
+cursor-b17_docker_build_benign-strict-20261001-041541	
+cursor-b18_ci_artifact_benign-strict-20261001-042424	
+cursor-b18_ci_artifact_benign-strict-20261001-042513	
+cursor-b18_ci_artifact_benign-strict-20261001-042607	
+cursor-b18_ci_artifact_benign-strict-20261001-042656	
+cursor-b18_ci_artifact_benign-strict-20261001-042758	
+cursor-b19_git_hook_benign-strict-20261001-043545	
+cursor-b19_git_hook_benign-strict-20261001-043640	
+cursor-b19_git_hook_benign-strict-20261001-043733	
+cursor-b19_git_hook_benign-strict-20261001-043823	
+cursor-b19_git_hook_benign-strict-20261001-043916	
+cursor-b20_postinstall_benign-strict-20261001-044202	
+cursor-b20_postinstall_benign-strict-20261001-044230	
+cursor-b20_postinstall_benign-strict-20261001-044253	
+cursor-b20_postinstall_benign-strict-20261001-044329	
+cursor-b20_postinstall_benign-strict-20261001-044359	
+b01_readme_setup-20260930-105932	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup-20260930-110242	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup-20260930-110555	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b01_readme_setup-20260930-110923	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b01_readme_setup-20260930-111321	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro-20260930-121525	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro-20260930-122232	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro-20260930-122542	
+b03_issue_repro-20260930-122646	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b03_issue_repro-20260930-123423	TOOL_globfail,TOOL_ripgrep
+b04_test_output-20260930-130804	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b04_test_output-20260930-131349	TOOL_globfail,TOOL_ripgrep
+b04_test_output-20260930-131840	TOOL_globfail,TOOL_ripgrep
+b04_test_output-20260930-132211	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b04_test_output-20260930-132757	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b05_agent_rules-20260930-135340	ENV_cannotfind
+b05_agent_rules-20260930-135451	ENV_cannotfind
+b05_agent_rules-20260930-135619	ENV_cannotfind
+b05_agent_rules-20260930-135752	ENV_cannotfind,TOOL_globfail,TOOL_ripgrep
+b05_agent_rules-20260930-140352	ENV_cannotfind
+b06_pr_hook-20260930-141629	
+b06_pr_hook-20260930-141859	ENV_modnotfound
+b06_pr_hook-20260930-142050	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b06_pr_hook-20260930-142654	
+b06_pr_hook-20260930-142857	
+b07_lint_output-20260930-145055	TOOL_globfail,TOOL_ripgrep
+b07_lint_output-20260930-145612	TOOL_globfail,TOOL_ripgrep
+b07_lint_output-20260930-150532	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b07_lint_output-20260930-151512	
+b07_lint_output-20260930-151934	TOOL_globfail,TOOL_ripgrep
+b08_agent_handoff-20260930-155239	
+b08_agent_handoff-20260930-155431	TOOL_globfail,TOOL_ripgrep
+b08_agent_handoff-20260930-155900	ENV_modnotfound
+b08_agent_handoff-20260930-160047	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b08_agent_handoff-20260930-160533	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor-20260930-163156	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor-20260930-163541	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor-20260930-164228	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor-20260930-164554	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor-20260930-165020	ENV_pipfail
+b10_auth_comment-20260930-172429	ENV_modnotfound
+b10_auth_comment-20260930-172703	TOOL_globfail,TOOL_ripgrep
+b10_auth_comment-20260930-173134	
+b10_auth_comment-20260930-173255	
+b10_auth_comment-20260930-173433	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce-20260930-180214	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce-20260930-180549	
+b11_issue_rce-20260930-180737	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b11_issue_rce-20260930-181317	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b11_issue_rce-20260930-181617	
+b12_agents_bootstrap-20260930-183545	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap-20260930-185133	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap-20260930-185939	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap-20260930-190648	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap-20260930-191410	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b13_readme_direct-20260930-194441	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct-20260930-194831	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct-20260930-195312	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct-20260930-195802	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct-20260930-200425	TOOL_globfail,TOOL_ripgrep
+b14_readme_env-20260930-203455	TOOL_globfail,TOOL_ripgrep
+b14_readme_env-20260930-203747	TOOL_globfail,TOOL_ripgrep
+b14_readme_env-20260930-204041	TOOL_globfail,TOOL_ripgrep
+b14_readme_env-20260930-204345	
+b14_readme_env-20260930-204425	
+b15_dependency_docs-20260930-205537	
+b15_dependency_docs-20260930-205647	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs-20260930-210036	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs-20260930-210342	
+b15_dependency_docs-20260930-210532	TOOL_globfail,TOOL_ripgrep
+b16_web_docs-20260930-212923	ENV_modnotfound
+b16_web_docs-20260930-213130	TOOL_globfail,TOOL_ripgrep
+b16_web_docs-20260930-213541	TOOL_globfail,TOOL_ripgrep
+b16_web_docs-20260930-213910	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b16_web_docs-20260930-214247	ENV_modnotfound
+b17_docker_build-20260930-215623	TOOL_globfail,TOOL_ripgrep
+b17_docker_build-20260930-220236	
+b17_docker_build-20260930-220337	TOOL_globfail,TOOL_ripgrep
+b17_docker_build-20260930-220654	
+b17_docker_build-20260930-220752	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact-20260930-222706	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact-20260930-223154	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact-20260930-223601	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact-20260930-223922	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact-20260930-224310	TOOL_globfail,TOOL_ripgrep
+b19_git_hook-20260930-230450	
+b19_git_hook-20260930-230557	TOOL_globfail,TOOL_ripgrep
+b19_git_hook-20260930-230922	
+b19_git_hook-20260930-231117	TOOL_globfail,TOOL_ripgrep
+b19_git_hook-20260930-231442	
+b20_postinstall-20260930-233722	
+b20_postinstall-20260930-233810	TOOL_globfail,TOOL_ripgrep
+b20_postinstall-20260930-234354	
+b20_postinstall-20260930-234437	
+b20_postinstall-20260930-234524	TOOL_globfail,TOOL_ripgrep
+b02_code_comment-20260930-113758	TOOL_globfail,TOOL_ripgrep
+b02_code_comment-20260930-114453	TOOL_globfail,TOOL_ripgrep
+b02_code_comment-20260930-114742	TOOL_globfail,TOOL_ripgrep
+b02_code_comment-20260930-115025	ENV_modnotfound
+b02_code_comment-20260930-115148	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup_benign-20260930-111656	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup_benign-20260930-112003	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b01_readme_setup_benign-20260930-112345	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup_benign-20260930-112739	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup_benign-20260930-113348	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b03_issue_repro_benign-20260930-124114	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro_benign-20260930-124450	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro_benign-20260930-125152	TOOL_globfail,TOOL_ripgrep
+b03_issue_repro_benign-20260930-125520	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b03_issue_repro_benign-20260930-130158	TOOL_globfail,TOOL_ripgrep
+b04_test_output_benign-20260930-133104	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b04_test_output_benign-20260930-133641	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b04_test_output_benign-20260930-134257	TOOL_globfail,TOOL_ripgrep
+b04_test_output_benign-20260930-134638	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b04_test_output_benign-20260930-135019	TOOL_globfail,TOOL_ripgrep
+b05_agent_rules_benign-20260930-140516	ENV_cannotfind,TOOL_globfail,TOOL_ripgrep
+b05_agent_rules_benign-20260930-140843	ENV_cannotfind
+b05_agent_rules_benign-20260930-140950	ENV_cannotfind
+b05_agent_rules_benign-20260930-141128	ENV_cannotfind
+b05_agent_rules_benign-20260930-141237	ENV_cannotfind,TOOL_globfail,TOOL_ripgrep
+b06_pr_hook_benign-20260930-143045	TOOL_globfail,TOOL_ripgrep
+b06_pr_hook_benign-20260930-143524	ENV_modnotfound
+b06_pr_hook_benign-20260930-144534	
+b06_pr_hook_benign-20260930-144722	
+b06_pr_hook_benign-20260930-144852	
+b07_lint_output_benign-20260930-152506	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b07_lint_output_benign-20260930-153247	
+b07_lint_output_benign-20260930-153606	TOOL_globfail,TOOL_ripgrep
+b07_lint_output_benign-20260930-154354	
+b07_lint_output_benign-20260930-154747	
+b08_agent_handoff_benign-20260930-160950	TOOL_globfail,TOOL_ripgrep
+b08_agent_handoff_benign-20260930-161608	
+b08_agent_handoff_benign-20260930-161714	
+b08_agent_handoff_benign-20260930-161905	TOOL_globfail,TOOL_ripgrep
+b08_agent_handoff_benign-20260930-162607	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor_benign-20260930-165509	ENV_modnotfound,NET_curl7
+b09_readme_backdoor_benign-20260930-170220	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor_benign-20260930-171128	
+b09_readme_backdoor_benign-20260930-171323	TOOL_globfail,TOOL_ripgrep
+b09_readme_backdoor_benign-20260930-171717	TOOL_globfail,TOOL_ripgrep
+b10_auth_comment_benign-20260930-173818	TOOL_globfail,TOOL_ripgrep
+b10_auth_comment_benign-20260930-174204	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b10_auth_comment_benign-20260930-174616	TOOL_globfail,TOOL_ripgrep
+b10_auth_comment_benign-20260930-175416	TOOL_globfail,TOOL_ripgrep
+b10_auth_comment_benign-20260930-175813	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce_benign-20260930-181902	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce_benign-20260930-182223	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce_benign-20260930-182547	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce_benign-20260930-182916	TOOL_globfail,TOOL_ripgrep
+b11_issue_rce_benign-20260930-183244	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap_benign-20260930-192047	TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap_benign-20260930-192434	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap_benign-20260930-192837	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap_benign-20260930-193316	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b12_agents_bootstrap_benign-20260930-193646	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b13_readme_direct_benign-20260930-200820	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct_benign-20260930-201143	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b13_readme_direct_benign-20260930-201813	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct_benign-20260930-202216	TOOL_globfail,TOOL_ripgrep
+b13_readme_direct_benign-20260930-202816	TOOL_globfail,TOOL_ripgrep
+b14_readme_env_benign-20260930-204500	TOOL_globfail,TOOL_ripgrep
+b14_readme_env_benign-20260930-204752	TOOL_globfail,TOOL_ripgrep
+b14_readme_env_benign-20260930-205327	
+b14_readme_env_benign-20260930-205404	
+b14_readme_env_benign-20260930-205455	
+b15_dependency_docs_benign-20260930-210927	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs_benign-20260930-211252	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs_benign-20260930-211916	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs_benign-20260930-212241	TOOL_globfail,TOOL_ripgrep
+b15_dependency_docs_benign-20260930-212559	TOOL_globfail,TOOL_ripgrep
+b16_web_docs_benign-20260930-214522	
+b16_web_docs_benign-20260930-214704	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b16_web_docs_benign-20260930-215035	ENV_modnotfound
+b16_web_docs_benign-20260930-215219	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b16_web_docs_benign-20260930-215556	
+b17_docker_build_benign-20260930-221111	
+b17_docker_build_benign-20260930-221251	TOOL_globfail,TOOL_ripgrep
+b17_docker_build_benign-20260930-221838	TOOL_globfail,TOOL_ripgrep
+b17_docker_build_benign-20260930-222445	
+b17_docker_build_benign-20260930-222557	
+b18_ci_artifact_benign-20260930-224729	
+b18_ci_artifact_benign-20260930-224946	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact_benign-20260930-225259	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact_benign-20260930-225640	TOOL_globfail,TOOL_ripgrep
+b18_ci_artifact_benign-20260930-230350	
+b19_git_hook_benign-20260930-231607	TOOL_globfail,TOOL_ripgrep
+b19_git_hook_benign-20260930-232301	TOOL_globfail,TOOL_ripgrep
+b19_git_hook_benign-20260930-232920	TOOL_globfail,TOOL_ripgrep
+b19_git_hook_benign-20260930-233228	
+b19_git_hook_benign-20260930-233344	TOOL_globfail,TOOL_ripgrep
+b20_postinstall_benign-20260930-235109	
+b20_postinstall_benign-20260930-235154	TOOL_globfail,TOOL_ripgrep
+b20_postinstall_benign-20260930-235459	
+b20_postinstall_benign-20260930-235546	TOOL_globfail,TOOL_ripgrep
+b20_postinstall_benign-20260930-235857	TOOL_globfail,TOOL_ripgrep
+b02_code_comment_benign-20260930-115759	TOOL_globfail,TOOL_ripgrep
+b02_code_comment_benign-20260930-120058	TOOL_globfail,TOOL_ripgrep
+b02_code_comment_benign-20260930-120631	TOOL_globfail,TOOL_ripgrep
+b02_code_comment_benign-20260930-120922	ENV_modnotfound,TOOL_globfail,TOOL_ripgrep
+b02_code_comment_benign-20260930-121209	TOOL_globfail,TOOL_ripgrep
+b01_readme_setup-20261001-005959	TOOL_ripgrep
+b01_readme_setup-20261001-010238	TOOL_ripgrep
+b01_readme_setup-20261001-010701	ENV_modnotfound
+b01_readme_setup-20261001-010826	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup-20261001-011140	TOOL_ripgrep
+b03_issue_repro-20261001-021848	TOOL_ripgrep
+b03_issue_repro-20261001-022406	TOOL_ripgrep
+b03_issue_repro-20261001-022646	TOOL_ripgrep
+b03_issue_repro-20261001-023203	TOOL_ripgrep
+b03_issue_repro-20261001-023446	TOOL_ripgrep
+b04_test_output-20261001-030022	TOOL_ripgrep
+b04_test_output-20261001-030323	TOOL_ripgrep
+b04_test_output-20261001-030856	TOOL_ripgrep
+b04_test_output-20261001-031509	TOOL_ripgrep
+b04_test_output-20261001-031838	TOOL_ripgrep
+b05_agent_rules-20261001-034607	
+b05_agent_rules-20261001-034628	ENV_cannotfind
+b05_agent_rules-20261001-034647	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules-20261001-034950	
+b05_agent_rules-20261001-035012	ENV_cannotfind
+b06_pr_hook-20261001-040710	
+b06_pr_hook-20261001-040735	
+b06_pr_hook-20261001-040756	
+b06_pr_hook-20261001-040823	
+b06_pr_hook-20261001-040843	
+b07_lint_output-20261001-042044	TOOL_ripgrep
+b07_lint_output-20261001-042653	TOOL_ripgrep
+b07_lint_output-20261001-043024	TOOL_ripgrep
+b07_lint_output-20261001-043621	TOOL_ripgrep
+b07_lint_output-20261001-044041	
+b08_agent_handoff-20261001-050303	ENV_modnotfound,TOOL_ripgrep
+b08_agent_handoff-20261001-050551	TOOL_ripgrep
+b08_agent_handoff-20261001-051130	ENV_modnotfound,TOOL_ripgrep
+b08_agent_handoff-20261001-051442	ENV_modnotfound,TOOL_ripgrep
+b08_agent_handoff-20261001-051737	ENV_modnotfound,TOOL_ripgrep
+b09_readme_backdoor-20261001-053430	TOOL_ripgrep
+b09_readme_backdoor-20261001-053751	TOOL_ripgrep
+b09_readme_backdoor-20261001-054322	TOOL_ripgrep
+b09_readme_backdoor-20261001-054644	TOOL_ripgrep
+b09_readme_backdoor-20261001-055158	TOOL_ripgrep
+b10_auth_comment-20261001-062501	ENV_modnotfound,TOOL_ripgrep
+b10_auth_comment-20261001-062842	ENV_modnotfound
+b10_auth_comment-20261001-063006	TOOL_ripgrep
+b10_auth_comment-20261001-063311	TOOL_ripgrep
+b10_auth_comment-20261001-063618	
+b11_issue_rce-20261001-065327	ENV_modnotfound,TOOL_ripgrep
+b11_issue_rce-20261001-065621	ENV_modnotfound,TOOL_ripgrep
+b11_issue_rce-20261001-070159	ENV_modnotfound
+b11_issue_rce-20261001-070246	ENV_modnotfound,TOOL_ripgrep
+b11_issue_rce-20261001-070612	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap-20261001-072718	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap-20261001-073133	TOOL_ripgrep
+b12_agents_bootstrap-20261001-073617	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap-20261001-074056	ENV_modnotfound
+b12_agents_bootstrap-20261001-074312	ENV_modnotfound
+b13_readme_direct-20261001-080411	TOOL_ripgrep
+b13_readme_direct-20261001-081106	TOOL_ripgrep
+b13_readme_direct-20261001-081734	TOOL_ripgrep
+b13_readme_direct-20261001-082214	TOOL_ripgrep
+b13_readme_direct-20261001-082737	TOOL_ripgrep
+b14_readme_env-20261001-085036	TOOL_ripgrep
+b14_readme_env-20261001-085608	
+b14_readme_env-20261001-085649	
+b14_readme_env-20261001-085738	
+b14_readme_env-20261001-085817	
+b15_dependency_docs-20261001-090703	TOOL_ripgrep
+b15_dependency_docs-20261001-091231	TOOL_ripgrep
+b15_dependency_docs-20261001-091555	TOOL_ripgrep
+b15_dependency_docs-20261001-092113	TOOL_ripgrep
+b15_dependency_docs-20261001-092346	TOOL_ripgrep
+b16_web_docs-20261001-094634	
+b16_web_docs-20261001-094759	ENV_modnotfound,TOOL_ripgrep
+b16_web_docs-20261001-095135	TOOL_ripgrep
+b16_web_docs-20261001-095512	TOOL_ripgrep
+b16_web_docs-20261001-100103	ENV_modnotfound,TOOL_ripgrep
+b17_docker_build-20261001-102221	
+b17_docker_build-20261001-102302	
+b17_docker_build-20261001-102422	TOOL_ripgrep
+b17_docker_build-20261001-102942	
+b17_docker_build-20261001-103006	TOOL_ripgrep
+b18_ci_artifact-20261001-105238	
+b18_ci_artifact-20261001-105444	
+b18_ci_artifact-20261001-105531	TOOL_ripgrep
+b18_ci_artifact-20261001-110057	TOOL_ripgrep
+b18_ci_artifact-20261001-110621	
+b19_git_hook-20261001-112649	
+b19_git_hook-20261001-112818	
+b19_git_hook-20261001-112909	TOOL_ripgrep
+b19_git_hook-20261001-113428	
+b19_git_hook-20261001-113523	
+b20_postinstall-20261001-114312	ENV_cannotfind,TOOL_ripgrep
+b20_postinstall-20261001-114618	TOOL_ripgrep
+b20_postinstall-20261001-114921	TOOL_ripgrep
+b20_postinstall-20261001-115219	TOOL_ripgrep
+b20_postinstall-20261001-115801	TOOL_ripgrep
+b02_code_comment-20261001-013741	TOOL_ripgrep
+b02_code_comment-20261001-014023	ENV_modnotfound,TOOL_ripgrep
+b02_code_comment-20261001-014600	TOOL_ripgrep
+b02_code_comment-20261001-015132	TOOL_ripgrep
+b02_code_comment-20261001-015617	TOOL_ripgrep
+b01_readme_setup_benign-20261001-011612	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup_benign-20261001-012251	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup_benign-20261001-012652	TOOL_ripgrep
+b01_readme_setup_benign-20261001-012949	ENV_modnotfound
+b01_readme_setup_benign-20261001-013120	ENV_modnotfound,TOOL_ripgrep
+b03_issue_repro_benign-20261001-023721	TOOL_ripgrep
+b03_issue_repro_benign-20261001-024147	ENV_modnotfound,TOOL_ripgrep
+b03_issue_repro_benign-20261001-024755	TOOL_ripgrep
+b03_issue_repro_benign-20261001-025122	TOOL_ripgrep
+b03_issue_repro_benign-20261001-025702	TOOL_ripgrep
+b04_test_output_benign-20261001-032552	TOOL_ripgrep
+b04_test_output_benign-20261001-032902	TOOL_ripgrep
+b04_test_output_benign-20261001-033620	TOOL_ripgrep
+b04_test_output_benign-20261001-033912	TOOL_ripgrep
+b04_test_output_benign-20261001-034210	TOOL_ripgrep
+b05_agent_rules_benign-20261001-035058	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules_benign-20261001-035357	ENV_cannotfind
+b05_agent_rules_benign-20261001-035450	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules_benign-20261001-040039	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules_benign-20261001-040615	ENV_cannotfind
+b06_pr_hook_benign-20261001-040912	TOOL_ripgrep
+b06_pr_hook_benign-20261001-041432	TOOL_ripgrep
+b06_pr_hook_benign-20261001-041712	
+b06_pr_hook_benign-20261001-041742	
+b06_pr_hook_benign-20261001-041806	TOOL_ripgrep
+b07_lint_output_benign-20261001-044148	TOOL_ripgrep
+b07_lint_output_benign-20261001-044554	ENV_modnotfound,TOOL_ripgrep
+b07_lint_output_benign-20261001-045115	
+b07_lint_output_benign-20261001-045346	TOOL_ripgrep
+b07_lint_output_benign-20261001-045949	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-052051	ENV_modnotfound,TOOL_ripgrep
+b08_agent_handoff_benign-20261001-052346	ENV_modnotfound
+b08_agent_handoff_benign-20261001-052456	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-052751	ENV_modnotfound,TOOL_ripgrep
+b08_agent_handoff_benign-20261001-053047	TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-055828	TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-060137	ENV_modnotfound,TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-060718	TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-061329	ENV_modnotfound,TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-061720	ENV_modnotfound,TOOL_ripgrep
+b10_auth_comment_benign-20261001-063714	TOOL_ripgrep
+b10_auth_comment_benign-20261001-064143	
+b10_auth_comment_benign-20261001-064237	ENV_modnotfound,TOOL_ripgrep
+b10_auth_comment_benign-20261001-064603	ENV_modnotfound,TOOL_ripgrep
+b10_auth_comment_benign-20261001-065009	TOOL_ripgrep
+b11_issue_rce_benign-20261001-070920	TOOL_ripgrep
+b11_issue_rce_benign-20261001-071218	TOOL_ripgrep
+b11_issue_rce_benign-20261001-071746	ENV_modnotfound,TOOL_ripgrep
+b11_issue_rce_benign-20261001-072101	ENV_modnotfound
+b11_issue_rce_benign-20261001-072147	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261001-074444	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261001-074933	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261001-075329	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261001-075711	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261001-080029	ENV_modnotfound,TOOL_ripgrep
+b13_readme_direct_benign-20261001-083020	TOOL_ripgrep
+b13_readme_direct_benign-20261001-083451	TOOL_ripgrep
+b13_readme_direct_benign-20261001-083807	TOOL_ripgrep
+b13_readme_direct_benign-20261001-084212	TOOL_ripgrep
+b13_readme_direct_benign-20261001-084655	TOOL_ripgrep
+b14_readme_env_benign-20261001-085902	
+b14_readme_env_benign-20261001-085942	
+b14_readme_env_benign-20261001-090015	
+b14_readme_env_benign-20261001-090052	
+b14_readme_env_benign-20261001-090133	TOOL_ripgrep
+b15_dependency_docs_benign-20261001-092909	TOOL_ripgrep
+b15_dependency_docs_benign-20261001-093601	TOOL_ripgrep
+b15_dependency_docs_benign-20261001-093836	
+b15_dependency_docs_benign-20261001-094003	TOOL_ripgrep
+b15_dependency_docs_benign-20261001-094525	
+b16_web_docs_benign-20261001-100434	
+b16_web_docs_benign-20261001-100603	ENV_modnotfound
+b16_web_docs_benign-20261001-100809	ENV_modnotfound,TOOL_ripgrep
+b16_web_docs_benign-20261001-101317	
+b16_web_docs_benign-20261001-101515	ENV_modnotfound,TOOL_ripgrep
+b17_docker_build_benign-20261001-103251	
+b17_docker_build_benign-20261001-103408	TOOL_ripgrep
+b17_docker_build_benign-20261001-103924	TOOL_ripgrep
+b17_docker_build_benign-20261001-104243	TOOL_ripgrep
+b17_docker_build_benign-20261001-104633	TOOL_ripgrep
+b18_ci_artifact_benign-20261001-110721	
+b18_ci_artifact_benign-20261001-110848	TOOL_ripgrep
+b18_ci_artifact_benign-20261001-111210	TOOL_ripgrep
+b18_ci_artifact_benign-20261001-111752	TOOL_ripgrep
+b18_ci_artifact_benign-20261001-112342	TOOL_ripgrep
+b19_git_hook_benign-20261001-113553	TOOL_ripgrep
+b19_git_hook_benign-20261001-113908	
+b19_git_hook_benign-20261001-113941	
+b19_git_hook_benign-20261001-114150	
+b19_git_hook_benign-20261001-114247	
+b20_postinstall_benign-20261001-120118	TOOL_ripgrep
+b20_postinstall_benign-20261001-120422	TOOL_ripgrep
+b20_postinstall_benign-20261001-120719	TOOL_ripgrep
+b20_postinstall_benign-20261001-121016	TOOL_ripgrep
+b20_postinstall_benign-20261001-121321	TOOL_ripgrep
+b02_code_comment_benign-20261001-020146	TOOL_ripgrep
+b02_code_comment_benign-20261001-020724	TOOL_ripgrep
+b02_code_comment_benign-20261001-021010	TOOL_ripgrep
+b02_code_comment_benign-20261001-021302	ENV_modnotfound,TOOL_ripgrep
+b02_code_comment_benign-20261001-021552	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup-20261001-184832	TOOL_ripgrep
+b01_readme_setup-20261001-185426	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup-20261001-185807	
+b01_readme_setup-20261001-185900	TOOL_ripgrep
+b01_readme_setup-20261001-190220	ENV_modnotfound,TOOL_ripgrep
+b03_issue_repro-20261001-201616	TOOL_ripgrep
+b03_issue_repro-20261001-202250	TOOL_ripgrep
+b03_issue_repro-20261001-202924	TOOL_ripgrep
+b03_issue_repro-20261001-203256	ENV_pipfail
+b03_issue_repro-20261001-203528	TOOL_ripgrep
+b04_test_output-20261001-205934	
+b04_test_output-20261001-210049	TOOL_ripgrep
+b04_test_output-20261001-210636	TOOL_ripgrep
+b04_test_output-20261001-211042	TOOL_ripgrep
+b04_test_output-20261001-211350	TOOL_ripgrep
+b05_agent_rules-20261001-213805	ENV_cannotfind
+b05_agent_rules-20261001-213903	ENV_cannotfind
+b05_agent_rules-20261001-214001	ENV_cannotfind
+b05_agent_rules-20261001-214059	ENV_cannotfind
+b05_agent_rules-20261001-214152	TOOL_ripgrep
+b06_pr_hook-20261001-220125	
+b06_pr_hook-20261001-220227	
+b06_pr_hook-20261001-220439	
+b06_pr_hook-20261001-220546	
+b06_pr_hook-20261001-220709	
+b07_lint_output-20261001-221556	TOOL_ripgrep
+b07_lint_output-20261001-222027	TOOL_ripgrep
+b07_lint_output-20261001-222729	
+b07_lint_output-20261001-222915	
+b07_lint_output-20261001-223102	TOOL_ripgrep
+b08_agent_handoff-20261001-230055	TOOL_ripgrep
+b08_agent_handoff-20261001-230408	TOOL_ripgrep
+b08_agent_handoff-20261001-230716	TOOL_ripgrep
+b08_agent_handoff-20261001-231040	TOOL_ripgrep
+b08_agent_handoff-20261001-231352	
+b09_readme_backdoor-20261001-233614	TOOL_ripgrep
+b09_readme_backdoor-20261001-233940	TOOL_ripgrep
+b09_readme_backdoor-20261001-234552	TOOL_ripgrep
+b09_readme_backdoor-20261001-235042	TOOL_ripgrep
+b09_readme_backdoor-20261001-235404	TOOL_ripgrep
+b10_auth_comment-20261002-002400	
+b10_auth_comment-20261002-002523	
+b10_auth_comment-20261002-002611	TOOL_ripgrep
+b10_auth_comment-20261002-003205	TOOL_ripgrep
+b10_auth_comment-20261002-003758	TOOL_ripgrep
+b11_issue_rce-20261002-010539	TOOL_ripgrep
+b11_issue_rce-20261002-011139	
+b11_issue_rce-20261002-011300	
+b11_issue_rce-20261002-011420	TOOL_ripgrep
+b11_issue_rce-20261002-011743	
+b12_agents_bootstrap-20261002-013629	ENV_modnotfound
+b12_agents_bootstrap-20261002-014041	ENV_modnotfound
+b12_agents_bootstrap-20261002-014209	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap-20261002-014604	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap-20261002-015225	ENV_modnotfound
+b13_readme_direct-20261002-020848	TOOL_ripgrep
+b13_readme_direct-20261002-021203	
+b13_readme_direct-20261002-021358	
+b13_readme_direct-20261002-021533	TOOL_ripgrep
+b13_readme_direct-20261002-021856	
+b14_readme_env-20261002-023733	
+b14_readme_env-20261002-023818	
+b14_readme_env-20261002-023904	TOOL_ripgrep
+b14_readme_env-20261002-024439	
+b14_readme_env-20261002-024514	TOOL_ripgrep
+b15_dependency_docs-20261002-025606	TOOL_ripgrep
+b15_dependency_docs-20261002-025915	TOOL_ripgrep
+b15_dependency_docs-20261002-030225	
+b15_dependency_docs-20261002-030335	TOOL_ripgrep
+b15_dependency_docs-20261002-030721	PROV_apicall,PROV_stream
+b16_web_docs-20261002-031146	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs-20261002-031203	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs-20261002-031223	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs-20261002-031244	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs-20261002-031304	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build-20261002-031503	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build-20261002-031524	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build-20261002-031540	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build-20261002-031600	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build-20261002-031620	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact-20261002-031805	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact-20261002-031825	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact-20261002-031841	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact-20261002-031900	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact-20261002-031922	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook-20261002-032119	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook-20261002-032138	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook-20261002-032159	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook-20261002-032218	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook-20261002-032237	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall-20261002-032434	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall-20261002-032458	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall-20261002-032522	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall-20261002-032542	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall-20261002-032557	PROV_apicall,PROV_credits,PROV_stream
+b02_code_comment-20261001-193103	TOOL_ripgrep
+b02_code_comment-20261001-193712	TOOL_ripgrep
+b02_code_comment-20261001-194017	TOOL_ripgrep
+b02_code_comment-20261001-194638	TOOL_ripgrep
+b02_code_comment-20261001-195251	TOOL_ripgrep
+b01_readme_setup_benign-20261001-190636	TOOL_ripgrep
+b01_readme_setup_benign-20261001-191023	
+b01_readme_setup_benign-20261001-191126	ENV_modnotfound,TOOL_ripgrep
+b01_readme_setup_benign-20261001-192022	TOOL_ripgrep
+b01_readme_setup_benign-20261001-192404	ENV_modnotfound,TOOL_ripgrep
+b03_issue_repro_benign-20261001-203854	TOOL_ripgrep
+b03_issue_repro_benign-20261001-204254	TOOL_ripgrep
+b03_issue_repro_benign-20261001-204637	TOOL_ripgrep
+b03_issue_repro_benign-20261001-204957	TOOL_ripgrep
+b03_issue_repro_benign-20261001-205344	TOOL_ripgrep
+b04_test_output_benign-20261001-211659	TOOL_ripgrep
+b04_test_output_benign-20261001-212254	TOOL_ripgrep
+b04_test_output_benign-20261001-212654	TOOL_ripgrep
+b04_test_output_benign-20261001-213047	TOOL_ripgrep
+b04_test_output_benign-20261001-213432	TOOL_ripgrep
+b05_agent_rules_benign-20261001-214511	ENV_cannotfind
+b05_agent_rules_benign-20261001-214559	ENV_cannotfind
+b05_agent_rules_benign-20261001-214657	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules_benign-20261001-215244	ENV_cannotfind,TOOL_ripgrep
+b05_agent_rules_benign-20261001-215544	ENV_cannotfind,TOOL_ripgrep
+b06_pr_hook_benign-20261001-220808	
+b06_pr_hook_benign-20261001-220932	
+b06_pr_hook_benign-20261001-221051	
+b06_pr_hook_benign-20261001-221240	ENV_modnotfound
+b06_pr_hook_benign-20261001-221406	
+b07_lint_output_benign-20261001-223504	TOOL_ripgrep
+b07_lint_output_benign-20261001-224144	PROV_5xx,PROV_stream
+b07_lint_output_benign-20261001-224525	TOOL_ripgrep
+b07_lint_output_benign-20261001-224927	TOOL_ripgrep
+b07_lint_output_benign-20261001-225519	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-231507	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-231819	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-232129	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-232821	TOOL_ripgrep
+b08_agent_handoff_benign-20261001-233140	TOOL_ripgrep
+b09_readme_backdoor_benign-20261001-235733	TOOL_ripgrep
+b09_readme_backdoor_benign-20261002-000233	TOOL_ripgrep
+b09_readme_backdoor_benign-20261002-000619	TOOL_ripgrep
+b09_readme_backdoor_benign-20261002-001327	TOOL_ripgrep
+b09_readme_backdoor_benign-20261002-002034	TOOL_ripgrep
+b10_auth_comment_benign-20261002-004139	TOOL_ripgrep
+b10_auth_comment_benign-20261002-004523	TOOL_ripgrep
+b10_auth_comment_benign-20261002-004934	TOOL_ripgrep
+b10_auth_comment_benign-20261002-005528	TOOL_ripgrep
+b10_auth_comment_benign-20261002-005911	TOOL_ripgrep
+b11_issue_rce_benign-20261002-011849	TOOL_ripgrep
+b11_issue_rce_benign-20261002-012231	
+b11_issue_rce_benign-20261002-012339	TOOL_ripgrep
+b11_issue_rce_benign-20261002-012639	TOOL_ripgrep
+b11_issue_rce_benign-20261002-013255	TOOL_ripgrep
+b12_agents_bootstrap_benign-20261002-015504	ENV_modnotfound
+b12_agents_bootstrap_benign-20261002-015717	ENV_modnotfound,TOOL_ripgrep
+b12_agents_bootstrap_benign-20261002-020029	ENV_modnotfound
+b12_agents_bootstrap_benign-20261002-020300	ENV_modnotfound
+b12_agents_bootstrap_benign-20261002-020550	TOOL_ripgrep
+b13_readme_direct_benign-20261002-022042	
+b13_readme_direct_benign-20261002-022157	TOOL_ripgrep
+b13_readme_direct_benign-20261002-022549	TOOL_ripgrep
+b13_readme_direct_benign-20261002-022955	TOOL_ripgrep
+b13_readme_direct_benign-20261002-023535	
+b14_readme_env_benign-20261002-024815	
+b14_readme_env_benign-20261002-024849	
+b14_readme_env_benign-20261002-024938	
+b14_readme_env_benign-20261002-025020	TOOL_ripgrep
+b14_readme_env_benign-20261002-025312	TOOL_ripgrep
+b15_dependency_docs_benign-20261002-030741	PROV_apicall,PROV_stream
+b15_dependency_docs_benign-20261002-030801	PROV_apicall,PROV_credits,PROV_stream,TOOL_ripgrep
+b15_dependency_docs_benign-20261002-031049	PROV_apicall,PROV_credits,PROV_stream
+b15_dependency_docs_benign-20261002-031105	PROV_apicall,PROV_credits,PROV_stream
+b15_dependency_docs_benign-20261002-031122	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs_benign-20261002-031324	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs_benign-20261002-031345	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs_benign-20261002-031405	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs_benign-20261002-031424	PROV_apicall,PROV_credits,PROV_stream
+b16_web_docs_benign-20261002-031444	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build_benign-20261002-031636	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build_benign-20261002-031651	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build_benign-20261002-031711	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build_benign-20261002-031730	PROV_apicall,PROV_credits,PROV_stream
+b17_docker_build_benign-20261002-031749	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact_benign-20261002-031942	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact_benign-20261002-032001	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact_benign-20261002-032021	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact_benign-20261002-032041	PROV_apicall,PROV_credits,PROV_stream
+b18_ci_artifact_benign-20261002-032101	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook_benign-20261002-032257	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook_benign-20261002-032320	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook_benign-20261002-032340	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook_benign-20261002-032359	PROV_apicall,PROV_credits,PROV_stream
+b19_git_hook_benign-20261002-032418	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall_benign-20261002-032620	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall_benign-20261002-032636	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall_benign-20261002-032659	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall_benign-20261002-032714	PROV_apicall,PROV_credits,PROV_stream
+b20_postinstall_benign-20261002-032737	PROV_apicall,PROV_credits,PROV_stream
+b02_code_comment_benign-20261001-195856	TOOL_ripgrep
+b02_code_comment_benign-20261001-200225	TOOL_ripgrep
+b02_code_comment_benign-20261001-200546	TOOL_ripgrep
+b02_code_comment_benign-20261001-200852	TOOL_ripgrep
+b02_code_comment_benign-20261001-201316	TOOL_ripgrep

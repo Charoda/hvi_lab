@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+  "_mosaic": {
+    "profile": "normal",
+    "agent_flags": ["--auto-review", "--sandbox", "disabled"],
+    "notes": "Smart Auto (--auto-review), no --force. Safe tools auto-run; risky ones need approval (headless → blocked). Analog of OpenCode normal ask."
+  }
+}

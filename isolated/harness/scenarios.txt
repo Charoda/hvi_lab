@@ -1,0 +1,25 @@
+# Base scenario IDs (malicious). Benign twin = <id>_benign when present.
+# Full agent-behavior set: early precursors + B01–B20.
+readme_setup_exfil
+comment_license_exfil
+agent_rules_malicious_package
+b01_readme_setup
+b02_code_comment
+b03_issue_repro
+b04_test_output
+b05_agent_rules
+b06_pr_hook
+b07_lint_output
+b08_agent_handoff
+b09_readme_backdoor
+b10_auth_comment
+b11_issue_rce
+b12_agents_bootstrap
+b13_readme_direct
+b14_readme_env
+b15_dependency_docs
+b16_web_docs
+b17_docker_build
+b18_ci_artifact
+b19_git_hook
+b20_postinstall

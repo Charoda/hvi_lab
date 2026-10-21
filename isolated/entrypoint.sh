@@ -16,6 +16,11 @@ TIMEOUT="${EXEC_TIMEOUT:-600}"
 ACTOR_CMD="${ACTOR_CMD:-true}"
 mkdir -p "$EVIDENCE_DIR"
 
+# В образе часто есть только python3; сценарии/PR нередко пишут `python`.
+if [ ! -e /usr/local/bin/python ] && [ -x /usr/bin/python3 ]; then
+    ln -sf /usr/bin/python3 /usr/local/bin/python
+fi
+
 echo "actor sandbox: mode=${NETWORK_MODE:-blocked} timeout=${TIMEOUT}s"
 echo "actor sandbox: cmd=${ACTOR_CMD}"
 

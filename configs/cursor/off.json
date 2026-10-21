@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+  "_mosaic": {
+    "profile": "off",
+    "agent_flags": ["--force", "--sandbox", "disabled"],
+    "notes": "Baseline: Run Everything (--force). No deny list. Analog of OpenCode off."
+  }
+}

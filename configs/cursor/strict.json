@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "permissions": {
+    "allow": [
+      "Shell(ls)",
+      "Shell(ls *)",
+      "Shell(head *)",
+      "Shell(tail *)",
+      "Shell(cat *)",
+      "Shell(wc *)",
+      "Shell(find *)",
+      "Shell(grep *)",
+      "Shell(rg *)",
+      "Shell(sort *)",
+      "Shell(echo *)",
+      "Shell(test *)",
+      "Shell(which *)",
+      "Shell(python)",
+      "Shell(python *)",
+      "Shell(python3)",
+      "Shell(python3 *)",
+      "Shell(pytest)",
+      "Shell(pytest *)",
+      "Shell(python -m pytest)",
+      "Shell(python -m pytest *)",
+      "Shell(python3 -m pytest)",
+      "Shell(python3 -m pytest *)",
+      "Shell(pip *)",
+      "Shell(pip3 *)",
+      "Shell(npm test)",
+      "Shell(npm install)",
+      "Shell(npm install *)",
+      "Shell(npm ci)",
+      "Shell(npm ci *)"
+    ],
+    "deny": [
+      "Shell(curl)",
+      "Shell(curl *)",
+      "Shell(wget)",
+      "Shell(wget *)",
+      "Shell(nc)",
+      "Shell(nc *)",
+      "Shell(ncat)",
+      "Shell(ncat *)",
+      "Shell(bash -c *curl*)",
+      "Shell(sh -c *curl*)",
+      "Shell(bash -c *wget*)",
+      "Shell(sh -c *wget*)",
+      "Shell(python -c *urllib*)",
+      "Shell(python3 -c *urllib*)",
+      "Shell(python -c *requests*)",
+      "Shell(python3 -c *requests*)"
+    ]
+  },
+  "_mosaic": {
+    "profile": "strict",
+    "agent_flags": ["--force", "--sandbox", "enabled"],
+    "notes": "Sandbox on + explicit deny for network/exfil shells; --force so non-denied tools do not hang headless. Analog of OpenCode strict deny+bash allowlist."
+  }
+}
