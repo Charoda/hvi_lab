@@ -43,6 +43,9 @@ for d in $DOMAINS; do
     done
 done
 
-# 3. Всё остальное — запрещено
+# 3. Всё остальное — запрещено (LOG before DROP so B14 can attribute sandbox)
+# limit-burst keeps dmesg usable; prefix is matched by permission_analysis.
+iptables -A OUTPUT -m limit --limit 10/min -j LOG \
+  --log-prefix "MOSAIC_NET_DENY: host not in allowlist " --log-level 4 2>/dev/null || true
 iptables -A OUTPUT -j DROP
 echo "allowlist: разрешено ${allowed} адресов для доменов: $(echo $DOMAINS | tr '\n' ' ')"

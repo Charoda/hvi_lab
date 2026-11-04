@@ -234,6 +234,9 @@ ensure_benign_exists() {
   [[ -f "$REPO_ROOT/benchmark/chains/${base}_benign/chain.json" ]]
 }
 
+# Max automatic retries when record_run marks the trial INVALID (provider errors).
+INVALID_RETRIES="${INVALID_RETRIES:-2}"
+
 # --- OpenCode path ----------------------------------------------------------
 run_opencode_one() {
   local base="$1" variant="$2" profile="$3" idx="$4"
@@ -248,39 +251,79 @@ run_opencode_one() {
     echo "[skip] $chain $profile #$idx"
     return 0
   fi
-  echo "===== opencode $variant / $profile / $chain / trial $idx ====="
-  local tmp_log="/tmp/harness-${chain}-${profile}-${idx}-$$.log"
-  set +e
-  "$REPO_ROOT/run_isolated.sh" "$chain" \
-    --actor opencode \
-    --permission-profile "$profile" \
-    --network "$NETWORK" \
-    --timeout "$TIMEOUT" \
-    --verbose >"$tmp_log" 2>&1
-  local rc=$?
-  set -e
-  log_dir="$(ls -td "$REPO_ROOT/logs/${chain}-"* 2>/dev/null | head -1 || true)"
-  if [[ -z "$log_dir" || ! -f "$log_dir/result.json" ]]; then
-    echo -e "${base}\t${variant}\t${profile}\t${idx}\tERROR\tNO_RUN\t\t\tFalse\t\t\t\t\t\t\t\t\t\trc=$rc no result.json" \
-      | { [[ -f "$tsv" ]] || echo -e "scenario\tvariant\tprofile\trepeat_idx\trun_id\tactor\tmodel\tverdict\tvalid\tattack_attempted\tattack_success\tutility_success\ttests_passed\tpermission_blocked_attack\tpermission_blocked_utility\tdefense_false_positive\tstopped_by\tduration_s\tevidence\tnotes"; cat; } >>"$tsv"
-    echo "[error] no result.json (rc=$rc) — see $tmp_log"
-    return 0
-  fi
-  # keep harness copy of raw log
-  mkdir -p "$OUT_DIR/raw"
-  cp "$tmp_log" "$OUT_DIR/raw/$(basename "$log_dir").console.log" 2>/dev/null || true
-  "$PYTHON" "$HARNESS_DIR/record_run.py" \
-    --source opencode \
-    --chain "$chain" \
-    --scenario-base "$base" \
-    --variant "$variant" \
-    --profile "$profile" \
-    --idx "$idx" \
-    --log-dir "$log_dir" \
-    --tsv "$tsv" \
-    --notes "console=$tmp_log" \
-    --rescore-poc || true
-  mark_done "$chain" "$variant" "$profile" "$idx" "$(basename "$log_dir")"
+
+  local attempt=0 max_attempts=$((1 + INVALID_RETRIES))
+  local recorded_valid=0
+  while (( attempt < max_attempts )); do
+    attempt=$((attempt + 1))
+    echo "===== opencode $variant / $profile / $chain / trial $idx (attempt $attempt/$max_attempts) ====="
+    local tmp_log="/tmp/harness-${chain}-${profile}-${idx}-a${attempt}-$$.log"
+    set +e
+    "$REPO_ROOT/run_isolated.sh" "$chain" \
+      --actor opencode \
+      --permission-profile "$profile" \
+      --network "$NETWORK" \
+      --timeout "$TIMEOUT" \
+      --verbose >"$tmp_log" 2>&1
+    local rc=$?
+    set -e
+    log_dir="$(ls -td "$REPO_ROOT/logs/${chain}-"* 2>/dev/null | head -1 || true)"
+    if [[ -z "$log_dir" || ! -f "$log_dir/result.json" ]]; then
+      echo "[warn] no result.json (rc=$rc) attempt=$attempt — see $tmp_log"
+      if (( attempt < max_attempts )); then
+        echo "[retry] INVALID/no-result → retrying ($attempt/$INVALID_RETRIES left after this)"
+        continue
+      fi
+      echo -e "${base}\t${variant}\t${profile}\t${idx}\tNO_RUN\tINVALID\tFalse\t\t\t\t\t\t\t\t\t\t\t\trc=$rc no result.json after ${max_attempts} attempts" \
+        | { [[ -f "$tsv" ]] || echo -e "scenario\tvariant\tprofile\trepeat_idx\trun_id\tactor\tmodel\tverdict\tvalid\tattack_attempted\tattack_success\tutility_success\ttests_passed\tpermission_blocked_attack\tpermission_blocked_utility\tdefense_false_positive\tstopped_by\tduration_s\tevidence\tnotes"; cat; } >>"$tsv"
+      echo "[error] no result.json after retries — see $tmp_log"
+      return 0
+    fi
+    mkdir -p "$OUT_DIR/raw"
+    cp "$tmp_log" "$OUT_DIR/raw/$(basename "$log_dir").console.log" 2>/dev/null || true
+
+    # Record into a temp TSV line; detect INVALID via record_run exit / verdict.
+    # mktemp creates an empty file; record_run.append_row only writes HEADER when
+    # the path is missing — so remove the placeholder first.
+    local tmp_tsv
+    tmp_tsv="$(mktemp)"
+    rm -f "$tmp_tsv"
+    set +e
+    "$PYTHON" "$HARNESS_DIR/record_run.py" \
+      --source opencode \
+      --chain "$chain" \
+      --scenario-base "$base" \
+      --variant "$variant" \
+      --profile "$profile" \
+      --idx "$idx" \
+      --log-dir "$log_dir" \
+      --tsv "$tmp_tsv" \
+      --notes "console=$tmp_log attempt=$attempt" \
+      --rescore-poc
+    local rec_rc=$?
+    set -e
+    local verdict
+    verdict="$(awk -F'\t' 'NR==2 {print $8; exit}' "$tmp_tsv" 2>/dev/null || true)"
+    if [[ "$verdict" == "INVALID" ]] && (( attempt < max_attempts )); then
+      echo "[retry] verdict=INVALID ($(basename "$log_dir")) → auto-retry ($((max_attempts - attempt)) left)"
+      rm -f "$tmp_tsv"
+      continue
+    fi
+    # Accept this attempt (valid or final INVALID/ERROR).
+    if [[ -f "$tmp_tsv" ]]; then
+      if [[ ! -f "$tsv" ]]; then
+        head -1 "$tmp_tsv" >"$tsv"
+      fi
+      # append data row (skip header)
+      tail -n +2 "$tmp_tsv" >>"$tsv"
+      rm -f "$tmp_tsv"
+    fi
+    if [[ "$rec_rc" -eq 0 ]]; then
+      recorded_valid=1
+    fi
+    mark_done "$chain" "$variant" "$profile" "$idx" "$(basename "$log_dir")"
+    break
+  done
 }
 
 # --- Cursor permission profiles ---------------------------------------------
@@ -328,132 +371,156 @@ run_cursor_one() {
   fi
 
   batch_cursor="${BATCH_NAME}-workspaces"
-  echo "===== cursor $variant / $profile / $chain / trial $idx (mode=$MODE) ====="
-  # Prepare blind workspace (harness meta outside workspace)
+  # Prepare blind workspace once; retries re-run the agent on the same staged tree.
   stage_one "$batch_cursor" "$chain" >/dev/null
   ws="$(workspace_for "$batch_cursor" "$chain")"
   meta_dir="$(meta_dir_for "$batch_cursor" "$chain")"
 
-  local prompt log t0 t1 duration dest rc=0 cursor_home=""
-  prompt="$(cat "$meta_dir/PROMPT.txt")"
-  log="$meta_dir/agent_stdout_${profile}.log"
-  : >"$meta_dir/evidence/honey_requests.jsonl"
-  if [[ "$(cat "$meta_dir/NEEDS_HONEY")" == "1" ]]; then
-    start_honey "$meta_dir/evidence"
-  fi
-  t0="$(date +%s)"
-  if [[ "$MODE" == "interactive" ]]; then
-    echo "Open Cursor ONLY on: $ws"
-    echo "Profile hint (manual): $profile — see configs/cursor/${profile}.json"
-    echo "----- PROMPT -----"
-    echo "$prompt"
-    echo "----- END -----"
-    cursor "$ws" >/dev/null 2>&1 || true
-    read -r -p "Enter when agent finished... " _
-  else
-    [[ -n "$AGENT_BIN" ]] || die "agent CLI not found; use MODE=interactive or install Cursor agent"
-    require_cursor_api_key
-    cursor_home="$(prepare_cursor_home "$profile" "$meta_dir")"
+  local attempt=0 max_attempts=$((1 + INVALID_RETRIES))
+  while (( attempt < max_attempts )); do
+    attempt=$((attempt + 1))
+    echo "===== cursor $variant / $profile / $chain / trial $idx (mode=$MODE attempt $attempt/$max_attempts) ====="
+
+    local prompt log t0 t1 duration dest rc=0 cursor_home=""
+    prompt="$(cat "$meta_dir/PROMPT.txt")"
+    log="$meta_dir/agent_stdout_${profile}.log"
+    : >"$meta_dir/evidence/honey_requests.jsonl"
+    if [[ "$(cat "$meta_dir/NEEDS_HONEY")" == "1" ]]; then
+      start_honey "$meta_dir/evidence"
+    fi
+    t0="$(date +%s)"
+    if [[ "$MODE" == "interactive" ]]; then
+      echo "Open Cursor ONLY on: $ws"
+      echo "Profile hint (manual): $profile — see configs/cursor/${profile}.json"
+      echo "----- PROMPT -----"
+      echo "$prompt"
+      echo "----- END -----"
+      cursor "$ws" >/dev/null 2>&1 || true
+      read -r -p "Enter when agent finished... " _
+    else
+      [[ -n "$AGENT_BIN" ]] || die "agent CLI not found; use MODE=interactive or install Cursor agent"
+      require_cursor_api_key
+      cursor_home="$(prepare_cursor_home "$profile" "$meta_dir")"
+      set +e
+      (
+        cd "$ws"
+        # Isolated HOME → per-run cli-config (profile). Auth via API key only.
+        # Avoid bash arrays — safer if the script file is edited mid-run.
+        export HOME="$cursor_home"
+        case "$profile" in
+          off)
+            if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox disabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --endpoint "$CURSOR_API_ENDPOINT" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            else
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox disabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            fi
+            ;;
+          normal)
+            if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --auto-review --sandbox disabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --endpoint "$CURSOR_API_ENDPOINT" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            else
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --auto-review --sandbox disabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            fi
+            ;;
+          strict)
+            if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox enabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --endpoint "$CURSOR_API_ENDPOINT" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            else
+              timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox enabled --trust \
+                --api-key "$CURSOR_API_KEY" \
+                --model "${MODEL:-auto}" \
+                --output-format text \
+                "$prompt"
+            fi
+            ;;
+          *)
+            die "unknown Cursor profile: $profile (use off|normal|strict)"
+            ;;
+        esac
+      ) >"$log" 2>&1
+      rc=$?
+      set -e
+    fi
+    t1="$(date +%s)"
+    duration=$((t1 - t0))
+    if [[ "$(cat "$meta_dir/NEEDS_HONEY")" == "1" ]]; then
+      stop_honey "$meta_dir/evidence"
+    fi
+
+    # Collect into logs/ under harness-friendly run id
+    local run_id
+    run_id="cursor-${chain}-${profile}-$(date +%Y%m%d-%H%M%S)"
+    dest="$REPO_ROOT/logs/$run_id"
+    mkdir -p "$dest"
+    cp -a "$ws" "$dest/final_app"
+    cp -a "$meta_dir/evidence/." "$dest/" 2>/dev/null || true
+    [[ -f "$log" ]] && cp "$log" "$dest/cursor_agent.log"
+    if [[ -n "$cursor_home" && -f "$cursor_home/.cursor/cli-config.json" ]]; then
+      cp "$cursor_home/.cursor/cli-config.json" "$dest/cursor_cli_config.json" 2>/dev/null || true
+      cp "$cursor_home/.cursor/mosaic_profile.json" "$dest/cursor_profile.json" 2>/dev/null || true
+    fi
+    printf '%s\n' "$profile" >"$dest/cursor_profile_name.txt"
+    printf '%s\n' "$run_id" >"$meta_dir/LAST_RUN_ID"
+
+    local tmp_tsv
+    tmp_tsv="$(mktemp)"
+    rm -f "$tmp_tsv"  # see opencode path: append_row needs missing file for HEADER
     set +e
-    (
-      cd "$ws"
-      # Isolated HOME → per-run cli-config (profile). Auth via API key only.
-      # Avoid bash arrays — safer if the script file is edited mid-run.
-      export HOME="$cursor_home"
-      case "$profile" in
-        off)
-          if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox disabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --endpoint "$CURSOR_API_ENDPOINT" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          else
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox disabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          fi
-          ;;
-        normal)
-          if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --auto-review --sandbox disabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --endpoint "$CURSOR_API_ENDPOINT" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          else
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --auto-review --sandbox disabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          fi
-          ;;
-        strict)
-          if [[ -n "${CURSOR_API_ENDPOINT:-}" ]]; then
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox enabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --endpoint "$CURSOR_API_ENDPOINT" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          else
-            timeout "$TIMEOUT" "$AGENT_BIN" -p --force --sandbox enabled --trust \
-              --api-key "$CURSOR_API_KEY" \
-              --model "${MODEL:-auto}" \
-              --output-format text \
-              "$prompt"
-          fi
-          ;;
-        *)
-          die "unknown Cursor profile: $profile (use off|normal|strict)"
-          ;;
-      esac
-    ) >"$log" 2>&1
-    rc=$?
+    "$PYTHON" "$HARNESS_DIR/record_run.py" \
+      --source cursor \
+      --chain "$chain" \
+      --scenario-base "$base" \
+      --variant "$variant" \
+      --profile "$profile" \
+      --idx "$idx" \
+      --log-dir "$dest" \
+      --tsv "$tmp_tsv" \
+      --model "${MODEL:-auto}" \
+      --duration "$duration" \
+      --notes "agent_rc=$rc mode=$MODE profile=$profile attempt=$attempt" || true
     set -e
-  fi
-  t1="$(date +%s)"
-  duration=$((t1 - t0))
-  if [[ "$(cat "$meta_dir/NEEDS_HONEY")" == "1" ]]; then
-    stop_honey "$meta_dir/evidence"
-  fi
-
-  # Collect into logs/ under harness-friendly run id
-  local run_id dest
-  run_id="cursor-${chain}-${profile}-$(date +%Y%m%d-%H%M%S)"
-  dest="$REPO_ROOT/logs/$run_id"
-  mkdir -p "$dest"
-  cp -a "$ws" "$dest/final_app"
-  cp -a "$meta_dir/evidence/." "$dest/" 2>/dev/null || true
-  [[ -f "$log" ]] && cp "$log" "$dest/cursor_agent.log"
-  if [[ -n "$cursor_home" && -f "$cursor_home/.cursor/cli-config.json" ]]; then
-    cp "$cursor_home/.cursor/cli-config.json" "$dest/cursor_cli_config.json" 2>/dev/null || true
-    cp "$cursor_home/.cursor/mosaic_profile.json" "$dest/cursor_profile.json" 2>/dev/null || true
-  fi
-  printf '%s\n' "$profile" >"$dest/cursor_profile_name.txt"
-  printf '%s\n' "$run_id" >"$meta_dir/LAST_RUN_ID"
-
-  "$PYTHON" "$HARNESS_DIR/record_run.py" \
-    --source cursor \
-    --chain "$chain" \
-    --scenario-base "$base" \
-    --variant "$variant" \
-    --profile "$profile" \
-    --idx "$idx" \
-    --log-dir "$dest" \
-    --tsv "$tsv" \
-    --model "${MODEL:-auto}" \
-    --duration "$duration" \
-    --notes "agent_rc=$rc mode=$MODE profile=$profile" || true
-  # symlink into batch out dir for convenience
-  mkdir -p "$OUT_DIR/runs"
-  ln -sfn "$dest" "$OUT_DIR/runs/$run_id" 2>/dev/null || true
-  mark_done "$chain" "$variant" "$profile" "$idx" "$run_id"
+    local verdict
+    verdict="$(awk -F'\t' 'NR==2 {print $8; exit}' "$tmp_tsv" 2>/dev/null || true)"
+    if [[ "$verdict" == "INVALID" ]] && (( attempt < max_attempts )); then
+      echo "[retry] verdict=INVALID ($run_id) → auto-retry ($((max_attempts - attempt)) left)"
+      rm -f "$tmp_tsv"
+      continue
+    fi
+    if [[ -f "$tmp_tsv" ]]; then
+      if [[ ! -f "$tsv" ]]; then
+        head -1 "$tmp_tsv" >"$tsv"
+      fi
+      tail -n +2 "$tmp_tsv" >>"$tsv"
+      rm -f "$tmp_tsv"
+    fi
+    mkdir -p "$OUT_DIR/runs"
+    ln -sfn "$dest" "$OUT_DIR/runs/$run_id" 2>/dev/null || true
+    mark_done "$chain" "$variant" "$profile" "$idx" "$run_id"
+    break
+  done
 }
 
 # --- Main loop: scenario × variant × profile × trial -----------------------

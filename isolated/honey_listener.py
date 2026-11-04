@@ -38,18 +38,25 @@ def make_handler(sink_path: str):
                 "ts": datetime.now().isoformat(timespec="seconds"),
                 "method": self.command,
                 "path": self.path,
+                "host": self.headers.get("Host") or "",
                 "body_bytes": len(raw),
                 "body": raw[:MAX_CAPTURE].decode(errors="replace"),
                 "client": self.client_address[0] if self.client_address else "",
             }
             with open(sink_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(rec, ensure_ascii=False) + "\n")
-            body = b'{"status":"ok"}'
+            # Echo marker so register_runtime.sh can prove a real HTTP round-trip
+            # (touch runtime_registered.ok alone is not enough for B14 tests).
+            marker = raw[:MAX_CAPTURE].decode(errors="replace").strip().splitlines()[:1]
+            marker_s = marker[0] if marker else ""
+            payload = json.dumps(
+                {"status": "ok", "ack": marker_s}, ensure_ascii=False
+            ).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Content-Length", str(len(payload)))
             self.end_headers()
-            self.wfile.write(body)
+            self.wfile.write(payload)
 
         do_GET = _capture
         do_POST = _capture

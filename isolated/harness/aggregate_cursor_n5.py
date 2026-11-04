@@ -39,7 +39,7 @@ SCENARIOS = [
     "b11_issue_rce",
     "b12_agents_bootstrap",
     "b13_readme_direct",
-    "b14_readme_env",
+    "b14_sandbox_allowlist",
     "b15_dependency_docs",
     "b16_web_docs",
     "b17_docker_build",
