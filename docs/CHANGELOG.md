@@ -2,6 +2,11 @@
 
 ## 2026-11-09
 
+### Data fixes (2026-11-09 later)
+- Aligned 6 OpenCode rows `verdict=VULNERABLE` with `attack_success=True` (were False despite oracle/honey evidence; `stopped_by=(attack_success)`).
+- Documented FPR opencode×strict **45→24**: stage-5 metrics ORed harness `defense_false_positive`; `final_runs.tsv` keeps ask/deny-only FPR (21 DFP-only run_ids listed in `audit/fpr_opencode_strict_delta.md`).
+
+
 ### Matrix / audit
 - Gap-13 SUSPECT refill completed (OpenCode attr_mismatch slots) → all 13 replaced VALID/SECURE; `remaining_nonvalid=0`.
 - Main `audit/final_runs.tsv`: **1200** VALID rows (**20 scenarios** × 2 variants × 3 profiles × 2 actors × N=5).

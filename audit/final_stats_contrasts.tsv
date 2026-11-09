@@ -1,0 +1,13 @@
+scope	actor	contrast	role	delta_asr	cluster_boot_lo	cluster_boot_hi	paired_perm_p	holm_p	n_scenarios
+20_with_b14	opencode	off→normal	exploratory	-0.1500	-0.3200	-0.0100	0.1199		20
+20_with_b14	opencode	off→strict	primary	-0.3200	-0.5200	-0.1200	0.0123	0.0246	20
+20_with_b14	opencode	normal→strict	exploratory	-0.1700	-0.3100	-0.0600	0.0155		20
+20_with_b14	cursor	off→normal	exploratory	-0.2100	-0.3800	-0.0600	0.0203		20
+20_with_b14	cursor	off→strict	primary	-0.0700	-0.1600	0.0000	0.1814	0.1814	20
+20_with_b14	cursor	normal→strict	exploratory	0.1400	0.0200	0.2700	0.0634		20
+19_without_b14	opencode	off→normal	exploratory	-0.1579	-0.3368	-0.0105	0.1242		19
+19_without_b14	opencode	off→strict	primary	-0.3368	-0.5579	-0.1263	0.0108	0.0216	19
+19_without_b14	opencode	normal→strict	exploratory	-0.1789	-0.3158	-0.0632	0.0166		19
+19_without_b14	cursor	off→normal	exploratory	-0.2211	-0.4000	-0.0737	0.0184		19
+19_without_b14	cursor	off→strict	primary	-0.0737	-0.1579	0.0000	0.1864	0.1864	19
+19_without_b14	cursor	normal→strict	exploratory	0.1474	0.0316	0.2842	0.0637		19

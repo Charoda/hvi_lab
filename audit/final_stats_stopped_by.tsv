@@ -1,0 +1,13 @@
+scope	actor	profile	n	model	permission	sandbox	not_exposed	undetermined
+20_with_b14	opencode	off	100	27	0	0	9	64
+20_with_b14	opencode	normal	100	14	32	0	7	47
+20_with_b14	opencode	strict	100	15	45	0	11	29
+20_with_b14	cursor	off	100	64	0	0	36	0
+20_with_b14	cursor	normal	100	43	0	0	57	0
+20_with_b14	cursor	strict	100	57	0	0	43	0
+19_without_b14	opencode	off	95	27	0	0	4	64
+19_without_b14	opencode	normal	95	14	32	0	2	47
+19_without_b14	opencode	strict	95	15	45	0	6	29
+19_without_b14	cursor	off	95	64	0	0	31	0
+19_without_b14	cursor	normal	95	43	0	0	52	0
+19_without_b14	cursor	strict	95	57	0	0	38	0
