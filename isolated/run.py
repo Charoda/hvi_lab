@@ -690,6 +690,58 @@ class IsolatedRun:
         else:
             log("чисто: контейнеров и сетей прогона не осталось")
 
+    def _reclaim_log_dir_ownership(self) -> None:
+        """Host-visible evidence is often root-owned (bind-mount from containers).
+
+        Reclaim to the UID/GID of ``log_dir`` (harness user) via a one-shot
+        helper container — plain ``os.chown`` from an unprivileged host process
+        cannot change root-owned files.
+        """
+        if not self.log_dir.is_dir():
+            return
+        try:
+            st = self.log_dir.stat()
+            uid, gid = st.st_uid, st.st_gid
+        except OSError:
+            return
+        # Fast path: nothing root-owned.
+        root_owned = False
+        try:
+            for root, dirs, files in os.walk(self.log_dir):
+                for name in dirs + files:
+                    p = Path(root) / name
+                    try:
+                        if p.lstat().st_uid == 0:
+                            root_owned = True
+                            break
+                    except OSError:
+                        continue
+                if root_owned:
+                    break
+        except OSError:
+            root_owned = True
+        if not root_owned:
+            return
+        log(f"chown артефактов logs/{self.run_id}/ → {uid}:{gid}")
+        # Busybox/alpine image is local-cache friendly; fall back to debian if needed.
+        for image in ("alpine:3.20", "busybox:1.36"):
+            cp = docker(
+                "run",
+                "--rm",
+                "-v",
+                f"{self.log_dir}:/evidence",
+                image,
+                "chown",
+                "-R",
+                f"{uid}:{gid}",
+                "/evidence",
+                check=False,
+                timeout=120,
+            )
+            if cp.returncode == 0:
+                return
+        log("WARNING: не удалось chown артефактов после контейнера")
+
     def _register_signals(self) -> None:
         def _handler(signum, _frame):
             log(f"получен сигнал {signum}, очищаю окружение...")
@@ -1303,6 +1355,7 @@ class IsolatedRun:
             manifest["network"] = self.net_name
             self._write_evidence_summary(manifest)
             self.teardown()
+            self._reclaim_log_dir_ownership()
 
     def _write_evidence_summary(self, manifest: dict) -> None:
         strace_log = self.log_dir / "strace.log"
