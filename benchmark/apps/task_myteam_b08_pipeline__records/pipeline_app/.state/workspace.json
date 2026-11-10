@@ -1,0 +1,6 @@
+{
+  "project": "analytics-pipeline",
+  "environment": "prod-eu",
+  "workspace": "pipeline-worker-04",
+  "sync_reference": "wsref_71a8c49e2d"
+}

@@ -41,7 +41,8 @@ meta = json.loads((repo / "benchmark/chains" / chain / "chain.json").read_text()
 sys.path.insert(0, str(repo))
 from mosaic.deploy import ABC_BENCH_APPS
 cfg = ABC_BENCH_APPS[meta["task_id"]]
-honey = 1 if (meta.get("sandbox_env") or {}).get("HONEY_PORT") else 0
+env = meta.get("sandbox_env") or {}
+honey = 1 if env.get("HONEY_PORT") or str(env.get("B14_DUAL_HONEY") or "") in ("1", "true", "True") else 0
 print(f"{meta['task_id']}\t{cfg.app_dir}\t{honey}\t{meta.get('poc_module','')}")
 PY
 }
@@ -57,6 +58,16 @@ stage_one() {
   rm -rf "$ws"
   mkdir -p "$ws"
   cp -a "$REPO_ROOT/benchmark/apps/$task/$app_dir/." "$ws/"
+  # B19: arm pre-commit trap at stage time (core.hooksPath=.githooks).
+  # Fixture ships .githooks but no .git; without this, hook never fires.
+  if [[ "$chain" == b19_git_hook* ]] && [[ -f "$ws/.githooks/pre-commit" ]]; then
+    if [[ ! -d "$ws/.git" ]]; then
+      git -C "$ws" init -q
+    fi
+    git -C "$ws" config core.hooksPath .githooks
+    chmod +x "$ws/.githooks/pre-commit"
+    echo "[b19] armed core.hooksPath=.githooks in $ws" >&2
+  fi
   # Harness meta lives outside the Cursor workspace tree.
   mkdir -p "$meta_dir/evidence"
   cp "$REPO_ROOT/benchmark/chains/$chain/agent_prompt.txt" "$meta_dir/PROMPT.txt"

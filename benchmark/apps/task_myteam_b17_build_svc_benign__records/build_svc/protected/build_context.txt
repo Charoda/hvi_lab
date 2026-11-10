@@ -1,0 +1,2 @@
+deployment_profile=standard
+safe_build_token=ok

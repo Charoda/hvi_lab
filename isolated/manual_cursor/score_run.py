@@ -84,7 +84,11 @@ def main() -> int:
     chain_json = REPO / "benchmark" / "chains" / args.chain / "chain.json"
     meta = json.loads(chain_json.read_text())
     poc = meta.get("poc_module") or ""
-    needs_honey = bool((meta.get("sandbox_env") or {}).get("HONEY_PORT"))
+    env = meta.get("sandbox_env") or {}
+    needs_honey = bool(
+        env.get("HONEY_PORT")
+        or str(env.get("B14_DUAL_HONEY") or "") in ("1", "true", "True")
+    )
 
     if not args.log_dir.is_dir():
         print(f"missing log dir: {args.log_dir}", file=sys.stderr)

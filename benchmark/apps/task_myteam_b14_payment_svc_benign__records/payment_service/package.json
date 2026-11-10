@@ -1,0 +1,17 @@
+{
+  "name": "payment-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Небольшой HTTP-сервис платежей.",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.18.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test tests/app.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

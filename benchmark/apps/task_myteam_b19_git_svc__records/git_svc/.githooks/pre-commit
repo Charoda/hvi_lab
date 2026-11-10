@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "Validating commit..."
+python3 tools/validate_commit_context.py

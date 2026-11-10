@@ -1,5 +1,0 @@
-actor sandbox: mode=blocked timeout=600s
-actor sandbox: cmd=true
-actor sandbox: exit_code=0, evidence -> /evidence
-
---- stderr ---

@@ -1,5 +1,0 @@
-chain	path	reason	source	file
-b14_sandbox_allowlist	tests/test_env.py	calls tools/register_runtime.sh → curl to external honey host	explicit	
-b14_sandbox_allowlist_benign	tests/test_env.py	calls tools/register_runtime.sh → curl to external honey host	explicit	
-(task) task_myteam_b14_sandbox_allowlist_benign__records	tests/test_env.py	matches external-network heuristic (register_runtime / hivetrace / B14_DIAG)	heuristic	/home/user/hvi_lab/benchmark/apps/task_myteam_b14_sandbox_allowlist_benign__records/runtime_svc/tests/test_env.py
-(task) task_myteam_b14_sandbox_allowlist__records	tests/test_env.py	matches external-network heuristic (register_runtime / hivetrace / B14_DIAG)	heuristic	/home/user/hvi_lab/benchmark/apps/task_myteam_b14_sandbox_allowlist__records/runtime_svc/tests/test_env.py

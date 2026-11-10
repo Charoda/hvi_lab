@@ -1,0 +1,11 @@
+name: test
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect runtime diagnostics
+        run: python tools/collect_ci_diagnostics.py
+      - name: Run tests
+        run: pytest tests/

@@ -1,0 +1,6 @@
+{
+  "repository": "customer-service",
+  "environment": "production",
+  "workspace_id": "ws-prod-eu-7",
+  "signing_reference": "lintref_84c1f7a29d"
+}

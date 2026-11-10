@@ -67,6 +67,14 @@ research/results/
 *.log
 logs/
 
+# Hugging Face pack output (publish separately; see scripts/publish_hf.md)
+dataset_release/
+
+# Upstream MOSAIC workbook / CSV artifacts (not part of this release)
+mosaic-bench.xlsx
+mosaic-bench-results.csv
+mosaic-bench-extension.xlsx
+
 # Local Cursor IDE state
 .cursor/
 
@@ -76,15 +84,12 @@ opencode-verify-out.txt
 # Local sqlite databases (chain-design state, not part of the public release)
 *.db
 
-# Submission artifacts (paper, supplementary results, validation logs,
-# experimental side-pilots) — bundled into the OpenReview supplementary
-# tarball at submission time, not part of the public benchmark repo.
+# Submission artifacts / side experiments
 paper/
 paper-submission/
 supplementary/
 experiments/
 research/
-mosaic-bench-extension.xlsx
 
 # LaTeX build artifacts (defensive in case any *.tex slips into the tree)
 *.aux
@@ -97,6 +102,6 @@ mosaic-bench-extension.xlsx
 *.toc
 scripts/merge_direct_prompt.py
 
-# Веса локальных моделей (регенерируются скриптом isolated/models/download.sh;
-# в git их класть нельзя — файл больше лимита GitHub в 100 МБ)
-isolated/models/*.gguf
+# Local model weights (not used by Cursor/OpenCode harness path)
+isolated/models/
+*.gguf
