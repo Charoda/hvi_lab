@@ -29,19 +29,19 @@ pip install -U "huggingface_hub[cli]"
 huggingface-cli login
 ```
 
-Upload the pack (replace `ORG/NAME` with your dataset repo):
+Target dataset: [`anichkvv/hivetrace-agent-defense-bench`](https://huggingface.co/datasets/anichkvv/hivetrace-agent-defense-bench).
 
 ```bash
 # Prefer an already-built pack if present elsewhere:
 SRC="${DATASET_RELEASE_DIR:-$HOME/mosaic-benchmark/dataset_release}"
 
-huggingface-cli upload ORG/NAME "$SRC" . --repo-type dataset
+hf upload anichkvv/hivetrace-agent-defense-bench "$SRC" . --repo-type dataset
 ```
 
 Or from a freshly built `~/hvi_lab/dataset_release`:
 
 ```bash
-huggingface-cli upload ORG/NAME ~/hvi_lab/dataset_release . --repo-type dataset
+hf upload anichkvv/hivetrace-agent-defense-bench ~/hvi_lab/dataset_release . --repo-type dataset
 ```
 
 The dataset README already contains HF YAML frontmatter (`license`, `pretty_name`, tags).
